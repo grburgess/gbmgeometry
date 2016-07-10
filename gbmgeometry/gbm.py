@@ -46,11 +46,11 @@ class GBM(object):
                                       na=self.na,
                                       nb=self.nb)
 
-    def set_quarternion(self, quaternion):
+    def set_quaternion(self, quaternion):
         """
         """
         for key in self._detectors.keys():
-            self._detectors[key].set_quarternion(quaternion)
+            self._detectors[key].set_quaternion(quaternion)
 
     def get_fov(self, radius):
         """
@@ -135,7 +135,9 @@ class GBM(object):
         for i, fov in enumerate(fovs):
             ra, dec = fov
 
-            map.plot(ra, dec, '.', color=plt.cm.Set1(color_itr[i]), latlon=True, markersize=2.)
+            idx = np.argsort(ra)
+
+            map.plot(ra[idx], dec[idx], '.', color=plt.cm.Set1(color_itr[i]), latlon=True, markersize=2.)
 
             x, y = map(centers[good_detectors[i]].icrs.ra.value, centers[good_detectors[i]].icrs.dec.value)
 

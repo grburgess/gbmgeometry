@@ -205,6 +205,7 @@ class NaIA(GBMDetector):
 
         self._az = 123.73
         self._zen = 90.42 - 90.
+
         super(NaIA, self).__init__(quaternion)
 
 

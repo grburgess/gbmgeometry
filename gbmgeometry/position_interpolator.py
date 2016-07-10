@@ -42,17 +42,18 @@ class PositionInterpolator(object):
             trigdat = fits.open(trigdat)
             trigtime = trigdat['EVNTRATE'].header['TRIGTIME']
             tstart = trigdat['EVNTRATE'].data['TIME'] - trigtime
-            tstop = trigdat['EVNTRATE'].data['ENDTIME'] - trigtime
+
             self._quats = trigdat['EVNTRATE'].data['SCATTITD']
             self._sc_pos = trigdat['EVNTRATE'].data['EIC']
 
             sort_mask = np.argsort(tstart)
             tstart = tstart[sort_mask]
-            tstop = tstop[sort_mask]
+
             self._quats = self._quats[sort_mask]
             self._sc_pos = self._sc_pos[sort_mask]
 
-            self._time = np.array([np.mean(x, y) for x, y in zip(tstart, tstop)])
+            self._time = tstart
+
 
             trigdat.close()
 
@@ -61,10 +62,11 @@ class PositionInterpolator(object):
             print "No file passed. Exiting"
             return
 
-        # Interpolate the quarternion
+        # Interpolate the stuf
         self._interpolate_quaternion()
+        self._interpolate_sc_pos()
 
-    def qauternion(self, t):
+    def quaternion(self, t):
         """
         Gets an itnerpolated quaternion as a function of time
 
@@ -78,7 +80,7 @@ class PositionInterpolator(object):
 
         """
 
-        return self.normalize(self._quaternion_t(t))
+        return self._quaternion_t(t)
 
     def sc_pos(self, t):
         """
@@ -92,15 +94,15 @@ class PositionInterpolator(object):
         Fermi GBM spacecraft position
 
         """
-        return self.normalize(self._scxyz_t(t))
+        return self._scxyz_t(t)
 
     def _interpolate_quaternion(self):
 
-        self._quaternion_t = interpolate.interp1d(self._time, self._quats)
+        self._quaternion_t = interpolate.interp1d(self._time, self._quats.T)
 
     def _interpolate_sc_pos(self):
 
-        self._scxyz_t = interpolate.interp1d(self._time, self._sc_pos)
+        self._scxyz_t = interpolate.interp1d(self._time, self._sc_pos.T)
 
     @staticmethod
     def normalize(x):
