@@ -1,5 +1,4 @@
-
-
+__author__="drjfunk"
 from .gbm_frame import GBMFrame
 from astropy.coordinates import SkyCoord
 from spherical_geometry.polygon import SphericalPolygon
@@ -43,7 +42,7 @@ class GBMDetector(object):
         poly = SphericalPolygon.from_cone(j2000.ra.value,j2000.dec.value,radius)
 
         # ra, dec
-        return [for p in poly.to_radec()][0]
+        return [p for p in poly.to_radec()][0]
 
 class NaI0(GBMDetector):
     """
