@@ -1,6 +1,5 @@
 from setuptools import setup
 
-
 setup(
 
     name="gbmgeometry",
@@ -12,9 +11,8 @@ setup(
 
     requires=[
         'numpy',
-        'matplotlib'
+        'matplotlib',
         'astropy'
-    ],
+    ]
 
-    
 )
