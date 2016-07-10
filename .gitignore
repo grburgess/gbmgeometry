@@ -1,6 +1,5 @@
-./build
-./build/
-./dist/
+build
+dist/
 *.ipynb_checkpoints
-./gbmgeometry.egg-info/
+gbmgeometry.egg-info/
 *.pyc
