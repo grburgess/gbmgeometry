@@ -5,3 +5,4 @@ astropy
 seaborn
 matplotlib
 numpydoc
+autoapi
