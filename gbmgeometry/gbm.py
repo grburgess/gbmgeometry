@@ -113,6 +113,7 @@ class GBM(object):
         lon_0
         """
 
+        map_flag = False
         if map is  None:
 
             fig = plt.figure(fignum)
@@ -123,6 +124,9 @@ class GBM(object):
                          resolution='l', area_thresh=1000.0, celestial=True,ax=ax)
 
 
+        else:
+
+            map_flag =True
         map.drawmapboundary(fill_color='#151719')
 
         good_detectors = range(12)
@@ -156,8 +160,9 @@ class GBM(object):
 
             plt.text(x, y, self._detectors.keys()[good_detectors[i]], color='w')
 
-        _ = map.drawmeridians(np.arange(0, 360, 30), color='#3A3A3A')
-        _ = map.drawparallels(np.arange(-90, 90, 15), labels=[True] * len(np.arange(-90, 90, 15)), color='#3A3A3A')
+        if not map_flag:
+            _ = map.drawmeridians(np.arange(0, 360, 30), color='#3A3A3A')
+            _ = map.drawparallels(np.arange(-90, 90, 15), labels=[True] * len(np.arange(-90, 90, 15)), color='#3A3A3A')
 
 
     def get_separation(self,source):
