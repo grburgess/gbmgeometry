@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 import numpy as np
 from collections import OrderedDict
-from spherical_geometry.polygon import SphericalPolygon
+import spherical_geometry.polygon as sp
 
 from astropy.table import Table
 
@@ -202,7 +202,7 @@ class GBM(object):
         for key in self._detectors.keys():
             j2000 = self._detectors[key]._center.icrs
 
-            poly = SphericalPolygon.from_cone(j2000.ra.value,
+            poly = sp.SphericalPolygon.from_cone(j2000.ra.value,
                                               j2000.dec.value,
                                               radius,
                                               steps=steps)
