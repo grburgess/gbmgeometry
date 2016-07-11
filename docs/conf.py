@@ -25,19 +25,19 @@ sys.path.insert(1, os.path.abspath('../gbmgeometry'))
 on_rtd = os.environ.get('READTHEDOCS') == 'True'
 
 
-if on_rtd:
 
 
-    from mock import Mock as MagicMock
-    class Mock(MagicMock):
-        @classmethod
-        def __getattr__(cls, name):
-            return Mock()
+
+from mock import Mock as MagicMock
+class Mock(MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+        return Mock()
 
 
-    MOCK_MODULES = ['mpl_toolkits.basemap']
+MOCK_MODULES = ['mpl_toolkits.basemap']
 
-    sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 
 # -- General configuration ------------------------------------------------
