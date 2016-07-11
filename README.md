@@ -7,3 +7,8 @@ Routines to handle GBM geometry and plotting
 * matplotlib
 * scipy
 * Basemap
+* seaborn
+* 
+## Install
+
+$> python setup.py install
