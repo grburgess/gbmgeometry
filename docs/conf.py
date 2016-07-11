@@ -35,7 +35,7 @@ if on_rtd:
             return Mock()
 
 
-    MOCK_MODULES = ['mpl_toolkits.basemap','spherical_geometry.polygon']
+    MOCK_MODULES = ['mpl_toolkits.basemap']
 
     sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 

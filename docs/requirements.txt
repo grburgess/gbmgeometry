@@ -6,3 +6,4 @@ seaborn
 matplotlib
 numpydoc
 autoapi
+spherical_geometry
