@@ -1,0 +1,6 @@
+mock
+numpy
+scipy
+astropy
+seaborn
+matplotlib
