@@ -1,18 +1,21 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
 
     name="gbmgeometry",
-    packages=['gbmgeometry'],
+    packages=find_packages(),
     version='v0.1',
     description=' Geometry calculations for Fermi GBM ',
     author='J. Michael Burgess',
     author_email='jmichaelburgess@gmail.com',
-
+    include_package_data=True,
     requires=[
         'numpy',
         'matplotlib',
         'astropy'
-    ]
+    ],
+
+    package_data={'gbmgeometry': ['gbmgeometry/dlp.csv']}
+
 
 )

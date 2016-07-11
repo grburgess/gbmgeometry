@@ -8,6 +8,10 @@ import numpy as np
 from collections import OrderedDict
 from spherical_geometry.polygon import SphericalPolygon
 
+import pandas as pd
+import seaborn as sns
+
+
 _det_color_cycle = np.linspace(0, 1, 12)
 
 
@@ -94,7 +98,7 @@ class GBM(object):
 
         return centers
 
-    def detector_plot(self, radius=60., point=None, good=False, projection='moll', lat_0=0, lon_0=0):
+    def detector_plot(self, radius=60., point=None, good=False, projection='moll', lat_0=0, lon_0=0, fignum=1, map=None):
 
         """
 
@@ -107,10 +111,18 @@ class GBM(object):
         lat_0
         lon_0
         """
-        map = bm.Basemap(projection=projection, lat_0=lat_0, lon_0=lon_0,
-                         resolution='l', area_thresh=1000.0, celestial=True)
 
-        map.drawmapboundary(fill_color='#5B5655')
+        if map is  None:
+
+            fig = plt.figure(fignum)
+            ax = fig.add_subplot(111)
+
+
+            map = bm.Basemap(projection=projection, lat_0=lat_0, lon_0=lon_0,
+                         resolution='l', area_thresh=1000.0, celestial=True,ax=ax)
+
+
+        map.drawmapboundary(fill_color='#151719')
 
         good_detectors = range(12)
         centers = self.get_centers()
@@ -166,3 +178,12 @@ class GBM(object):
             condition.append(poly.contains_point(point.cartesian.xyz.value))
 
         return np.array(condition)
+
+
+def get_legal_pairs():
+
+
+    dlp = pd.read_csv("dlp.csv",header=None)
+    sns.heatmap(dlp,annot=True,fmt='d',cmap="YlGnBu")
+    plt.ylabel("NaI")
+    plt.xlabel("NaI")
