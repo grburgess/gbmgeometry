@@ -8,7 +8,8 @@ import numpy as np
 from collections import OrderedDict
 from spherical_geometry.polygon import SphericalPolygon
 
-import pandas as pd
+from astropy.table import Table
+
 import seaborn as sns
 
 
@@ -158,6 +159,32 @@ class GBM(object):
         _ = map.drawmeridians(np.arange(0, 360, 30), color='#3A3A3A')
         _ = map.drawparallels(np.arange(-90, 90, 15), labels=[True] * len(np.arange(-90, 90, 15)), color='#3A3A3A')
 
+
+    def get_separation(self,source):
+        """
+        Get the andular separation of the detectors from a point
+        Parameters
+        ----------
+        source
+
+        Returns
+        -------
+
+        """
+
+        tab = Table(names=["Detector","Separation"],dtype=["|S2",np.float64])
+
+        for key in self._detectors.keys():
+
+            sep = self._detectors[key].get_center().separation(source)
+            tab.add_row([key,sep])
+
+        return tab
+
+
+
+
+
     def _contains_point(self, point, radius):
         """
         returns detectors that contain a points
@@ -183,7 +210,21 @@ class GBM(object):
 def get_legal_pairs():
 
 
-    dlp = pd.read_csv("dlp.csv",header=None)
+    dlp = np.array([[0,274,39,171,12,29,0,5,1,6,1,0],
+           [258,0,233,55,4,100,2,1,1,12,27,0],
+           [55,437,0,2,2,311,0,1,1,13,235,0],
+           [215,80,3,0,330,107,4,8,19,2,1,0],
+           [13,4,8,508,0,269,2,29,236,0,1,0],
+           [44,188,337,166,279,0,0,0,0,0,0,0],
+           [0,1,1,2,2,0,0,238,46,180,12,33],
+           [0,2,0,18,35,0,222,0,221,61,3,109],
+           [0,0,1,16,215,0,51,399,0,4,2,303],
+           [3,18,21,4,0,0,190,82,1,0,324,110],
+           [1,25,191,0,0,0,16,6,4,516,0,293],
+           [0,0,0,0,0,0,32,147,297,138,263,0]])
+
+
+
     sns.heatmap(dlp,annot=True,fmt='d',cmap="YlGnBu")
     plt.ylabel("NaI")
     plt.xlabel("NaI")
