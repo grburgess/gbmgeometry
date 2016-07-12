@@ -7,4 +7,3 @@ matplotlib
 numpydoc
 autoapi
 spherical_geometry
-basemap

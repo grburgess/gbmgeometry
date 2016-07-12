@@ -26,11 +26,11 @@ class PositionInterpolator(object):
             self._quats = np.array([poshist['GLAST POS HIST'].data['QSJ_1'],
                                     poshist['GLAST POS HIST'].data['QSJ_2'],
                                     poshist['GLAST POS HIST'].data['QSJ_3'],
-                                    poshist['GLAST POS HIST'].data['QSJ_4']])
+                                    poshist['GLAST POS HIST'].data['QSJ_4']]).T
 
             self._sc_pos = np.array([poshist['GLAST POS HIST'].data['POS_X'],
                                      poshist['GLAST POS HIST'].data['POS_Y'],
-                                     poshist['GLAST POS HIST'].data['POS_Z']])
+                                     poshist['GLAST POS HIST'].data['POS_Z']]).T
 
             if T0 is not None:
                 self._time -= T0

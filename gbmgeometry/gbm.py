@@ -187,7 +187,9 @@ class GBM(object):
 
         tab['Separation'].unit = u.degree
 
-        return tab.sort("Separation")
+        tab.sort("Separation")
+
+        return tab
 
 
 
