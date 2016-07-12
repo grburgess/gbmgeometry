@@ -9,6 +9,7 @@ from collections import OrderedDict
 import spherical_geometry.polygon as sp
 
 from astropy.table import Table
+import astropy.units as u
 
 import seaborn as sns
 
@@ -184,7 +185,9 @@ class GBM(object):
             sep = self._detectors[key].get_center().separation(source)
             tab.add_row([key,sep])
 
-        return tab
+        tab['Separation'].unit = u.degree
+
+        return tab.sort("Separation")
 
 
 
@@ -213,6 +216,13 @@ class GBM(object):
 
 
 def get_legal_pairs():
+    """
+    Plots the legal pairs of detectors for GBM observations
+
+    Returns
+    -------
+
+    """
 
 
     dlp = np.array([[0,274,39,171,12,29,0,5,1,6,1,0],
