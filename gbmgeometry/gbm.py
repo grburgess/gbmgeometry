@@ -115,7 +115,7 @@ class GBM(object):
         """
 
         map_flag = False
-        if map is  None:
+        if map is None:
 
             fig = plt.figure(fignum)
             ax = fig.add_subplot(111)
@@ -128,7 +128,7 @@ class GBM(object):
         else:
 
             map_flag =True
-        map.drawmapboundary(fill_color='#151719')
+
 
         good_detectors = range(12)
         centers = self.get_centers()
@@ -136,7 +136,7 @@ class GBM(object):
         if good and point:
 
             fovs, good_detectors = self.get_good_fov(point, radius)
-            map.plot(point.ra.value, point.dec.value, '*', color='yellow', latlon=True)
+            map.plot(point.ra.value, point.dec.value, '*', color='#ffffbf', latlon=True)
 
 
 
@@ -146,7 +146,7 @@ class GBM(object):
             fovs = self.get_fov(radius)
 
         if point:
-            map.plot(point.ra.value, point.dec.value, '*', color='yellow', latlon=True)
+            map.plot(point.ra.value, point.dec.value, '*', color='#ffffbf', latlon=True)
 
         color_itr = np.linspace(0, 1, len(fovs))
 
@@ -164,6 +164,7 @@ class GBM(object):
         if not map_flag:
             _ = map.drawmeridians(np.arange(0, 360, 30), color='#3A3A3A')
             _ = map.drawparallels(np.arange(-90, 90, 15), labels=[True] * len(np.arange(-90, 90, 15)), color='#3A3A3A')
+            map.drawmapboundary(fill_color='#151719')
 
 
     def get_separation(self,source):
