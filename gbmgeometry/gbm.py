@@ -159,7 +159,7 @@ class GBM(object):
 
             x, y = map(centers[good_detectors[i]].icrs.ra.value, centers[good_detectors[i]].icrs.dec.value)
 
-            plt.text(x, y, self._detectors.keys()[good_detectors[i]], color='w')
+            plt.text(x, y, self._detectors.keys()[good_detectors[i]], color=plt.cm.Set1(color_itr[i]))
 
         if not map_flag:
             _ = map.drawmeridians(np.arange(0, 360, 30), color='#3A3A3A')
