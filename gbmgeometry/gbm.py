@@ -88,7 +88,7 @@ class GBM(object):
         for key in self._detectors.keys():
 
             if key[0] == 'b':
-                this_rad = 120
+                this_rad = 90
 
             else:
                 this_rad = radius
@@ -114,9 +114,12 @@ class GBM(object):
 
         good_detectors = self._contains_point(point, radius)
 
-        polys = self.get_fov(radius, fermi_frame)
+        polys = []
 
-        return [polys[good_detectors], np.where(good_detectors)[0]]
+        for key in good_detectors:
+            polys.append(self._detectors[key].get_fov(radius, fermi_frame))
+
+        return [polys, good_detectors]
 
     def get_centers(self):
 
@@ -161,8 +164,8 @@ class GBM(object):
 
             map_flag = True
 
-        good_detectors = range(14)
-        centers = self.get_centers()
+        good_detectors = self._detectors.keys()
+
 
         if good and point:
 
@@ -189,12 +192,13 @@ class GBM(object):
             map.plot(ra[idx], dec[idx], '.', color=plt.cm.Set1(color_itr[i]), latlon=True, markersize=2.)
 
             if fermi_frame:
-                x, y = map(centers[good_detectors[i]].Az.value, centers[good_detectors[i]].Zen.value)
+                x, y = map(self._detectors[good_detectors[i]].get_center().Az.value,
+                           self._detectors[good_detectors[i]].get_center().Zen.value)
             else:
-                x, y = map(centers[good_detectors[i]].icrs.ra.value, centers[good_detectors[i]].icrs.dec.value)
+                x, y = map(self._detectors[good_detectors[i]].get_center().icrs.ra.value,
+                           self._detectors[good_detectors[i]].get_center().icrs.dec.value)
 
-
-            plt.text(x, y, self._detectors.keys()[good_detectors[i]], color=plt.cm.Set1(color_itr[i]))
+            plt.text(x, y, good_detectors[i], color=plt.cm.Set1(color_itr[i]))
 
         if not map_flag:
             _ = map.drawmeridians(np.arange(0, 360, 30), color='#3A3A3A')
@@ -237,7 +241,7 @@ class GBM(object):
         for key in self._detectors.keys():
 
             if key[0] == 'b':
-                this_rad = 180
+                this_rad = 90
             else:
                 this_rad = radius
 
@@ -248,9 +252,10 @@ class GBM(object):
                                                  this_rad,
                                                  steps=steps)
 
-            condition.append(poly.contains_point(point.cartesian.xyz.value))
+            if poly.contains_point(point.cartesian.xyz.value):
+                condition.append(key)
 
-        return np.array(condition)
+        return condition
 
 
 def get_legal_pairs():
