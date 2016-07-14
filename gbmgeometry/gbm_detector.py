@@ -45,7 +45,7 @@ class GBMDetector(object):
         self._center = SkyCoord(Az=self._az, Zen=self._zen, unit='deg',
                                 frame=GBMFrame(quaternion=self._quaternion, location=sc_pos))
 
-    def get_fov(self, radius):
+    def get_fov(self, radius, fermi_frame=False):
         """
         Returns
         -------
@@ -55,12 +55,23 @@ class GBMDetector(object):
 
         steps = 500
 
-        j2000 = self._center.icrs
+        if fermi_frame:
+            fermi = self._center
 
-        poly = SphericalPolygon.from_cone(j2000.ra.value,
-                                          j2000.dec.value,
-                                          radius,
-                                          steps=steps)
+            poly = SphericalPolygon.from_cone(fermi.Az.value,
+                                              fermi.Zen.value,
+                                              radius,
+                                              steps=steps)
+
+
+        else:
+
+            j2000 = self._center.icrs
+
+            poly = SphericalPolygon.from_cone(j2000.ra.value,
+                                              j2000.dec.value,
+                                              radius,
+                                              steps=steps)
 
         # ra, dec
         return [p for p in poly.to_radec()][0]
@@ -78,7 +89,7 @@ class NaI0(GBMDetector):
         quaternion
         """
         self._az = 45.89
-        self._zen = 20.58 - 90.
+        self._zen = 90 - 20.58
 
         super(NaI0, self).__init__(quaternion, sc_pos)
 
@@ -92,7 +103,7 @@ class NaI1(GBMDetector):
         quaternion
         """
         self._az = 45.11
-        self._zen = 45.31 - 90.
+        self._zen = 90 - 45.31
 
         super(NaI1, self).__init__(quaternion, sc_pos)
 
@@ -106,7 +117,7 @@ class NaI2(GBMDetector):
         quaternion
         """
         self._az = 58.44
-        self._zen = 90.21 - 90.
+        self._zen = 90 - 90.21
 
         super(NaI2, self).__init__(quaternion, sc_pos)
 
@@ -120,7 +131,7 @@ class NaI3(GBMDetector):
         quaternion
         """
         self._az = 314.87
-        self._zen = 45.24 - 90.
+        self._zen = 90 - 45.24
 
         super(NaI3, self).__init__(quaternion, sc_pos)
 

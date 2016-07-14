@@ -74,10 +74,11 @@ class GBM(object):
         for key in self._detectors.keys():
             self._detectors[key].set_sc_pos(sc_pos)
 
-    def get_fov(self, radius):
+    def get_fov(self, radius, fermi_frame=False):
         """
         Parameters
         ----------
+        fermi_frame
         radius
 
         """
@@ -92,13 +93,13 @@ class GBM(object):
             else:
                 this_rad = radius
 
-            polys.append(self._detectors[key].get_fov(this_rad))
+            polys.append(self._detectors[key].get_fov(this_rad, fermi_frame))
 
         polys = np.array(polys)
 
         return polys
 
-    def get_good_fov(self, point, radius):
+    def get_good_fov(self, point, radius, fermi_frame=False):
         """
         Returns the detectors that contain the given point
         for the given angular radius
@@ -113,7 +114,7 @@ class GBM(object):
 
         good_detectors = self._contains_point(point, radius)
 
-        polys = self.get_fov(radius)
+        polys = self.get_fov(radius, fermi_frame)
 
         return [polys[good_detectors], np.where(good_detectors)[0]]
 
@@ -132,7 +133,7 @@ class GBM(object):
         return centers
 
     def detector_plot(self, radius=60., point=None, good=False, projection='moll', lat_0=0, lon_0=0, fignum=1,
-                      map=None):
+                      map=None, fermi_frame=False):
 
         """
 
@@ -165,7 +166,7 @@ class GBM(object):
 
         if good and point:
 
-            fovs, good_detectors = self.get_good_fov(point, radius)
+            fovs, good_detectors = self.get_good_fov(point, radius, fermi_frame)
             map.plot(point.ra.value, point.dec.value, '*', color='#ffffbf', latlon=True)
 
 
@@ -173,7 +174,7 @@ class GBM(object):
 
         else:
 
-            fovs = self.get_fov(radius)
+            fovs = self.get_fov(radius, fermi_frame)
 
         if point:
             map.plot(point.ra.value, point.dec.value, '*', color='#ffffbf', latlon=True)
@@ -231,7 +232,7 @@ class GBM(object):
 
         for key in self._detectors.keys():
 
-            if key[0] =='b':
+            if key[0] == 'b':
                 this_rad = 180
             else:
                 this_rad = radius
