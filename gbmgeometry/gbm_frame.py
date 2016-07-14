@@ -21,18 +21,19 @@ class GBMFrame(BaseCoordinateFrame):
     frame_specific_representation_info = {
         'spherical': [RepresentationMapping(reprname='lon', framename='Az', defaultunit=u.degree),
                       RepresentationMapping(reprname='lat', framename='Zen', defaultunit=u.degree),
-                        RepresentationMapping(reprname='distance', framename='DIST', defaultunit=None)],
-          'unitspherical': [RepresentationMapping(reprname='lon', framename='Az', defaultunit=u.degree),
-                            RepresentationMapping(reprname='lat', framename='Zen', defaultunit=u.degree)],
-          'cartesian': [RepresentationMapping(reprname='x', framename='SCX'),
-                        RepresentationMapping(reprname='y', framename='SCY'),
-                        RepresentationMapping(reprname='z', framename='SCZ')]
-      }
+                      RepresentationMapping(reprname='distance', framename='DIST', defaultunit=None)],
+        'unitspherical': [RepresentationMapping(reprname='lon', framename='Az', defaultunit=u.degree),
+                          RepresentationMapping(reprname='lat', framename='Zen', defaultunit=u.degree)],
+        'cartesian': [RepresentationMapping(reprname='x', framename='SCX'),
+                      RepresentationMapping(reprname='y', framename='SCY'),
+                      RepresentationMapping(reprname='z', framename='SCZ')]
+    }
 
-      # Specify frame attributes required to fully specify the frame
+    # Specify frame attributes required to fully specify the frame
     # location = FrameAttribute(default=None)
     quaternion = FrameAttribute(default=None)
-    #equinox = TimeFrameAttribute(default='J2000')
+
+    # equinox = TimeFrameAttribute(default='J2000')
 
     @staticmethod
     def _set_quaternion(quaternion):
@@ -58,29 +59,24 @@ def gbm_to_j2000(gbm_coord, j2000_frame):
     """
 
     sc_matrix = gbm_coord._set_quaternion(gbm_coord.quaternion)
-    
-    #X,Y,Z = gbm_coord.cartesian
-    
+
+    # X,Y,Z = gbm_coord.cartesian
+
     pos = gbm_coord.cartesian.xyz.value
-    
-    
-    X0 = np.dot(sc_matrix[:,0],pos)
-    X1 = np.dot(sc_matrix[:,1],pos)
-    X2 = np.clip(np.dot(sc_matrix[:,2],pos),-1.,1.)
-    
+
+    X0 = np.dot(sc_matrix[:, 0], pos)
+    X1 = np.dot(sc_matrix[:, 1], pos)
+    X2 = np.clip(np.dot(sc_matrix[:, 2], pos), -1., 1.)
+
     dec = np.arcsin(X2)
-    
-    idx = np.logical_and(np.abs(X0)<1E-6,np.abs(X1)<1E-6)
-    
+
+    idx = np.logical_and(np.abs(X0) < 1E-6, np.abs(X1) < 1E-6)
+
     ra = np.zeros_like(dec)
 
     ra[~idx] = np.arctan2(X1, X0) % (2 * np.pi)
-    
 
-    
-
-
-    return coord.ICRS(ra=ra*u.radian, dec=dec*u.radian)
+    return coord.ICRS(ra=ra * u.radian, dec=dec * u.radian)
 
 
 @frame_transform_graph.transform(coord.FunctionTransform, coord.ICRS, GBMFrame)
