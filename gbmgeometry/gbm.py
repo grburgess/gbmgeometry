@@ -188,7 +188,11 @@ class GBM(object):
 
             map.plot(ra[idx], dec[idx], '.', color=plt.cm.Set1(color_itr[i]), latlon=True, markersize=2.)
 
-            x, y = map(centers[good_detectors[i]].icrs.ra.value, centers[good_detectors[i]].icrs.dec.value)
+            if fermi_frame:
+                x, y = map(centers[good_detectors[i]].Az.value, centers[good_detectors[i]].Zen.value)
+            else:
+                x, y = map(centers[good_detectors[i]].icrs.ra.value, centers[good_detectors[i]].icrs.dec.value)
+
 
             plt.text(x, y, self._detectors.keys()[good_detectors[i]], color=plt.cm.Set1(color_itr[i]))
 
