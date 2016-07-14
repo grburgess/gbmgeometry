@@ -119,7 +119,7 @@ class NaI4(GBMDetector):
         quaternion
         """
         self._az = 303.15
-        self._zen = 90.27 - 90.
+        self._zen = 90. - 90.27
 
         super(NaI4, self).__init__(quaternion)
 
@@ -133,7 +133,7 @@ class NaI5(GBMDetector):
         quaternion
         """
         self._az = 3.35
-        self._zen = 89.97 - 90.
+        self._zen = 90 - 89.97
 
         super(NaI5, self).__init__(quaternion)
 
@@ -147,7 +147,7 @@ class NaI6(GBMDetector):
         quaternion
         """
         self._az = 224.93
-        self._zen = 20.43 - 90.
+        self._zen = 90 - 20.43
 
         super(NaI6, self).__init__(quaternion)
 
@@ -161,7 +161,7 @@ class NaI7(GBMDetector):
         quaternion
         """
         self._az = 224.62
-        self._zen = 46.18 - 90.
+        self._zen = 90 - 46.18
 
         super(NaI7, self).__init__(quaternion)
 
@@ -175,7 +175,7 @@ class NaI8(GBMDetector):
         quaternion
         """
         self._az = 236.61
-        self._zen = 89.97 - 90.
+        self._zen = 90 - 89.97
 
         super(NaI8, self).__init__(quaternion)
 
@@ -189,7 +189,7 @@ class NaI9(GBMDetector):
         quaternion
         """
         self._az = 135.19
-        self._zen = 45.55 - 90.
+        self._zen = 90 - 45.55
 
         super(NaI9, self).__init__(quaternion)
 
@@ -204,7 +204,7 @@ class NaIA(GBMDetector):
         """
 
         self._az = 123.73
-        self._zen = 90.42 - 90.
+        self._zen = 90 - 90.42
 
         super(NaIA, self).__init__(quaternion)
 
@@ -218,6 +218,6 @@ class NaIB(GBMDetector):
         quaternion
         """
         self._az = 183.74
-        self._zen = 90.32 - 90.
+        self._zen = 90 - 90.32
 
         super(NaIB, self).__init__(quaternion)
