@@ -1,6 +1,6 @@
 from .gbm_detector import NaI0, NaI1, NaI2, NaI3, NaI4, NaI5
 from .gbm_detector import NaI6, NaI7, NaI8, NaI9, NaIA, NaIB
-
+from .gbm_detector import BGO0, BGO1
 import mpl_toolkits.basemap as bm
 import matplotlib.pyplot as plt
 
@@ -37,6 +37,8 @@ class GBM(object):
         self.n9 = NaI9(quaternion, sc_pos)
         self.na = NaIA(quaternion, sc_pos)
         self.nb = NaIB(quaternion, sc_pos)
+        self.b0 = BGO0(quaternion, sc_pos)
+        self.b1 = BGO1(quaternion, sc_pos)
 
         self._detectors = OrderedDict(n0=self.n0,
                                       n1=self.n1,
@@ -49,7 +51,9 @@ class GBM(object):
                                       n8=self.n8,
                                       n9=self.n9,
                                       na=self.na,
-                                      nb=self.nb)
+                                      nb=self.nb,
+                                      b0=self.b0,
+                                      b1=self.b1)
 
     def set_quaternion(self, quaternion):
         """
@@ -81,7 +85,14 @@ class GBM(object):
         polys = []
 
         for key in self._detectors.keys():
-            polys.append(self._detectors[key].get_fov(radius))
+
+            if key[0] == 'b':
+                this_rad = 120
+
+            else:
+                this_rad = radius
+
+            polys.append(self._detectors[key].get_fov(this_rad))
 
         polys = np.array(polys)
 
@@ -149,7 +160,7 @@ class GBM(object):
 
             map_flag = True
 
-        good_detectors = range(12)
+        good_detectors = range(14)
         centers = self.get_centers()
 
         if good and point:
@@ -219,11 +230,17 @@ class GBM(object):
         steps = 500
 
         for key in self._detectors.keys():
+
+            if key[0] =='b':
+                this_rad = 180
+            else:
+                this_rad = radius
+
             j2000 = self._detectors[key]._center.icrs
 
             poly = sp.SphericalPolygon.from_cone(j2000.ra.value,
                                                  j2000.dec.value,
-                                                 radius,
+                                                 this_rad,
                                                  steps=steps)
 
             condition.append(poly.contains_point(point.cartesian.xyz.value))

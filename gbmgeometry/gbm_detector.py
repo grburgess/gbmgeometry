@@ -236,3 +236,30 @@ class NaIB(GBMDetector):
         self._zen = 90 - 90.32
 
         super(NaIB, self).__init__(quaternion, sc_pos)
+
+class BGO0(GBMDetector):
+    def __init__(self, quaternion, sc_pos=None):
+        """
+
+        Parameters
+        ----------
+        quaternion
+        """
+        self._az = 0.
+        self._zen = 0.
+
+        super(BGO0, self).__init__(quaternion, sc_pos)
+
+class BGO1(GBMDetector):
+    def __init__(self, quaternion, sc_pos=None):
+        """
+
+        Parameters
+        ----------
+        quaternion
+        """
+        self._az = 180.
+        self._zen = 0.
+
+        super(BGO1, self).__init__(quaternion, sc_pos)
+
