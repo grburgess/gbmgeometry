@@ -12,11 +12,11 @@ class GBMDetector(object):
         ----------
         quaternion
         """
-        self._center = SkyCoord(Az=self._az, Zen=self._zen, unit='deg', frame=GBMFrame)
+        self._center = SkyCoord(Az=self._az, Zen=self._zen, unit='deg', frame=GBMFrame(quaternion=quaternion))
 
         self._quaternion = quaternion
 
-        self._center.set_quaternion(quaternion)
+
 
     def set_quaternion(self, quaternion):
         """
@@ -28,7 +28,7 @@ class GBMDetector(object):
 
         self._quaternion = quaternion
 
-        self._center.set_quaternion(quaternion)
+        self._center = SkyCoord(Az=self._az, Zen=self._zen, unit='deg', frame=GBMFrame(quaternion=quaternion))
 
     def get_fov(self, radius):
         """
