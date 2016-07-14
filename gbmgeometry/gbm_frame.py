@@ -1,6 +1,6 @@
 import numpy as np
 from astropy.coordinates import frame_transform_graph
-from astropy.coordinates import BaseCoordinateFrame, FrameAttribute, TimeFrameAttribute, RepresentationMapping
+from astropy.coordinates import BaseCoordinateFrame, FrameAttribute, EarthLocationAttribute, RepresentationMapping
 import astropy.coordinates as coord
 import astropy.units as u
 
@@ -30,7 +30,7 @@ class GBMFrame(BaseCoordinateFrame):
     }
 
     # Specify frame attributes required to fully specify the frame
-    # location = FrameAttribute(default=None)
+    location = EarthLocationAttribute(default=None)
     quaternion = FrameAttribute(default=None)
 
     # equinox = TimeFrameAttribute(default='J2000')
