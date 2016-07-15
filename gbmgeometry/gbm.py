@@ -60,8 +60,7 @@ class GBM(object):
         self._quaternion = quaternion
         self._sc_pos = sc_pos
 
-        if sc_pos is not None:
-            self._calc_earth_points()
+
 
     def set_quaternion(self, quaternion):
         """
@@ -86,7 +85,6 @@ class GBM(object):
 
         self._sc_pos = sc_pos
 
-        self._calc_earth_points()
 
     def get_good_detectors(self, point, fov):
         """
@@ -236,11 +234,11 @@ class GBM(object):
 
         if show_earth and self._sc_pos is not None:
 
-            earth_points = self.get_earth_points()
+            earth_points = self.get_earth_points(fermi_frame)
 
             if fermi_frame:
 
-                earth_points = earth_points.transform_to(GBMFrame(quaternion=self._quaternion))
+
 
                 lon, lat = earth_points.Az.value, earth_points.Zen.value
 
@@ -252,7 +250,7 @@ class GBM(object):
             lon = lon[idx]
             lat = lat[idx]
 
-            map.plot(lon, lat, '.', color="#0C81F9", latlon=True, alpha=0.3, markersize=3.5)
+            map.plot(lon, lat, '.', color="#0C81F9", latlon=True, alpha=0.35, markersize=4.5)
 
 
 
@@ -286,7 +284,7 @@ class GBM(object):
 
         return tab
 
-    def get_earth_points(self):
+    def get_earth_points(self, fermi_frame):
         """
 
         Returns
@@ -296,12 +294,14 @@ class GBM(object):
 
         if self._sc_pos is not None:
 
+            self._calc_earth_points(fermi_frame)
+
             return self._earth_points
 
         else:
             print "No spacecraft position set"
 
-    def _calc_earth_points(self):
+    def _calc_earth_points(self, fermi_frame):
 
         xyz_position = coord.SkyCoord(x=self._sc_pos[0],
                                       y=self._sc_pos[1],
@@ -316,10 +316,20 @@ class GBM(object):
 
         horizon_angle = (180 - horizon_angle) * u.degree
 
-        num_points = 200
+        num_points = 300
 
-        ra_grid_tmp = np.linspace(1, 360, num_points)
-        dec_grid_tmp = np.linspace(-89, 89, num_points)
+        ra_grid_tmp = np.linspace(0, 360, num_points)
+
+        dec_range = [-90, 90]
+        cosdec_min = np.cos(np.deg2rad(90.0 + dec_range[0]))
+        cosdec_max = np.cos(np.deg2rad(90.0 + dec_range[1]))
+
+        v = np.linspace(cosdec_min, cosdec_max, num_points)
+        v = np.arccos(v)
+        v = np.rad2deg(v)
+        v -= 90.
+
+        dec_grid_tmp = v
 
         ra_grid = np.zeros(num_points ** 2)
         dec_grid = np.zeros(num_points ** 2)
@@ -331,7 +341,10 @@ class GBM(object):
                 dec_grid[itr] = dec
                 itr += 1
 
-        all_sky = coord.SkyCoord(ra=ra_grid, dec=dec_grid, frame='icrs', unit='deg')
+        if fermi_frame:
+            all_sky = coord.SkyCoord(Az=ra_grid, Zen=dec_grid, frame=GBMFrame(quaternion=self._quaternion), unit='deg')
+        else:
+            all_sky = coord.SkyCoord(ra=ra_grid, dec=dec_grid, frame='icrs', unit='deg')
 
         condition = all_sky.separation(xyz_position) > horizon_angle
 
