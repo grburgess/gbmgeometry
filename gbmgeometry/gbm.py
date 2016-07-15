@@ -1,6 +1,8 @@
 from .gbm_detector import NaI0, NaI1, NaI2, NaI3, NaI4, NaI5
 from .gbm_detector import NaI6, NaI7, NaI8, NaI9, NaIA, NaIB
 from .gbm_detector import BGO0, BGO1
+from .gbm_frame import GBMFrame
+
 import mpl_toolkits.basemap as bm
 import matplotlib.pyplot as plt
 
@@ -10,6 +12,7 @@ import spherical_geometry.polygon as sp
 
 from astropy.table import Table
 import astropy.units as u
+import astropy.coordinates as coord
 
 import seaborn as sns
 
@@ -54,6 +57,11 @@ class GBM(object):
                                       nb=self.nb,
                                       b0=self.b0,
                                       b1=self.b1)
+        self._quaternion = quaternion
+        self._sc_pos = sc_pos
+
+        if sc_pos is not None:
+            self._calc_earth_points()
 
     def set_quaternion(self, quaternion):
         """
@@ -64,6 +72,8 @@ class GBM(object):
         for key in self._detectors.keys():
             self._detectors[key].set_quaternion(quaternion)
 
+        self._quaternion = quaternion
+
     def set_sc_pos(self, sc_pos):
         """
         Parameters
@@ -73,6 +83,30 @@ class GBM(object):
 
         for key in self._detectors.keys():
             self._detectors[key].set_sc_pos(sc_pos)
+
+        self._sc_pos = sc_pos
+
+        self._calc_earth_points()
+
+    def get_good_detectors(self, point, fov):
+        """
+        Returns a list of detectors containing the point in the FOV
+
+        Parameters
+        ----------
+        point
+        fov
+
+        Returns
+        -------
+
+        """
+
+        good_detectors = self._contains_point(point, fov)
+
+        return good_detectors
+
+
 
     def get_fov(self, radius, fermi_frame=False):
         """
@@ -136,7 +170,7 @@ class GBM(object):
         return centers
 
     def detector_plot(self, radius=60., point=None, good=False, projection='moll', lat_0=0, lon_0=0, fignum=1,
-                      map=None, fermi_frame=False):
+                      map=None, show_earth=False, fermi_frame=False):
 
         """
 
@@ -200,6 +234,29 @@ class GBM(object):
 
             plt.text(x, y, good_detectors[i], color=plt.cm.Set1(color_itr[i]))
 
+        if show_earth and self._sc_pos is not None:
+
+            earth_points = self.get_earth_points()
+
+            if fermi_frame:
+
+                earth_points = earth_points.transform_to(GBMFrame(quaternion=self._quaternion))
+
+                lon, lat = earth_points.Az.value, earth_points.Zen.value
+
+            else:
+
+                lon, lat = earth_points.ra.value, earth_points.dec.value
+
+            idx = np.argsort(lon)
+            lon = lon[idx]
+            lat = lat[idx]
+
+            map.plot(lon, lat, '.', color="#0C81F9", latlon=True, alpha=0.3, markersize=3.5)
+
+
+
+
         if not map_flag:
             _ = map.drawmeridians(np.arange(0, 360, 30), color='#3A3A3A')
             _ = map.drawparallels(np.arange(-90, 90, 15), labels=[True] * len(np.arange(-90, 90, 15)), color='#3A3A3A')
@@ -228,6 +285,66 @@ class GBM(object):
         tab.sort("Separation")
 
         return tab
+
+    def get_earth_points(self):
+        """
+
+        Returns
+        -------
+
+        """
+
+        if self._sc_pos is not None:
+
+            return self._earth_points
+
+        else:
+            print "No spacecraft position set"
+
+    def _calc_earth_points(self):
+
+        xyz_position = coord.SkyCoord(x=self._sc_pos[0],
+                                      y=self._sc_pos[1],
+                                      z=self._sc_pos[2],
+                                      frame='icrs',
+                                      representation='cartesian')
+
+        earth_radius = 6371. * u.km
+        fermi_radius = np.sqrt((self._sc_pos ** 2).sum())
+
+        horizon_angle = 90 - np.rad2deg(np.arccos(earth_radius / fermi_radius).value)
+
+        horizon_angle = (180 - horizon_angle) * u.degree
+
+        num_points = 200
+
+        ra_grid_tmp = np.linspace(1, 360, num_points)
+        dec_grid_tmp = np.linspace(-89, 89, num_points)
+
+        ra_grid = np.zeros(num_points ** 2)
+        dec_grid = np.zeros(num_points ** 2)
+
+        itr = 0
+        for ra in ra_grid_tmp:
+            for dec in dec_grid_tmp:
+                ra_grid[itr] = ra
+                dec_grid[itr] = dec
+                itr += 1
+
+        all_sky = coord.SkyCoord(ra=ra_grid, dec=dec_grid, frame='icrs', unit='deg')
+
+        condition = all_sky.separation(xyz_position) > horizon_angle
+
+        # self.seps = all_sky.separation(xyz_position)
+
+        self._earth_points = all_sky[condition]
+
+
+
+
+
+
+
 
     def _contains_point(self, point, radius):
         """

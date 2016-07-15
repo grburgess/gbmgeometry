@@ -30,7 +30,7 @@ class GBMFrame(BaseCoordinateFrame):
     }
 
     # Specify frame attributes required to fully specify the frame
-    location = EarthLocationAttribute(default=None)
+    sc_pos = FrameAttribute(default=None)
     quaternion = FrameAttribute(default=None)
 
     # equinox = TimeFrameAttribute(default='J2000')
