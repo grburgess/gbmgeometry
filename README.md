@@ -8,7 +8,8 @@ Routines to handle GBM geometry and plotting
 * scipy
 * Basemap
 * seaborn
-* 
+* spherical_geometry
+
 ## Install
 
 $> python setup.py install
