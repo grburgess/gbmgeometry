@@ -153,7 +153,7 @@ class GBM(object):
 
         return [polys, good_detectors]
 
-    def get_centers(self):
+    def get_centers(self, keys=None):
 
         """
 
@@ -162,10 +162,50 @@ class GBM(object):
 
         """
         centers = []
-        for key in self._detectors.keys():
-            centers.append(self._detectors[key].get_center())
+
+        if keys is None:
+
+            for key in self._detectors.keys():
+                centers.append(self._detectors[key].get_center())
+
+        else:
+
+            for key in keys:
+                centers.append(self._detectors[key].get_center())
 
         return centers
+
+    def plot_pointing(self, ra_0=0, dec_0=0, projection='moll', fignum=1, point=None):
+        """
+
+
+        Returns
+        -------
+
+        """
+
+        fig = plt.figure(fignum)
+        ax = fig.add_subplot(111)
+
+        map = bm.Basemap(projection=projection, lat_0=dec_0, lon_0=ra_0, celestial=False, ax=ax)
+
+        color_itr = np.linspace(0, 1, 14)
+
+        for i, center in enumerate(self.get_centers()):
+            ra, dec = center.icrs.ra.value, center.icrs.dec.value
+
+            idx = np.argsort(ra)
+
+            map.plot(ra, dec, '.', color=plt.cm.Set1(color_itr[i]), latlon=True, markersize=3.)
+
+        if point is not None:
+            ra, dec = point.icrs.ra.value, point.icrs.dec.value
+
+            map.plot(ra, dec, '*', color='yellow', latlon=True, markersize=3.)
+
+        _ = map.drawmeridians(np.arange(0, 360, 30), color='#3A3A3A')
+        _ = map.drawparallels(np.arange(-90, 90, 15), labels=[True] * len(np.arange(-90, 90, 15)), color='#3A3A3A')
+        map.drawmapboundary(fill_color='#151719')
 
     def detector_plot(self, radius=60., point=None, good=False, projection='moll', lat_0=0, lon_0=0, fignum=1,
                       map=None, show_earth=False, fermi_frame=False):
