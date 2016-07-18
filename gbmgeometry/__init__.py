@@ -4,6 +4,8 @@ from gbm_detector import BGO0, BGO1
 from gbm_frame import GBMFrame
 from gbm import GBM, get_legal_pairs
 from position_interpolator import PositionInterpolator
+from getgbmdata import GetGBMData
+
 
 __all__=["GBMFrame",
          "GBM",
@@ -22,5 +24,6 @@ __all__=["GBMFrame",
          "BGO0",
          "BGO1",
          "PositionInterpolator",
-         "get_legal_pairs"
-]
+         "get_legal_pairs",
+         "GetGBMData"
+         ]
