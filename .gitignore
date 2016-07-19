@@ -3,3 +3,5 @@ dist/
 *.ipynb_checkpoints
 gbmgeometry.egg-info/
 *.pyc
+docs/_build/
+.idea
