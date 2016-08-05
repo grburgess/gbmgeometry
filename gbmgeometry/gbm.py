@@ -189,14 +189,14 @@ class GBM(object):
 
         map = bm.Basemap(projection=projection, lat_0=dec_0, lon_0=ra_0, celestial=False, ax=ax)
 
-        color_itr = np.linspace(0, 1, 14)
+        color_itr = np.linspace(0, .8, 14)
 
         for i, center in enumerate(self.get_centers()):
             ra, dec = center.icrs.ra.value, center.icrs.dec.value
 
             idx = np.argsort(ra)
 
-            map.plot(ra, dec, '.', color=plt.cm.Set1(color_itr[i]), latlon=True, markersize=3.)
+            map.plot(ra, dec, '.', color=plt.cm.Set2(color_itr[i]), latlon=True, markersize=3.)
 
         if point is not None:
             ra, dec = point.icrs.ra.value, point.icrs.dec.value
@@ -242,7 +242,7 @@ class GBM(object):
         if good and point:
 
             fovs, good_detectors = self.get_good_fov(point, radius, fermi_frame)
-            map.plot(point.ra.value, point.dec.value, '*', color='#ffffbf', latlon=True)
+            # map.plot(point.ra.value, point.dec.value, '*', color='#ffffbf', latlon=True)
 
 
 
@@ -252,16 +252,17 @@ class GBM(object):
             fovs = self.get_fov(radius, fermi_frame)
 
         if point:
-            map.plot(point.ra.value, point.dec.value, '*', color='#ffffbf', latlon=True)
+            pass
+            #map.plot(point.ra.value, point.dec.value, '*', color='#ffffbf', latlon=True)
 
-        color_itr = np.linspace(0, 1, len(fovs))
+        color_itr = np.linspace(0, .8, len(fovs))
 
         for i, fov in enumerate(fovs):
             ra, dec = fov
 
             idx = np.argsort(ra)
 
-            map.plot(ra[idx], dec[idx], '.', color=plt.cm.Set1(color_itr[i]), latlon=True, markersize=2.)
+            map.plot(ra[idx], dec[idx], '.', color=plt.cm.Set2(color_itr[i]), latlon=True, markersize=4.)
 
             if fermi_frame:
                 x, y = map(self._detectors[good_detectors[i]].get_center().Az.value,
@@ -270,7 +271,7 @@ class GBM(object):
                 x, y = map(self._detectors[good_detectors[i]].get_center().icrs.ra.value,
                            self._detectors[good_detectors[i]].get_center().icrs.dec.value)
 
-            plt.text(x, y, good_detectors[i], color=plt.cm.Set1(color_itr[i]))
+            plt.text(x, y, good_detectors[i], color=plt.cm.Set2(color_itr[i]), size=9)
 
         if show_earth and self._sc_pos is not None:
 
