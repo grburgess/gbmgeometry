@@ -325,7 +325,7 @@ class GBM(object):
 
         return tab
 
-    def get_earth_points(self, fermi_frame):
+    def get_earth_points(self, fermi_frame=False):
         """
 
         Returns
@@ -397,7 +397,10 @@ class GBM(object):
 
 
 
+    @property
+    def detectors(self):
 
+        return self._detectors
 
 
     def _contains_point(self, point, radius):
