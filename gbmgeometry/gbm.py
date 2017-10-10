@@ -353,7 +353,7 @@ class GBM(object):
         earth_radius = 6371. * u.km
         fermi_radius = np.sqrt((self._sc_pos ** 2).sum())
 
-        horizon_angle = 90 - np.rad2deg(np.arccos(earth_radius / fermi_radius).value)
+        horizon_angle = 90 - np.rad2deg(np.arccos((earth_radius / fermi_radius).to(u.dimensionless_unscaled)).value)
 
         horizon_angle = (180 - horizon_angle) * u.degree
 
