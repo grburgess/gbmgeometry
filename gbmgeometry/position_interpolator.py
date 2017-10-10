@@ -2,6 +2,8 @@ import numpy as np
 import scipy.interpolate as interpolate
 import astropy.io.fits as fits
 
+import astropy.units as u
+
 
 class PositionInterpolator(object):
     def __init__(self, poshist=None, T0=None, trigdat=None):
@@ -32,10 +34,16 @@ class PositionInterpolator(object):
                                      poshist['GLAST POS HIST'].data['POS_Y'],
                                      poshist['GLAST POS HIST'].data['POS_Z']]).T
 
+            # if using posthist then units are in m
+
+            self._factor = (u.m).to(u.km)
+
             if T0 is not None:
                 self._time -= T0
 
             poshist.close()
+
+
 
         elif trigdat is not None:
 
@@ -56,6 +64,11 @@ class PositionInterpolator(object):
 
 
             trigdat.close()
+
+
+            # the sc is in km so no need to convert
+
+            self._factor = 1
 
         else:
 
@@ -94,7 +107,7 @@ class PositionInterpolator(object):
         Fermi GBM spacecraft position
 
         """
-        return self._scxyz_t(t)
+        return self._scxyz_t(t) * self._factor
 
     def _interpolate_quaternion(self):
 
