@@ -146,6 +146,12 @@ class GBMDetector(object):
 
         return self._zen
 
+    @property
+    def mount_point(self):
+
+        return self._mount_point
+
+
 class NaI0(GBMDetector):
     def __init__(self, quaternion, sc_pos=None):
         """
@@ -156,6 +162,8 @@ class NaI0(GBMDetector):
         """
         self._az = 45.89
         self._zen = 90 - 20.58
+
+        self._mount_point = np.array([96.1, 80.4, 107.6])
 
         super(NaI0, self).__init__(quaternion, sc_pos)
 
@@ -170,6 +178,7 @@ class NaI1(GBMDetector):
         """
         self._az = 45.11
         self._zen = 90 - 45.31
+        self._mount_point = np.array([101.1, 72.8, 72.1])
 
         super(NaI1, self).__init__(quaternion, sc_pos)
 
@@ -184,6 +193,7 @@ class NaI2(GBMDetector):
         """
         self._az = 58.44
         self._zen = 90 - 90.21
+        self._mount_point = np.array([109.0, 58.1, 99.0])
 
         super(NaI2, self).__init__(quaternion, sc_pos)
 
@@ -198,6 +208,8 @@ class NaI3(GBMDetector):
         """
         self._az = 314.87
         self._zen = 90 - 45.24
+        self._mount_point = np.array([97.7, -76.3, 102.5])
+
 
         super(NaI3, self).__init__(quaternion, sc_pos)
 
@@ -212,6 +224,7 @@ class NaI4(GBMDetector):
         """
         self._az = 303.15
         self._zen = 90. - 90.27
+        self._mount_point = np.array([109.0, -57.5, 83.6])
 
         super(NaI4, self).__init__(quaternion, sc_pos)
 
@@ -226,6 +239,7 @@ class NaI5(GBMDetector):
         """
         self._az = 3.35
         self._zen = 90 - 89.97
+        self._mount_point = np.array([99.6, -49.7, 100.1])
 
         super(NaI5, self).__init__(quaternion, sc_pos)
 
@@ -240,6 +254,7 @@ class NaI6(GBMDetector):
         """
         self._az = 224.93
         self._zen = 90 - 20.43
+        self._mount_point = np.array([-95.8, -80.3, 107.1])
 
         super(NaI6, self).__init__(quaternion, sc_pos)
 
@@ -254,6 +269,7 @@ class NaI7(GBMDetector):
         """
         self._az = 224.62
         self._zen = 90 - 46.18
+        self._mount_point = np.array([-100.6, -72.5, 71.6])
 
         super(NaI7, self).__init__(quaternion, sc_pos)
 
@@ -268,6 +284,7 @@ class NaI8(GBMDetector):
         """
         self._az = 236.61
         self._zen = 90 - 89.97
+        self._mount_point = np.array([-108.4, -57.2, 99.0])
 
         super(NaI8, self).__init__(quaternion, sc_pos)
 
@@ -282,6 +299,7 @@ class NaI9(GBMDetector):
         """
         self._az = 135.19
         self._zen = 90 - 45.55
+        self._mount_point = np.array([-97.5, 76.5, 102.5])
 
         super(NaI9, self).__init__(quaternion, sc_pos)
 
@@ -297,6 +315,7 @@ class NaIA(GBMDetector):
 
         self._az = 123.73
         self._zen = 90 - 90.42
+        self._mount_point = np.array([-108.7, 57.7, 83.7])
 
         super(NaIA, self).__init__(quaternion, sc_pos)
 
@@ -311,6 +330,7 @@ class NaIB(GBMDetector):
         """
         self._az = 183.74
         self._zen = 90 - 90.32
+        self._mount_point = np.array([-99.3, 50.0, 100.2])
 
         super(NaIB, self).__init__(quaternion, sc_pos)
 
@@ -324,6 +344,7 @@ class BGO0(GBMDetector):
         """
         self._az = 0.
         self._zen = 0.
+        self._mount_point = np.array([126.05, 0.13, 63.32])
 
         super(BGO0, self).__init__(quaternion, sc_pos)
 
@@ -337,6 +358,7 @@ class BGO1(GBMDetector):
         """
         self._az = 180.
         self._zen = 0.
+        self._mount_point = np.array([-126.14, 0.01, 67.22])
 
         super(BGO1, self).__init__(quaternion, sc_pos)
 
