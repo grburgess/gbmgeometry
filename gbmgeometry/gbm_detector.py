@@ -136,6 +136,15 @@ class GBMDetector(object):
     def get_center(self):
         return self._center
 
+    @property
+    def az(self):
+
+        return self._az
+
+    @property
+    def zen(self):
+
+        return self._zen
 
 class NaI0(GBMDetector):
     def __init__(self, quaternion, sc_pos=None):
