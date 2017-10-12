@@ -76,7 +76,64 @@ class Fermi(object):
 
 
 
-    def compute_intersections(self):
+    def compute_intersections(self,*detectors):
+
+
+
+        all_intersections = collections.OrderedDict()
+
+        # go thru all detectors
+
+        if len(detectors) == 0:
+
+            dets = self._rays.keys()
+
+
+        for det_name, det in self._rays.iteritems():
+
+            
+
+            if det_name in dets:
+
+                # now go through all rays
+
+                for i, ray in enumerate(det):
+
+                    # now all components
+
+                    for name, component in self._spacecraft_components.iteritems():
+
+                        # intersect the volume with the rays
+
+                        component.intersect_ray(ray)
+
+                        plane, point, distance = component.intersection
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

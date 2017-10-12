@@ -10,7 +10,7 @@ from sympy import Plane, Point3D, Line3D
 
 class Ray(object):
 
-    R = 400. # cm
+    R = 1E4 # cm
 
 
     def __init__(self,detector, point_source, probability=None):
