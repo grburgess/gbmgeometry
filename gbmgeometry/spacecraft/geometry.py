@@ -39,7 +39,7 @@ class Volume(object):
 
             if '-z' in plane:
 
-                this_grid = self._grid('xy', (u, w), width, depth, v, 1, 1)
+                this_grid = self._grid('xy', (u, w), width, depth, v)
 
                 self._planes[plane] = this_grid
 
@@ -47,7 +47,7 @@ class Volume(object):
 
             if '+z' in plane:
 
-                this_grid = self._grid('xy', (u, w), width, depth, v + height, 1, 1)
+                this_grid = self._grid('xy', (u, w), width, depth, v + height)
 
                 self._planes[plane] = this_grid
 
@@ -57,7 +57,7 @@ class Volume(object):
             if '-y' in plane:
 
 
-                this_grid = self._grid('xz', (u, v), width, height, w, 1, 1)
+                this_grid = self._grid('xz', (u, v), width, height, w)
 
                 self._planes[plane] = this_grid
 
@@ -65,7 +65,7 @@ class Volume(object):
 
             if '+y' in plane:
 
-                this_grid = self._grid('xz', (u, v), width, height, w + depth, 1, 1)
+                this_grid = self._grid('xz', (u, v), width, height, w + depth)
 
                 self._planes[plane] = this_grid
 
@@ -73,7 +73,7 @@ class Volume(object):
 
             if '-x' in plane:
 
-                this_grid = self._grid('yz', (w, v), depth, height, u, 1, 1)
+                this_grid = self._grid('yz', (w, v), depth, height, u)
 
                 self._planes[plane] = this_grid
 
@@ -81,7 +81,7 @@ class Volume(object):
 
             if '+x' in plane:
 
-                this_grid = self._grid('yz', (w, v), depth, height, u + width, 1, 1)
+                this_grid = self._grid('yz', (w, v), depth, height, u + width)
 
                 self._planes[plane] = this_grid
 
