@@ -13,6 +13,8 @@ class LAT(Volume):
         x_width = 190.3
         y_width = 190.3
 
+        active_surfaces = ['+x', '-x', '+y', '-y', '+z']
+
         super(LAT, self).__init__(name='LAT',
                                   x_origin=x_origin,
                                   y_origin=y_origin,
@@ -20,12 +22,13 @@ class LAT(Volume):
                                   height=height,
                                   x_width=x_width,
                                   y_width=y_width,
-                                  color='#421352'
+                                  color='#421352',
+                                  active_surfaces=active_surfaces
                                   )
 
 
 class LATRadiator(Volume):
-    def __init__(self,name,sign):
+    def __init__(self,name,sign, active_surfaces):
         # cm
 
         height = 158.6
@@ -35,6 +38,8 @@ class LATRadiator(Volume):
         x_width = 190.3
         y_width = 5.2
 
+
+
         super(LATRadiator, self).__init__(name=name,
                                                  x_origin=x_origin,
                                                  y_origin=y_origin,
@@ -42,7 +47,8 @@ class LATRadiator(Volume):
                                                  height=height,
                                                  x_width=x_width,
                                                  y_width=y_width,
-                                                 color='darkgrey'
+                                                 color='darkgrey',
+                                                 active_surfaces=active_surfaces
                                                  )
 
 
@@ -50,11 +56,15 @@ class LATRadiatorMinus(LATRadiator):
     def __init__(self):
 
 
-        super(LATRadiatorMinus, self).__init__('LAT Radiator-', -1)
+        active_surfaces = [ '-x']
+
+
+        super(LATRadiatorMinus, self).__init__('LAT Radiator-', -1,active_surfaces)
 
 class LATRadiatorPlus(LATRadiator):
     def __init__(self):
+        active_surfaces = ['+x']
 
 
-        super(LATRadiatorPlus, self).__init__('LAT Radiator+',1)
+        super(LATRadiatorPlus, self).__init__('LAT Radiator+',1,active_surfaces)
 

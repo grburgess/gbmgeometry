@@ -258,7 +258,27 @@ class Surface(object):
 
 
 class Volume(object):
-    def __init__(self,name ,x_origin, y_origin, z_origin, height, x_width, y_width, color='grey'):
+    def __init__(self,name ,x_origin, y_origin, z_origin, height, x_width, y_width, color='grey', active_surfaces=None):
+
+        if active_surfaces is None:
+
+            self._active_surfaces = ('+x', '-x', '+y', '-y', '+z', '-z')
+
+
+        else:
+
+            for surface in active_surfaces:
+
+                assert surface in ['+x', '-x', '+y', '-y', '+z', '-z'], 'not a valid surface!'
+
+            self._active_surfaces = active_surfaces
+
+
+
+
+
+
+
         self._center = (x_origin, y_origin, z_origin)
 
         self._color = colors.to_rgb(color)
@@ -434,22 +454,26 @@ class Volume(object):
 
         for k, v in self._planes.iteritems():
 
-            intersection_info = collections.OrderedDict()
 
-            is_intersecting, point = v.is_intersecting(ray)
-
-            if is_intersecting:
-
-                intersection_info['intersection point'] = point
-
-                # now get the distance between the points
-
-                d2 = (np.power(point - ray.detector_origin, 2)).sum()
-
-                intersection_info['distance'] = np.sqrt(d2)
+            if k in self._active_surfaces:
 
 
-                intersections[k] = intersection_info
+                intersection_info = collections.OrderedDict()
+
+                is_intersecting, point = v.is_intersecting(ray)
+
+                if is_intersecting:
+
+                    intersection_info['intersection point'] = point
+
+                    # now get the distance between the points
+
+                    d2 = (np.power(point - ray.detector_origin, 2)).sum()
+
+                    intersection_info['distance'] = np.sqrt(d2)
+
+
+                    intersections[k] = intersection_info
 
 
         self._intersections = intersections

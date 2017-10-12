@@ -26,7 +26,9 @@ class SolarPanel(Volume):
                                   height=height,
                                   x_width=x_width,
                                   y_width=y_width,
-                                  color='#3498DB'
+                                  color='#3498DB',
+                                  active_surfaces=['+x','-x']
+
                                   )
 
 
