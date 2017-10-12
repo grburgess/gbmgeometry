@@ -1,6 +1,6 @@
 import numpy as np
 import collections
-
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 
 class Volume(object):
