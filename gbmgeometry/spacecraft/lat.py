@@ -13,7 +13,8 @@ class LAT(Volume):
         x_width = 190.3
         y_width = 190.3
 
-        super(LAT, self).__init__(x_origin=x_origin,
+        super(LAT, self).__init__(name='LAT',
+                                  x_origin=x_origin,
                                   y_origin=y_origin,
                                   z_origin=z_origin,
                                   height=height,
@@ -34,7 +35,8 @@ class LAT_radiator_minus(Volume):
         x_width = 190.3
         y_width = 5.2
 
-        super(LAT_radiator_minus, self).__init__(x_origin=x_origin,
+        super(LAT_radiator_minus, self).__init__(name='LAT Radiator-',
+                                                 x_origin=x_origin,
                                                  y_origin=y_origin,
                                                  z_origin=z_origin,
                                                  height=height,
@@ -55,7 +57,8 @@ class LAT_radiator_plus(Volume):
         x_width = 190.3
         y_width = 5.2
 
-        super(LAT_radiator_plus, self).__init__(x_origin=x_origin,
+        super(LAT_radiator_plus, self).__init__(name='LAT Radiator+',
+                                                x_origin=x_origin,
                                                 y_origin=y_origin,
                                                 z_origin=z_origin,
                                                 height=height,
