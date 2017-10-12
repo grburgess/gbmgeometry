@@ -91,8 +91,8 @@ class Fermi(object):
 
         for det_name, det in self._rays.iteritems():
 
-            
 
+            ray_dict= collections.OrderedDict()
             if det_name in dets:
 
                 # now go through all rays
@@ -101,6 +101,12 @@ class Fermi(object):
 
                     # now all components
 
+                    collision_info = collections.OrderedDict()
+
+                    collision_info['surface'] = []
+                    collision_info['point'] = []
+                    collision_info['distance'] = []
+
                     for name, component in self._spacecraft_components.iteritems():
 
                         # intersect the volume with the rays
@@ -108,6 +114,26 @@ class Fermi(object):
                         component.intersect_ray(ray)
 
                         plane, point, distance = component.intersection
+
+                        if plane is not None:
+
+                            collision_info['surface'].append('%s %s'%(name, plane))
+                            collision_info['point'].append(point)
+                            collision_info['distance'].append(distance)
+
+                    ray_dict[i] = collision_info
+
+                all_intersections[det_name] = ray_dict
+
+
+        return all_intersections
+
+
+
+
+
+
+
 
 
 
