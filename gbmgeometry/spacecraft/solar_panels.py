@@ -1,0 +1,47 @@
+from gbmgeometry.spacecraft.geometry import Volume
+
+
+class SolarPanel(Volume):
+
+    def __init__(self, sign, name):
+
+        lenght = 492.3
+        width = 151.0
+
+        xtra_y_mount = 150.
+
+        x_origin = 0.
+        y_origin = sign*(lenght/2. + xtra_y_mount)
+        z_origin = 41.5
+
+        y_width = lenght
+        x_width = 1.
+        height = width
+
+
+        super(SolarPanel, self).__init__(name=name,
+                                  x_origin=x_origin,
+                                  y_origin=y_origin,
+                                  z_origin=z_origin,
+                                  height=height,
+                                  x_width=x_width,
+                                  y_width=y_width,
+                                  color='#3498DB'
+                                  )
+
+
+class SolarPanelPlus(SolarPanel):
+
+    def __init__(self):
+
+        super(SolarPanelPlus,self).__init__(1., 'Solar Panel +')
+
+
+class SolarPanelMinus(SolarPanel):
+
+    def __init__(self):
+
+        super(SolarPanelMinus,self).__init__(-1., 'Solar Panel -')
+
+
+

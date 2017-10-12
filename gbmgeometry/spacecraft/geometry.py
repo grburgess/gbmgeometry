@@ -1,7 +1,7 @@
 import numpy as np
 import collections
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-
+from matplotlib import colors
 from sympy import Plane, Point3D, Line3D
 
 
@@ -257,20 +257,11 @@ class Surface(object):
 
 
 
-
-
-
-
-
-
-
-
-
 class Volume(object):
     def __init__(self,name ,x_origin, y_origin, z_origin, height, x_width, y_width, color='grey'):
         self._center = (x_origin, y_origin, z_origin)
 
-        self._color = color
+        self._color = colors.to_rgb(color)
 
         self._name = name
 
@@ -417,12 +408,23 @@ class Volume(object):
 
         return self._name
 
-    def plot(self, ax):
+    def plot(self, ax,alpha=.1):
+
+
         collection = Poly3DCollection(self._quads,
                                       facecolors=self._color,
                                       alpha=.1)
 
-        collection.set_facecolor((0, 0, 1, .1))
+        c =[]
+
+        for i in self._color:
+
+            c.append(i)
+
+        c.append(alpha)
+
+
+        collection.set_facecolor(c)
 
         ax.add_collection3d(collection)
 
