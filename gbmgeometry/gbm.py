@@ -1,22 +1,19 @@
+from collections import OrderedDict
+
+import astropy.coordinates as coord
+import astropy.units as u
+import matplotlib.pyplot as plt
+import mpl_toolkits.basemap as bm
+import numpy as np
+import spherical_geometry.polygon as sp
+from astropy.table import Table
+
+from .gbm_detector import BGO0, BGO1
 from .gbm_detector import NaI0, NaI1, NaI2, NaI3, NaI4, NaI5
 from .gbm_detector import NaI6, NaI7, NaI8, NaI9, NaIA, NaIB
-from .gbm_detector import BGO0, BGO1
 from .gbm_frame import GBMFrame
 
-import mpl_toolkits.basemap as bm
-import matplotlib.pyplot as plt
-
-import numpy as np
-from collections import OrderedDict
-import spherical_geometry.polygon as sp
-
-from astropy.table import Table
-import astropy.units as u
-import astropy.coordinates as coord
-
-
-
-#import seaborn as sns
+# import seaborn as sns
 
 _det_color_cycle = np.linspace(0, 1, 12)
 
@@ -62,8 +59,6 @@ class GBM(object):
         self._quaternion = quaternion
         self._sc_pos = sc_pos
 
-
-
     def set_quaternion(self, quaternion):
         """
         Parameters
@@ -87,7 +82,6 @@ class GBM(object):
 
         self._sc_pos = sc_pos
 
-
     def get_good_detectors(self, point, fov):
         """
         Returns a list of detectors containing the point in the FOV
@@ -105,8 +99,6 @@ class GBM(object):
         good_detectors = self._contains_point(point, fov)
 
         return good_detectors
-
-
 
     def get_fov(self, radius, fermi_frame=False):
         """
@@ -240,7 +232,6 @@ class GBM(object):
 
         good_detectors = self._detectors.keys()
 
-
         if good and point:
 
             fovs, good_detectors = self.get_good_fov(point, radius, fermi_frame)
@@ -255,7 +246,7 @@ class GBM(object):
 
         if point:
             pass
-            #map.plot(point.ra.value, point.dec.value, '*', color='#ffffbf', latlon=True)
+            # map.plot(point.ra.value, point.dec.value, '*', color='#ffffbf', latlon=True)
 
         color_itr = np.linspace(0, .8, len(fovs))
 
@@ -281,8 +272,6 @@ class GBM(object):
 
             if fermi_frame:
 
-
-
                 lon, lat = earth_points.Az.value, earth_points.Zen.value
 
             else:
@@ -294,9 +283,6 @@ class GBM(object):
             lat = lat[idx]
 
             map.plot(lon, lat, '.', color="#0C81F9", latlon=True, alpha=0.35, markersize=4.5)
-
-
-
 
         if not map_flag:
             _ = map.drawmeridians(np.arange(0, 360, 30), color='#3A3A3A')
@@ -395,15 +381,10 @@ class GBM(object):
 
         self._earth_points = all_sky[condition]
 
-
-
-
-
     @property
     def detectors(self):
 
         return self._detectors
-
 
     def _contains_point(self, point, radius):
         """

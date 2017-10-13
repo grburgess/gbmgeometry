@@ -1,7 +1,9 @@
 from __future__ import print_function
-import ftplib
-import sys, time
+
 import datetime
+import ftplib
+import sys
+import time
 
 
 class GetGBMData(object):

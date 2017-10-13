@@ -1,4 +1,3 @@
-
 GBM Geometry Demo
 =================
 

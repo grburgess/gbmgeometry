@@ -11,8 +11,10 @@ setup(
     requires=[
         'numpy',
         'matplotlib',
-        'astropy'
-    ]
+        'astropy',
+        'sympy',
+        'healpy'
 
+    ]
 
 )

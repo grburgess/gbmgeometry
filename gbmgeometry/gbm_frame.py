@@ -1,8 +1,8 @@
-import numpy as np
-from astropy.coordinates import frame_transform_graph
-from astropy.coordinates import BaseCoordinateFrame, Attribute, EarthLocationAttribute, RepresentationMapping
 import astropy.coordinates as coord
 import astropy.units as u
+import numpy as np
+from astropy.coordinates import BaseCoordinateFrame, Attribute, RepresentationMapping
+from astropy.coordinates import frame_transform_graph
 
 
 class GBMFrame(BaseCoordinateFrame):
@@ -36,8 +36,8 @@ class GBMFrame(BaseCoordinateFrame):
         'cartesian': [
             RepresentationMapping(
                 reprname='x', framename='SCX'), RepresentationMapping(
-                    reprname='y', framename='SCY'), RepresentationMapping(
-                        reprname='z', framename='SCZ')
+                reprname='y', framename='SCY'), RepresentationMapping(
+                reprname='z', framename='SCZ')
         ]
     }
 
@@ -54,27 +54,27 @@ class GBMFrame(BaseCoordinateFrame):
     # equinox = TimeFrameAttribute(default='J2000')
 
     @staticmethod
-    def _set_quaternion(q1,q2,q3,q4):
+    def _set_quaternion(q1, q2, q3, q4):
         sc_matrix = np.zeros((3, 3))
 
-        sc_matrix[0, 0] = (q1**2 - q2**2 - q3
-                           **2 + q4**2)
+        sc_matrix[0, 0] = (q1 ** 2 - q2 ** 2 - q3
+                           ** 2 + q4 ** 2)
         sc_matrix[0, 1] = 2.0 * (
             q1 * q2 + q4 * q3)
         sc_matrix[0, 2] = 2.0 * (
             q1 * q3 - q4 * q2)
         sc_matrix[1, 0] = 2.0 * (
             q1 * q2 - q4 * q3)
-        sc_matrix[1, 1] = (-q1**2 + q2**2 - q3
-                           **2 + q4**2)
+        sc_matrix[1, 1] = (-q1 ** 2 + q2 ** 2 - q3
+                           ** 2 + q4 ** 2)
         sc_matrix[1, 2] = 2.0 * (
             q2 * q3 + q4 * q1)
         sc_matrix[2, 0] = 2.0 * (
             q1 * q3 + q4 * q2)
         sc_matrix[2, 1] = 2.0 * (
             q2 * q3 - q4 * q1)
-        sc_matrix[2, 2] = (-q1**2 - q2**2 + q3
-                           **2 + q4**2)
+        sc_matrix[2, 2] = (-q1 ** 2 - q2 ** 2 + q3
+                           ** 2 + q4 ** 2)
 
         return sc_matrix
 
@@ -140,4 +140,3 @@ def j2000_to_gbm(j2000_frame, gbm_coord):
         quaternion_2=gbm_coord.quaternion_2,
         quaternion_3=gbm_coord.quaternion_3,
         quaternion_4=gbm_coord.quaternion_4)
-

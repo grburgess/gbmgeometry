@@ -1,8 +1,7 @@
+import astropy.io.fits as fits
+import astropy.units as u
 import numpy as np
 import scipy.interpolate as interpolate
-import astropy.io.fits as fits
-
-import astropy.units as u
 
 
 class PositionInterpolator(object):
@@ -62,9 +61,7 @@ class PositionInterpolator(object):
 
             self._time = tstart
 
-
             trigdat.close()
-
 
             # the sc is in km so no need to convert
 
