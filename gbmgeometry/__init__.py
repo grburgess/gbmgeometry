@@ -5,6 +5,7 @@ from gbm_frame import GBMFrame
 from gbm import GBM, get_legal_pairs
 from position_interpolator import PositionInterpolator
 from getgbmdata import GetGBMData
+from spacecraft.fermi import Fermi
 
 
 __all__=["GBMFrame",
@@ -25,5 +26,6 @@ __all__=["GBMFrame",
          "BGO1",
          "PositionInterpolator",
          "get_legal_pairs",
-         "GetGBMData"
+         "GetGBMData",
+         "Fermi"
          ]

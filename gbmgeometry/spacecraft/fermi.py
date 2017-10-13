@@ -1,5 +1,6 @@
 from lat import LAT, LATRadiatorMinus, LATRadiatorPlus
 from solar_panels import SolarPanelMinus, SolarPanelPlus
+from gbmgeometry.utils.array_to_cmap import array_to_cmap
 from gbmgeometry.gbm import GBM
 
 from geometry import Ray
@@ -9,6 +10,9 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 import numpy as np
+import healpy as hp
+
+from astropy.coordinates import SkyCoord
 
 
 
@@ -27,6 +31,10 @@ class Fermi(object):
         self._solar_panel_minus = SolarPanelMinus()
 
         self._gbm = GBM(quaternion,sc_pos)
+
+        # grab the frame
+
+        self._frame = self._gbm.n0.center.frame
 
 
         # attach the components to fermi
@@ -67,13 +75,13 @@ class Fermi(object):
         return self._rays
 
 
-    def add_ray(self, ray_coordinate,probability=None):
+    def add_ray(self, ray_coordinate,probability=None, color='#29FC5C'):
 
 
         for name, det in self._gbm.detectors.iteritems():
 
 
-            ray = Ray(det, ray_coordinate, probability)
+            ray = Ray(det, ray_coordinate, probability=probability, color=color)
 
             self._rays[name].append(ray)
 
@@ -142,11 +150,6 @@ class Fermi(object):
 
 
         return all_intersections
-
-
-
-
-
 
 
 
@@ -238,6 +241,46 @@ class Fermi(object):
 
 
         return fig
+
+
+
+    def read_healpix_map(self,healpix_map, cmap='viridis'):
+
+        nside = hp.get_nside(healpix_map)
+
+        _, colors = array_to_cmap(healpix_map, cmap=cmap, use_log=False)
+
+        for idx, val in enumerate(healpix_map):
+
+
+            if val> 0:
+
+                ra, dec = Fermi._pix_to_sky(idx, nside)
+
+                color = colors[idx]
+
+
+                # now make a point source
+
+                ps = SkyCoord(ra, dec, unit='deg', frame='icrs')
+
+                ps_fermi = ps.transform_to(frame=self._frame)
+
+                self.add_ray(ps_fermi, color=color)
+
+
+
+
+    @staticmethod
+    def _pix_to_sky(idx, nside):
+        """Convert the pixels corresponding to the input indexes to sky coordinates (RA, Dec)"""
+
+        theta, phi = hp.pix2ang(nside, idx)
+
+        ra = np.rad2deg(phi)
+        dec = np.rad2deg(0.5 * np.pi - theta)
+
+        return ra, dec
 
 
 

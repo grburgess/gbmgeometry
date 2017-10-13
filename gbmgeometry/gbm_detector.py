@@ -138,6 +138,12 @@ class GBMDetector(object):
     def get_center(self):
         return self._center
 
+
+    @property
+    def center(self):
+
+        return self._center
+
     @property
     def name(self):
 

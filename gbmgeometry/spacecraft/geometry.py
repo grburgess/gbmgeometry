@@ -3,7 +3,7 @@ import collections
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from matplotlib import colors
 from sympy import Plane, Point3D, Line3D, Symbol
-
+import healpy as hp
 
 
 
@@ -15,16 +15,20 @@ class Ray(object):
     _scale = 3E-8
 
 
-    def __init__(self,detector, point_source, probability=None):
+    def __init__(self,detector, point_source, color= '#29FC5C',probability=None):
 
 
         self._detector = detector
 
         self._probability = probability
 
+        self._color = color
+
         self._point_source = point_source
 
         self._calculate_ray_origin()
+
+
 
 
 
@@ -61,20 +65,14 @@ class Ray(object):
 
 
 
-        if self._probability is None:
-
-            ax.plot([self._plot_origin[0],self.detector_origin[0]],
-                    [self._plot_origin[1], self.detector_origin[1]],
-                    [self._plot_origin[2], self.detector_origin[2]],
-                    color = '#29FC5C'
 
 
-                    )
+        ax.plot([self._plot_origin[0],self.detector_origin[0]],
+                [self._plot_origin[1], self.detector_origin[1]],
+                [self._plot_origin[2], self.detector_origin[2]],
+                color = self._color,alpha=.8)
 
 
-        else:
-
-            raise NotImplementedError()
 
     @property
     def detector_name(self):
@@ -527,9 +525,6 @@ class Volume(object):
 
 
         return intersection, self._intersections[intersection]['intersection point'], self._intersections[intersection]['distance']
-
-
-
 
 
 
