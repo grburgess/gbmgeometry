@@ -46,9 +46,13 @@ class Fermi(object):
 
         self._rays = collections.OrderedDict()
 
+
         for name in self._gbm.detectors.iterkeys():
 
             self._rays[name] = []
+
+
+        self._intersection_points = None
 
 
     @property
@@ -80,6 +84,13 @@ class Fermi(object):
 
 
 
+        self._intersection_points = collections.OrderedDict()
+
+
+
+
+
+
         all_intersections = collections.OrderedDict()
 
         # go thru all detectors
@@ -91,6 +102,7 @@ class Fermi(object):
 
         for det_name, det in self._rays.iteritems():
 
+            self._intersection_points[det_name] = []
 
             ray_dict= collections.OrderedDict()
             if det_name in dets:
@@ -121,6 +133,9 @@ class Fermi(object):
                             collision_info['point'].append(point)
                             collision_info['distance'].append(distance)
 
+                            self._intersection_points[det_name].append(point)
+
+
                     ray_dict[i] = collision_info
 
                 all_intersections[det_name] = ray_dict
@@ -135,36 +150,7 @@ class Fermi(object):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    def plot_fermi(self, ax=None, with_rays=False):
+    def plot_fermi(self, ax=None, detectors=None, with_rays=False, with_intersections=False):
 
 
         if ax is None:
@@ -177,6 +163,19 @@ class Fermi(object):
             fig = ax.get_figure()
 
 
+        if detectors is None:
+
+            detectors = self._gbm.detectors.keys()
+
+
+        else:
+
+
+            for det in detectors:
+
+                assert det in self._gbm.detectors.keys(), 'invalid detector'
+
+
 
 
         for name, component in self._spacecraft_components.iteritems():
@@ -186,19 +185,34 @@ class Fermi(object):
 
         for name, det in self._gbm.detectors.iteritems():
 
-            ax.scatter(*det.mount_point,color='#FFC300')
-            ax.text3D(*det.mount_point,s=name)
+
+            if name in detectors:
+
+                ax.scatter(*det.mount_point,color='#FFC300')
+                ax.text3D(*det.mount_point,s=name)
 
 
 
         if with_rays:
 
-            for det in self._rays.itervalues():
+            for name, det in self._rays.iteritems():
+
+                if name in detectors:
 
 
-                for ray in det:
+                    for ray in det:
 
-                    ray.plot(ax)
+                        ray.plot(ax)
+
+
+        if with_intersections:
+
+            if self._intersection_points is not None:
+
+                for name, points in self._intersection_points.iteritems():
+                    if name in detectors:
+                        for point in points:
+                            ax.scatter(*point, c='r' )
 
 
 

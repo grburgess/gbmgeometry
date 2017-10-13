@@ -2,7 +2,7 @@ import numpy as np
 import collections
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from matplotlib import colors
-from sympy import Plane, Point3D, Line3D
+from sympy import Plane, Point3D, Line3D, Symbol
 
 
 
@@ -10,7 +10,9 @@ from sympy import Plane, Point3D, Line3D
 
 class Ray(object):
 
-    R = 1E4 # cm
+    # scaling for distance of lines
+    _R = 1E10 # cm
+    _scale = 3E-8
 
 
     def __init__(self,detector, point_source, probability=None):
@@ -24,7 +26,7 @@ class Ray(object):
 
         self._calculate_ray_origin()
 
-        self._sympy_line = Line3D( Point3D(self._origin), Point3D(self._detector.mount_point))
+
 
 
     def _calculate_ray_origin(self):
@@ -33,22 +35,38 @@ class Ray(object):
         theta = np.deg2rad(self._point_source.Zen.value)
         phi = np.deg2rad(self._point_source.Az.value)
 
-        x = Ray.R * np.cos(phi) * np.sin(theta)
-        y = Ray.R * np.sin(phi) * np.sin(theta)
-        z = Ray.R * np.cos(theta)
+        x = Ray._R * np.cos(phi) * np.sin(theta)
+        y = Ray._R * np.sin(phi) * np.sin(theta)
+        z = Ray._R * np.cos(theta)
 
 
+        # this is the "distant orgin of the ray"
         self._origin = np.array([x,y,z])
+
+
+        self._sympy_line = Line3D(Point3D(self._detector.mount_point),Point3D(self._origin))
+
+        t = Symbol('t', real=True)
+
+
+
+        ap = self._sympy_line.arbitrary_point()
+
+        self._plot_origin = np.array(map(float,  ap.subs(t,Ray._scale).evalf().args))
 
 
     def plot(self,ax):
 
 
+
+
+
         if self._probability is None:
 
-            ax.plot([self.ray_origin[0],self.detector_origin[0]],
-                    [self.ray_origin[1], self.detector_origin[1]],
-                    [self.ray_origin[2], self.detector_origin[2]]
+            ax.plot([self._plot_origin[0],self.detector_origin[0]],
+                    [self._plot_origin[1], self.detector_origin[1]],
+                    [self._plot_origin[2], self.detector_origin[2]],
+                    color = '#29FC5C'
 
 
                     )
@@ -433,7 +451,7 @@ class Volume(object):
 
         collection = Poly3DCollection(self._quads,
                                       facecolors=self._color,
-                                      alpha=.1)
+                                      alpha=.25)
 
         c =[]
 
