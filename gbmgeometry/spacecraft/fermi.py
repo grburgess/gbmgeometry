@@ -188,20 +188,34 @@ class Fermi(object):
 
     def read_healpix_map(self, healpix_map, cmap='viridis'):
 
+        # collect the nside of the map
+
         nside = hp.get_nside(healpix_map)
 
+        # get the colors of the rays based of their values
+
         _, colors = array_to_cmap(healpix_map, cmap=cmap, use_log=False)
+
+        # now go thru all the points on the sphere
 
         for idx, val in enumerate(healpix_map):
 
             if val > 0:
+
+                # if the probability is greater than 0
+                # then we need to get the sky position
+
                 ra, dec = Fermi._pix_to_sky(idx, nside)
+
+                # mark the color
 
                 color = colors[idx]
 
                 # now make a point source
 
                 ps = SkyCoord(ra, dec, unit='deg', frame='icrs')
+
+                # transform into the fermi frame
 
                 ps_fermi = ps.transform_to(frame=self._frame)
 
