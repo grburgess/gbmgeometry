@@ -23,6 +23,12 @@ class GBMTime(object):
 
         return self._time_object.iso
 
+
+    @property
+    def time(self):
+
+        return self._time_object
+
     @classmethod
     def from_UTC_fits(cls, date_string):
         """
@@ -108,7 +114,7 @@ class GBMTime(object):
 
         elif isinstance(other, GBMTime):
 
-            dt = self._time_object - other._time_object
+            dt = self._time_object - other.time
 
             return dt
 
