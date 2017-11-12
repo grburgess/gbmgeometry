@@ -3,15 +3,19 @@ from collections import OrderedDict
 import astropy.coordinates as coord
 import astropy.units as u
 import matplotlib.pyplot as plt
-import mpl_toolkits.basemap as bm
+#import mpl_toolkits.basemap as bm
 import numpy as np
 import spherical_geometry.polygon as sp
 from astropy.table import Table
+import astropy.time as time
 
 from .gbm_detector import BGO0, BGO1
 from .gbm_detector import NaI0, NaI1, NaI2, NaI3, NaI4, NaI5
 from .gbm_detector import NaI6, NaI7, NaI8, NaI9, NaIA, NaIB
 from .gbm_frame import GBMFrame
+
+
+from gbmgeometry.utils.gbm_time import GBMTime
 
 # import seaborn as sns
 
@@ -19,7 +23,7 @@ _det_color_cycle = np.linspace(0, 1, 12)
 
 
 class GBM(object):
-    def __init__(self, quaternion, sc_pos=None):
+    def __init__(self, quaternion, sc_pos=None, gbm_time=None):
 
         """
 
@@ -27,20 +31,43 @@ class GBM(object):
         ----------
         quaternion : Fermi GBM quarternion array
         """
-        self.n0 = NaI0(quaternion, sc_pos)
-        self.n1 = NaI1(quaternion, sc_pos)
-        self.n2 = NaI2(quaternion, sc_pos)
-        self.n3 = NaI3(quaternion, sc_pos)
-        self.n4 = NaI4(quaternion, sc_pos)
-        self.n5 = NaI5(quaternion, sc_pos)
-        self.n6 = NaI6(quaternion, sc_pos)
-        self.n7 = NaI7(quaternion, sc_pos)
-        self.n8 = NaI8(quaternion, sc_pos)
-        self.n9 = NaI9(quaternion, sc_pos)
-        self.na = NaIA(quaternion, sc_pos)
-        self.nb = NaIB(quaternion, sc_pos)
-        self.b0 = BGO0(quaternion, sc_pos)
-        self.b1 = BGO1(quaternion, sc_pos)
+
+        if gbm_time is not None:
+
+            if isinstance(gbm_time, str):
+
+               self._gbm_time = GBMTime.from_UTC_fits(gbm_time)
+
+            else:
+
+                # assuming MET
+
+                self._gbm_time = GBMTime.from_MET(gbm_time)
+
+        else:
+
+            self._gbm_time = None
+
+
+
+
+
+
+
+        self.n0 = NaI0(quaternion, sc_pos, self._gbm_time.time)
+        self.n1 = NaI1(quaternion, sc_pos, self._gbm_time.time)
+        self.n2 = NaI2(quaternion, sc_pos, self._gbm_time.time)
+        self.n3 = NaI3(quaternion, sc_pos, self._gbm_time.time)
+        self.n4 = NaI4(quaternion, sc_pos, self._gbm_time.time)
+        self.n5 = NaI5(quaternion, sc_pos, self._gbm_time.time)
+        self.n6 = NaI6(quaternion, sc_pos, self._gbm_time.time)
+        self.n7 = NaI7(quaternion, sc_pos, self._gbm_time.time)
+        self.n8 = NaI8(quaternion, sc_pos, self._gbm_time.time)
+        self.n9 = NaI9(quaternion, sc_pos, self._gbm_time.time)
+        self.na = NaIA(quaternion, sc_pos, self._gbm_time.time)
+        self.nb = NaIB(quaternion, sc_pos, self._gbm_time.time)
+        self.b0 = BGO0(quaternion, sc_pos, self._gbm_time.time)
+        self.b1 = BGO1(quaternion, sc_pos, self._gbm_time.time)
 
         self._detectors = OrderedDict(n0=self.n0,
                                       n1=self.n1,
@@ -147,6 +174,32 @@ class GBM(object):
 
         return [polys, good_detectors]
 
+
+    def get_sun_angle(self, keys=None):
+
+        """
+
+        Returns
+        -------
+
+        """
+        angles = []
+
+        if keys is None:
+
+            for key in self._detectors.keys():
+                angles.append(self._detectors[key].sun_angle)
+
+        else:
+
+            for key in keys:
+                angles.append(self._detectors[key].sun_angle)
+
+        return angles
+
+
+
+
     def get_centers(self, keys=None):
 
         """
@@ -169,125 +222,125 @@ class GBM(object):
 
         return centers
 
-    def plot_pointing(self, ra_0=0, dec_0=0, projection='moll', fignum=1, point=None):
-        """
+    # def plot_pointing(self, ra_0=0, dec_0=0, projection='moll', fignum=1, point=None):
+    #     """
+    #
+    #
+    #     Returns
+    #     -------
+    #
+    #     """
+    #
+    #     fig = plt.figure(fignum)
+    #     ax = fig.add_subplot(111)
+    #
+    #     map = bm.Basemap(projection=projection, lat_0=dec_0, lon_0=ra_0, celestial=False, ax=ax)
+    #
+    #     color_itr = np.linspace(0, .8, 14)
+    #
+    #     for i, center in enumerate(self.get_centers()):
+    #         ra, dec = center.icrs.ra.value, center.icrs.dec.value
+    #
+    #         idx = np.argsort(ra)
+    #
+    #         map.plot(ra, dec, '.', color=plt.cm.Set2(color_itr[i]), latlon=True, markersize=3.)
+    #
+    #     if point is not None:
+    #         ra, dec = point.icrs.ra.value, point.icrs.dec.value
+    #
+    #         map.plot(ra, dec, '*', color='yellow', latlon=True, markersize=3.)
+    #
+    #     _ = map.drawmeridians(np.arange(0, 360, 30), color='#3A3A3A')
+    #     _ = map.drawparallels(np.arange(-90, 90, 15), labels=[True] * len(np.arange(-90, 90, 15)), color='#3A3A3A')
+    #     map.drawmapboundary(fill_color='#151719')
 
-
-        Returns
-        -------
-
-        """
-
-        fig = plt.figure(fignum)
-        ax = fig.add_subplot(111)
-
-        map = bm.Basemap(projection=projection, lat_0=dec_0, lon_0=ra_0, celestial=False, ax=ax)
-
-        color_itr = np.linspace(0, .8, 14)
-
-        for i, center in enumerate(self.get_centers()):
-            ra, dec = center.icrs.ra.value, center.icrs.dec.value
-
-            idx = np.argsort(ra)
-
-            map.plot(ra, dec, '.', color=plt.cm.Set2(color_itr[i]), latlon=True, markersize=3.)
-
-        if point is not None:
-            ra, dec = point.icrs.ra.value, point.icrs.dec.value
-
-            map.plot(ra, dec, '*', color='yellow', latlon=True, markersize=3.)
-
-        _ = map.drawmeridians(np.arange(0, 360, 30), color='#3A3A3A')
-        _ = map.drawparallels(np.arange(-90, 90, 15), labels=[True] * len(np.arange(-90, 90, 15)), color='#3A3A3A')
-        map.drawmapboundary(fill_color='#151719')
-
-    def detector_plot(self, radius=60., point=None, good=False, projection='moll', lat_0=0, lon_0=0, fignum=1,
-                      map=None, show_earth=False, fermi_frame=False):
-
-        """
-
-        Parameters
-        ----------
-        radius
-        point
-        good
-        projection
-        lat_0
-        lon_0
-        """
-
-        map_flag = False
-        if map is None:
-
-            fig = plt.figure(fignum)
-            ax = fig.add_subplot(111)
-
-            map = bm.Basemap(projection=projection, lat_0=lat_0, lon_0=lon_0,
-                             resolution='l', area_thresh=1000.0, celestial=True, ax=ax)
-
-
-        else:
-
-            map_flag = True
-
-        good_detectors = self._detectors.keys()
-
-        if good and point:
-
-            fovs, good_detectors = self.get_good_fov(point, radius, fermi_frame)
-            # map.plot(point.ra.value, point.dec.value, '*', color='#ffffbf', latlon=True)
-
-
-
-
-        else:
-
-            fovs = self.get_fov(radius, fermi_frame)
-
-        if point:
-            pass
-            # map.plot(point.ra.value, point.dec.value, '*', color='#ffffbf', latlon=True)
-
-        color_itr = np.linspace(0, .8, len(fovs))
-
-        for i, fov in enumerate(fovs):
-            ra, dec = fov
-
-            idx = np.argsort(ra)
-
-            map.plot(ra[idx], dec[idx], '.', color=plt.cm.Set2(color_itr[i]), latlon=True, markersize=4.)
-
-            if fermi_frame:
-                x, y = map(self._detectors[good_detectors[i]].get_center().Az.value,
-                           self._detectors[good_detectors[i]].get_center().Zen.value)
-            else:
-                x, y = map(self._detectors[good_detectors[i]].get_center().icrs.ra.value,
-                           self._detectors[good_detectors[i]].get_center().icrs.dec.value)
-
-            plt.text(x, y, good_detectors[i], color=plt.cm.Set2(color_itr[i]), size=9)
-
-        if show_earth and self._sc_pos is not None:
-
-            earth_points = self.get_earth_points(fermi_frame)
-
-            if fermi_frame:
-
-                lon, lat = earth_points.Az.value, earth_points.Zen.value
-
-            else:
-
-                lon, lat = earth_points.ra.value, earth_points.dec.value
-
-            idx = np.argsort(lon)
-            lon = lon[idx]
-            lat = lat[idx]
-
-            map.plot(lon, lat, '.', color="#0C81F9", latlon=True, alpha=0.35, markersize=4.5)
-
-        if not map_flag:
-            _ = map.drawmeridians(np.arange(0, 360, 30), color='#3A3A3A')
-            _ = map.drawparallels(np.arange(-90, 90, 15), labels=[True] * len(np.arange(-90, 90, 15)), color='#3A3A3A')
-            map.drawmapboundary(fill_color='#151719')
+    # def detector_plot(self, radius=60., point=None, good=False, projection='moll', lat_0=0, lon_0=0, fignum=1,
+    #                   map=None, show_earth=False, fermi_frame=False):
+    #
+    #     """
+    #
+    #     Parameters
+    #     ----------
+    #     radius
+    #     point
+    #     good
+    #     projection
+    #     lat_0
+    #     lon_0
+    #     """
+    #
+    #     map_flag = False
+    #     if map is None:
+    #
+    #         fig = plt.figure(fignum)
+    #         ax = fig.add_subplot(111)
+    #
+    #         map = bm.Basemap(projection=projection, lat_0=lat_0, lon_0=lon_0,
+    #                          resolution='l', area_thresh=1000.0, celestial=True, ax=ax)
+    #
+    #
+    #     else:
+    #
+    #         map_flag = True
+    #
+    #     good_detectors = self._detectors.keys()
+    #
+    #     if good and point:
+    #
+    #         fovs, good_detectors = self.get_good_fov(point, radius, fermi_frame)
+    #         # map.plot(point.ra.value, point.dec.value, '*', color='#ffffbf', latlon=True)
+    #
+    #
+    #
+    #
+    #     else:
+    #
+    #         fovs = self.get_fov(radius, fermi_frame)
+    #
+    #     if point:
+    #         pass
+    #         # map.plot(point.ra.value, point.dec.value, '*', color='#ffffbf', latlon=True)
+    #
+    #     color_itr = np.linspace(0, .8, len(fovs))
+    #
+    #     for i, fov in enumerate(fovs):
+    #         ra, dec = fov
+    #
+    #         idx = np.argsort(ra)
+    #
+    #         map.plot(ra[idx], dec[idx], '.', color=plt.cm.Set2(color_itr[i]), latlon=True, markersize=4.)
+    #
+    #         if fermi_frame:
+    #             x, y = map(self._detectors[good_detectors[i]].get_center().Az.value,
+    #                        self._detectors[good_detectors[i]].get_center().Zen.value)
+    #         else:
+    #             x, y = map(self._detectors[good_detectors[i]].get_center().icrs.ra.value,
+    #                        self._detectors[good_detectors[i]].get_center().icrs.dec.value)
+    #
+    #         plt.text(x, y, good_detectors[i], color=plt.cm.Set2(color_itr[i]), size=9)
+    #
+    #     if show_earth and self._sc_pos is not None:
+    #
+    #         earth_points = self.get_earth_points(fermi_frame)
+    #
+    #         if fermi_frame:
+    #
+    #             lon, lat = earth_points.Az.value, earth_points.Zen.value
+    #
+    #         else:
+    #
+    #             lon, lat = earth_points.ra.value, earth_points.dec.value
+    #
+    #         idx = np.argsort(lon)
+    #         lon = lon[idx]
+    #         lat = lat[idx]
+    #
+    #         map.plot(lon, lat, '.', color="#0C81F9", latlon=True, alpha=0.35, markersize=4.5)
+    #
+    #     if not map_flag:
+    #         _ = map.drawmeridians(np.arange(0, 360, 30), color='#3A3A3A')
+    #         _ = map.drawparallels(np.arange(-90, 90, 15), labels=[True] * len(np.arange(-90, 90, 15)), color='#3A3A3A')
+    #         map.drawmapboundary(fill_color='#151719')
 
     def get_separation(self, source):
         """
