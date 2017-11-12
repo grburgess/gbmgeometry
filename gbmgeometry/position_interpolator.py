@@ -3,6 +3,8 @@ import astropy.units as u
 import numpy as np
 import scipy.interpolate as interpolate
 
+from gbmgeometry.utils.gbm_time import GBMTime
+
 
 class PositionInterpolator(object):
     def __init__(self, poshist=None, T0=None, trigdat=None):
@@ -22,46 +24,58 @@ class PositionInterpolator(object):
         """
         if poshist is not None:
 
-            poshist = fits.open(poshist)
-            self._time = poshist['GLAST POS HIST'].data['SCLK_UTC']
-            self._quats = np.array([poshist['GLAST POS HIST'].data['QSJ_1'],
-                                    poshist['GLAST POS HIST'].data['QSJ_2'],
-                                    poshist['GLAST POS HIST'].data['QSJ_3'],
-                                    poshist['GLAST POS HIST'].data['QSJ_4']]).T
 
-            self._sc_pos = np.array([poshist['GLAST POS HIST'].data['POS_X'],
-                                     poshist['GLAST POS HIST'].data['POS_Y'],
-                                     poshist['GLAST POS HIST'].data['POS_Z']]).T
+            with fits.open(poshist) as poshist:
+                #poshist = fits.open(poshist)
+                self._time = poshist['GLAST POS HIST'].data['SCLK_UTC']
+                self._quats = np.array([poshist['GLAST POS HIST'].data['QSJ_1'],
+                                        poshist['GLAST POS HIST'].data['QSJ_2'],
+                                        poshist['GLAST POS HIST'].data['QSJ_3'],
+                                        poshist['GLAST POS HIST'].data['QSJ_4']]).T
 
-            # if using posthist then units are in m
+                self._sc_pos = np.array([poshist['GLAST POS HIST'].data['POS_X'],
+                                         poshist['GLAST POS HIST'].data['POS_Y'],
+                                         poshist['GLAST POS HIST'].data['POS_Z']]).T
 
-            self._factor = (u.m).to(u.km)
+                # if using posthist then units are in m
 
-            if T0 is not None:
-                self._time -= T0
+                self._factor = (u.m).to(u.km)
 
-            poshist.close()
+                if T0 is not None:
+                    self._time -= T0
+
+                    self._trigtime  = T0
+
+                else:
+
+                    self._trigtime = None
+
+            #poshist.close()
 
 
 
         elif trigdat is not None:
 
-            trigdat = fits.open(trigdat)
-            trigtime = trigdat['EVNTRATE'].header['TRIGTIME']
-            tstart = trigdat['EVNTRATE'].data['TIME'] - trigtime
+            with fits.open(trigdat) as trigdat:
+                #trigdat = fits.open(trigdat)
+                trigtime = trigdat['EVNTRATE'].header['TRIGTIME']
+                tstart = trigdat['EVNTRATE'].data['TIME'] - trigtime
 
-            self._quats = trigdat['EVNTRATE'].data['SCATTITD']
-            self._sc_pos = trigdat['EVNTRATE'].data['EIC']
 
-            sort_mask = np.argsort(tstart)
-            tstart = tstart[sort_mask]
+                self._trigtime = trigtime
 
-            self._quats = self._quats[sort_mask]
-            self._sc_pos = self._sc_pos[sort_mask]
+                self._quats = trigdat['EVNTRATE'].data['SCATTITD']
+                self._sc_pos = trigdat['EVNTRATE'].data['EIC']
 
-            self._time = tstart
+                sort_mask = np.argsort(tstart)
+                tstart = tstart[sort_mask]
 
-            trigdat.close()
+                self._quats = self._quats[sort_mask]
+                self._sc_pos = self._sc_pos[sort_mask]
+
+                self._time = tstart
+
+            #trigdat.close()
 
             # the sc is in km so no need to convert
 
@@ -76,9 +90,45 @@ class PositionInterpolator(object):
         self._interpolate_quaternion()
         self._interpolate_sc_pos()
 
+
+    def utc(self,t):
+
+
+
+        if self._trigtime is not None:
+
+            met = self._trigtime + t
+
+        else:
+
+            met = t
+
+
+        time = GBMTime.from_MET(met)
+
+        return time.time.fits
+
+
+
+
+    def met(self,t):
+
+        if self._trigtime is not None:
+
+            met = self._trigtime + t
+
+        else:
+
+            met = t
+
+        return met
+
+
+
+
     def quaternion(self, t):
         """
-        Gets an itnerpolated quaternion as a function of time
+        Gets an interpolated quaternion as a function of time
 
         Parameters
         ----------
@@ -86,7 +136,7 @@ class PositionInterpolator(object):
 
         Returns
         -------
-        A Fermi GBM quarternion
+        A Fermi GBM quaternion
 
         """
 
