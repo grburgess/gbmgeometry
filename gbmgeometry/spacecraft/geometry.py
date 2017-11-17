@@ -3,7 +3,8 @@ import collections
 import numpy as np
 from matplotlib import colors
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-from sympy import Plane, Point3D, Line3D, Symbol
+from mpl_toolkits.mplot3d import Axes3D
+from sympy import Plane, Point3D, Line3D
 
 
 class Ray(object):
@@ -35,17 +36,16 @@ class Ray(object):
 
         self._sympy_line = Line3D(Point3D(self._detector.mount_point), Point3D(self._origin))
 
-        t = Symbol('t', real=True)
 
-        ap = self._sympy_line.arbitrary_point()
 
-        self._plot_origin = np.array(map(float, ap.subs(t, Ray._scale).evalf().args))
+        self._plot_origin = self.point_on_ray(Ray._scale)
 
     def plot(self, ax):
         ax.plot([self._plot_origin[0], self.detector_origin[0]],
                 [self._plot_origin[1], self.detector_origin[1]],
                 [self._plot_origin[2], self.detector_origin[2]],
-                color=self._color)
+                color=self._color,
+                alpha=0.8)
 
     @property
     def detector_name(self):
@@ -66,6 +66,19 @@ class Ray(object):
     @property
     def sympy_line(self):
         return self._sympy_line
+
+    def point_on_ray(self, t=0.5):
+        """
+        get a parametrized point on the ray
+        
+        :param t: point between 0 and 1
+        :return: 
+        """
+
+        assert 0. <= t <=1., 't must be between 0 and 1'
+
+
+        return self.detector_origin + (self._origin - self.detector_origin) * t
 
 
 class Surface(object):

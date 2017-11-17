@@ -7,6 +7,8 @@ from getgbmdata import GetGBMData
 from position_interpolator import PositionInterpolator
 from spacecraft.fermi import Fermi
 
+from utils.gbm_time import GBMTime
+
 __all__ = ["GBMFrame",
            "GBM",
            "NaI0",
@@ -26,5 +28,6 @@ __all__ = ["GBMFrame",
            "PositionInterpolator",
            "get_legal_pairs",
            "GetGBMData",
-           "Fermi"
+           "Fermi",
+           "GBMTime"
            ]
