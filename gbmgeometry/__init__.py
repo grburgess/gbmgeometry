@@ -51,5 +51,6 @@ __all__ = ["GBMFrame",
            "get_legal_pairs",
            "GetGBMData",
            "Fermi",
-           "GBMTime"
+           "GBMTime",
+           "gbm_detector_list"
            ]
