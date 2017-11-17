@@ -1,6 +1,6 @@
 __author__ = "drjfunk"
 import numpy as np
-from astropy.coordinates import SkyCoord, get_sun
+from astropy.coordinates import SkyCoord, get_sun, get_body
 from spherical_geometry.polygon import SphericalPolygon
 
 from .gbm_frame import GBMFrame
@@ -87,6 +87,7 @@ class GBMDetector(object):
         if self._time is not None:
             # we can calculate the sun position
             self._sun_position = get_sun(self._time).transform_to(self._center.frame)
+            self._earth_position = get_body('earth',time=self._time).transform_to(self._center.frame)
 
         self._quaternion = quaternion
         self._sc_pos = sc_pos
@@ -198,6 +199,16 @@ class GBMDetector(object):
     def sun_angle(self):
 
         return self._center.separation(self._sun_position)
+
+    @property
+    def earth_position(self):
+
+        return self._earth_position
+
+    @property
+    def earth_angle(self):
+
+        return self._center.separation(self._earth_position)
 
 
     @property
