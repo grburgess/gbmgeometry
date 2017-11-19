@@ -1,4 +1,5 @@
 import astropy.time as time
+import astropy.units as u
 import numpy as np
 
 
@@ -12,6 +13,14 @@ class GBMTime(object):
         # get the Fermi MET from the MET
 
         self._calculate_met_from_mjd()
+
+
+        self._utc_zero = self._calculate_MJD_from_MET(0)
+
+        # this is when week 9 of the mission starts
+        self._utc_start_of_sc_data = '2008-08-07T03:35:44.0'
+        self._time_of_start_of_sc_data = time.Time(self._utc_start_of_sc_data)
+
 
     @property
     def met(self):
@@ -28,6 +37,19 @@ class GBMTime(object):
     def time(self):
 
         return self._time_object
+
+    @property
+    def t_zero(self):
+        return self._utc_zero
+
+
+    @property
+    def mission_week(self):
+
+
+        dt = (self._time_object - self._time_of_start_of_sc_data).to(u.week)
+        return dt + 10* u.week
+
 
     @classmethod
     def from_UTC_fits(cls, date_string):
@@ -129,6 +151,9 @@ class GBMTime(object):
             new_time = self._time_object - dt
 
         return GBMTime(new_time)
+
+
+#def mission_week(met):
 
 
 
