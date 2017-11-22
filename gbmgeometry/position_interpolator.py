@@ -164,6 +164,20 @@ class PositionInterpolator(object):
 
         self._scxyz_t = interpolate.interp1d(self._time, self._sc_pos.T)
 
+
+
+    def altitude(self, t):
+        """
+        
+        :param t: 
+        :return: 
+        """
+
+        earth_radius = 6371.
+        fermi_radius = np.sqrt((self.sc_pos(t)**2).sum())
+
+        return fermi_radius - earth_radius
+
     @staticmethod
     def normalize(x):
         norm = np.sqrt(np.sum(x ** 2, axis=0))
