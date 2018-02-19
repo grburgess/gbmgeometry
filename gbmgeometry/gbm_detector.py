@@ -20,37 +20,6 @@ class GBMDetector(object):
 
         self.update_position(quaternion, sc_pos, time)
 
-        # self._time = time
-        #
-        # q1, q2, q3, q4 = quaternion
-        #
-        # if sc_pos is not None:
-        #     scx, scy, scz = sc_pos
-        #
-        # else:
-        #     scx = None
-        #     scy = None
-        #     scz = None
-        #
-        # self._center = SkyCoord(Az=self._az, Zen=self._zen, unit='deg',
-        #                         frame=GBMFrame(quaternion_1=q1,
-        #                                        quaternion_2=q2,
-        #                                        quaternion_3=q3,
-        #                                        quaternion_4=q4,
-        #                                        sc_pos_X=scx,
-        #                                        sc_pos_Y=scy,
-        #                                        sc_pos_Z=scz,
-        #                                        ))
-        #
-        #
-        # if self._time is not None:
-        #
-        #     # we can calculate the sun position
-        #     self._sun_position = get_sun(self._time).transform_to(self._center.frame)
-        #
-        #
-        # self._quaternion = quaternion
-        # self._sc_pos = sc_pos
 
 
     def update_position(self, quaternion, sc_pos=None, time=None):
@@ -86,8 +55,14 @@ class GBMDetector(object):
 
         if self._time is not None:
             # we can calculate the sun position
-            self._sun_position = get_sun(self._time).transform_to(self._center.frame)
-            self._earth_position = get_body('earth',time=self._time).transform_to(self._center.frame)
+            tmp_sun = get_sun(self._time)
+
+                        
+            self._sun_position = SkyCoord(tmp_sun.ra.deg,tmp_sun.dec.deg,unit='deg').transform_to(self._center.frame)
+
+            tmp_earth = get_body('earth',time=self._time)
+            
+            self._earth_position = SkyCoord(tmp_earth.ra.deg, tmp_earth.dec.deg, unit='deg').transform_to(self._center.frame)
 
         self._quaternion = quaternion
         self._sc_pos = sc_pos
