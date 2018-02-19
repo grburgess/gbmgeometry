@@ -55,14 +55,14 @@ class GBMDetector(object):
 
         if self._time is not None:
             # we can calculate the sun position
-            tmp_sun = get_sun(self._time)
+            tmp_sun = get_sun(self._time).icrs
 
                         
-            self._sun_position = SkyCoord(tmp_sun.ra.deg,tmp_sun.dec.deg,unit='deg').transform_to(self._center.frame)
+            self._sun_position = SkyCoord(tmp_sun.ra.deg,tmp_sun.dec.deg,unit='deg', frame='icrs').transform_to(self._center.frame)
 
-            tmp_earth = get_body('earth',time=self._time)
+            tmp_earth = get_body('earth',time=self._time).icrs
             
-            self._earth_position = SkyCoord(tmp_earth.ra.deg, tmp_earth.dec.deg, unit='deg').transform_to(self._center.frame)
+            self._earth_position = SkyCoord(tmp_earth.ra.deg, tmp_earth.dec.deg, unit='deg', frame='icrs').transform_to(self._center.frame)
 
         self._quaternion = quaternion
         self._sc_pos = sc_pos
