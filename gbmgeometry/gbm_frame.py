@@ -92,13 +92,18 @@ def gbm_to_j2000(gbm_coord, j2000_frame):
 
     # X,Y,Z = gbm_coord.cartesian
 
+    
+
+    
     pos = gbm_coord.cartesian.xyz.value
 
     X0 = np.dot(sc_matrix[:, 0], pos)
     X1 = np.dot(sc_matrix[:, 1], pos)
     X2 = np.clip(np.dot(sc_matrix[:, 2], pos), -1., 1.)
 
-    dec = np.arcsin(X2)
+    #dec = np.arcsin(X2)
+
+    dec = np.pi/2. - np.arccos(X2)
 
     idx = np.logical_and(np.abs(X0) < 1E-6, np.abs(X1) < 1E-6)
 
