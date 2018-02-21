@@ -21,17 +21,17 @@ class GBMFrame(BaseCoordinateFrame):
     frame_specific_representation_info = {
         'spherical': [
             RepresentationMapping(
-                reprname='lon', framename='Az', defaultunit=u.degree),
+                reprname='lon', framename='lon', defaultunit=u.degree),
             RepresentationMapping(
-                reprname='lat', framename='Zen', defaultunit=u.degree),
+                reprname='lat', framename='lat', defaultunit=u.degree),
             RepresentationMapping(
                 reprname='distance', framename='DIST', defaultunit=None)
         ],
         'unitspherical': [
             RepresentationMapping(
-                reprname='lon', framename='Az', defaultunit=u.degree),
+                reprname='lon', framename='lon', defaultunit=u.degree),
             RepresentationMapping(
-                reprname='lat', framename='Zen', defaultunit=u.degree)
+                reprname='lat', framename='lat', defaultunit=u.degree)
         ],
         'cartesian': [
             RepresentationMapping(
@@ -129,7 +129,7 @@ def j2000_to_gbm(j2000_frame, gbm_coord):
 
     X0 = np.dot(sc_matrix[0, :], pos)
     X1 = np.dot(sc_matrix[1, :], pos)
-    X2 = np.dot(sc_matrix[2, :], pos)
+    X2 = np.clip(np.dot(sc_matrix[2, :], pos), -1., 1.)
 
     el = np.pi / 2. - np.arccos(X2)  # convert to proper frame
 
@@ -139,8 +139,10 @@ def j2000_to_gbm(j2000_frame, gbm_coord):
 
     az[~idx] = np.arctan2(X1, X0) % (2 * np.pi)
 
+    az[np.rad2deg(el) == 90.] = 0.
+
     return GBMFrame(
-        Az=az * u.radian, Zen=el * u.radian,
+        lon=az * u.radian, lat=el * u.radian,
         quaternion_1=gbm_coord.quaternion_1,
         quaternion_2=gbm_coord.quaternion_2,
         quaternion_3=gbm_coord.quaternion_3,
