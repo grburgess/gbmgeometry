@@ -7,9 +7,9 @@ from astropy.coordinates import SkyCoord
 
 from gbmgeometry.gbm import GBM
 from gbmgeometry.utils.array_to_cmap import array_to_cmap
-from geometry import Ray
-from lat import LAT, LATRadiatorMinus, LATRadiatorPlus
-from solar_panels import SolarPanelMinus, SolarPanelPlus
+from gbmgeometry.spacecraft.geometry import Ray
+from gbmgeometry.spacecraft.lat import LAT, LATRadiatorMinus, LATRadiatorPlus
+from gbmgeometry.spacecraft.solar_panels import SolarPanelMinus, SolarPanelPlus
 
 
 class Fermi(object):

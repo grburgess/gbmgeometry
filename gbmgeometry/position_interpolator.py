@@ -83,7 +83,7 @@ class PositionInterpolator(object):
 
         else:
 
-            print "No file passed. Exiting"
+            print("No file passed. Exiting")
             return
 
         # Interpolate the stuf
@@ -165,6 +165,38 @@ class PositionInterpolator(object):
         self._scxyz_t = interpolate.interp1d(self._time, self._sc_pos.T)
 
 
+
+
+    def sc_matrix(self, t):
+
+        q1, q2, q3, q4 = self.quaternion(t)
+        sc_matrix = np.zeros((3, 3))
+
+        sc_matrix[0, 0] = (q1 ** 2 - q2 ** 2 - q3
+                           ** 2 + q4 ** 2)
+        sc_matrix[0, 1] = 2.0 * (
+            q1 * q2 + q4 * q3)
+        sc_matrix[0, 2] = 2.0 * (
+            q1 * q3 - q4 * q2)
+        sc_matrix[1, 0] = 2.0 * (
+            q1 * q2 - q4 * q3)
+        sc_matrix[1, 1] = (-q1 ** 2 + q2 ** 2 - q3
+                           ** 2 + q4 ** 2)
+        sc_matrix[1, 2] = 2.0 * (
+            q2 * q3 + q4 * q1)
+        sc_matrix[2, 0] = 2.0 * (
+            q1 * q3 + q4 * q2)
+        sc_matrix[2, 1] = 2.0 * (
+            q2 * q3 - q4 * q1)
+        sc_matrix[2, 2] = (-q1 ** 2 - q2 ** 2 + q3
+                           ** 2 + q4 ** 2)
+
+        return sc_matrix
+
+    def geo_matrix(self, t):
+
+        return self.sc_matrix(t).T
+        
 
     def altitude(self, t):
         """

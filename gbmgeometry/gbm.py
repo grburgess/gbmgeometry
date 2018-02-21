@@ -17,7 +17,7 @@ from .gbm_frame import GBMFrame
 
 from gbmgeometry.utils.gbm_time import GBMTime
 
-# import seaborn as sns
+import seaborn as sns
 
 _det_color_cycle = np.linspace(0, 1, 12)
 
@@ -222,125 +222,7 @@ class GBM(object):
 
         return centers
 
-    # def plot_pointing(self, ra_0=0, dec_0=0, projection='moll', fignum=1, point=None):
-    #     """
-    #
-    #
-    #     Returns
-    #     -------
-    #
-    #     """
-    #
-    #     fig = plt.figure(fignum)
-    #     ax = fig.add_subplot(111)
-    #
-    #     map = bm.Basemap(projection=projection, lat_0=dec_0, lon_0=ra_0, celestial=False, ax=ax)
-    #
-    #     color_itr = np.linspace(0, .8, 14)
-    #
-    #     for i, center in enumerate(self.get_centers()):
-    #         ra, dec = center.icrs.ra.value, center.icrs.dec.value
-    #
-    #         idx = np.argsort(ra)
-    #
-    #         map.plot(ra, dec, '.', color=plt.cm.Set2(color_itr[i]), latlon=True, markersize=3.)
-    #
-    #     if point is not None:
-    #         ra, dec = point.icrs.ra.value, point.icrs.dec.value
-    #
-    #         map.plot(ra, dec, '*', color='yellow', latlon=True, markersize=3.)
-    #
-    #     _ = map.drawmeridians(np.arange(0, 360, 30), color='#3A3A3A')
-    #     _ = map.drawparallels(np.arange(-90, 90, 15), labels=[True] * len(np.arange(-90, 90, 15)), color='#3A3A3A')
-    #     map.drawmapboundary(fill_color='#151719')
 
-    # def detector_plot(self, radius=60., point=None, good=False, projection='moll', lat_0=0, lon_0=0, fignum=1,
-    #                   map=None, show_earth=False, fermi_frame=False):
-    #
-    #     """
-    #
-    #     Parameters
-    #     ----------
-    #     radius
-    #     point
-    #     good
-    #     projection
-    #     lat_0
-    #     lon_0
-    #     """
-    #
-    #     map_flag = False
-    #     if map is None:
-    #
-    #         fig = plt.figure(fignum)
-    #         ax = fig.add_subplot(111)
-    #
-    #         map = bm.Basemap(projection=projection, lat_0=lat_0, lon_0=lon_0,
-    #                          resolution='l', area_thresh=1000.0, celestial=True, ax=ax)
-    #
-    #
-    #     else:
-    #
-    #         map_flag = True
-    #
-    #     good_detectors = self._detectors.keys()
-    #
-    #     if good and point:
-    #
-    #         fovs, good_detectors = self.get_good_fov(point, radius, fermi_frame)
-    #         # map.plot(point.ra.value, point.dec.value, '*', color='#ffffbf', latlon=True)
-    #
-    #
-    #
-    #
-    #     else:
-    #
-    #         fovs = self.get_fov(radius, fermi_frame)
-    #
-    #     if point:
-    #         pass
-    #         # map.plot(point.ra.value, point.dec.value, '*', color='#ffffbf', latlon=True)
-    #
-    #     color_itr = np.linspace(0, .8, len(fovs))
-    #
-    #     for i, fov in enumerate(fovs):
-    #         ra, dec = fov
-    #
-    #         idx = np.argsort(ra)
-    #
-    #         map.plot(ra[idx], dec[idx], '.', color=plt.cm.Set2(color_itr[i]), latlon=True, markersize=4.)
-    #
-    #         if fermi_frame:
-    #             x, y = map(self._detectors[good_detectors[i]].get_center().Az.value,
-    #                        self._detectors[good_detectors[i]].get_center().Zen.value)
-    #         else:
-    #             x, y = map(self._detectors[good_detectors[i]].get_center().icrs.ra.value,
-    #                        self._detectors[good_detectors[i]].get_center().icrs.dec.value)
-    #
-    #         plt.text(x, y, good_detectors[i], color=plt.cm.Set2(color_itr[i]), size=9)
-    #
-    #     if show_earth and self._sc_pos is not None:
-    #
-    #         earth_points = self.get_earth_points(fermi_frame)
-    #
-    #         if fermi_frame:
-    #
-    #             lon, lat = earth_points.Az.value, earth_points.Zen.value
-    #
-    #         else:
-    #
-    #             lon, lat = earth_points.ra.value, earth_points.dec.value
-    #
-    #         idx = np.argsort(lon)
-    #         lon = lon[idx]
-    #         lat = lat[idx]
-    #
-    #         map.plot(lon, lat, '.', color="#0C81F9", latlon=True, alpha=0.35, markersize=4.5)
-    #
-    #     if not map_flag:
-    #         _ = map.drawmeridians(np.arange(0, 360, 30), color='#3A3A3A')
-    #         _ = map.drawparallels(np.arange(-90, 90, 15), labels=[True] * len(np.arange(-90, 90, 15)), color='#3A3A3A')
-    #         map.drawmapboundary(fill_color='#151719')
 
     def get_separation(self, source):
         """
@@ -381,7 +263,7 @@ class GBM(object):
             return self._earth_points
 
         else:
-            print "No spacecraft position set"
+            print("No spacecraft position set")
 
     def _calc_earth_points(self, fermi_frame):
 
