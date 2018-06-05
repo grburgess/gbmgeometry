@@ -46,6 +46,8 @@ class GBMDetector(object):
             scx = None
             scy = None
             scz = None
+        self._quaternion = quaternion
+        self._sc_pos = sc_pos
 
         self._center = SkyCoord(lon=self._az * u.deg,
                                 lat=self._zen * u.deg,
@@ -58,20 +60,77 @@ class GBMDetector(object):
                                                sc_pos_Y=scy,
                                                sc_pos_Z=scz,
                                                ))
-
+        self._x = SkyCoord(lon=0 * u.deg,
+                           lat=0 * u.deg,
+                           unit='deg',
+                           frame=GBMFrame(quaternion_1=q1,
+                                          quaternion_2=q2,
+                                          quaternion_3=q3,
+                                          quaternion_4=q4,
+                                          sc_pos_X=scx,
+                                          sc_pos_Y=scy,
+                                          sc_pos_Z=scz,
+                                               ))
+        self._y = SkyCoord(lon=90 * u.deg,
+                           lat=0 * u.deg,
+                           unit='deg',
+                           frame=GBMFrame(quaternion_1=q1,
+                                          quaternion_2=q2,
+                                          quaternion_3=q3,
+                                          quaternion_4=q4,
+                                          sc_pos_X=scx,
+                                          sc_pos_Y=scy,
+                                          sc_pos_Z=scz,
+                                          ))
+        self._z = SkyCoord(lon=0 * u.deg,
+                           lat=90 * u.deg,
+                           unit='deg',
+                           frame=GBMFrame(quaternion_1=q1,
+                                          quaternion_2=q2,
+                                          quaternion_3=q3,
+                                          quaternion_4=q4,
+                                          sc_pos_X=scx,
+                                          sc_pos_Y=scy,
+                                          sc_pos_Z=scz,
+                                          ))
         if self._time is not None:
             # we can calculate the sun position
             tmp_sun = get_sun(self._time).icrs
 
-                        
             self._sun_position = SkyCoord(tmp_sun.ra.deg,tmp_sun.dec.deg,unit='deg', frame='icrs').transform_to(self._center.frame)
 
-            tmp_earth = get_body('earth',time=self._time).icrs
-            
-            self._earth_position = SkyCoord(tmp_earth.ra.deg, tmp_earth.dec.deg, unit='deg', frame='icrs').transform_to(self._center.frame)
+            #sun_pos=np.array([np.cos(tmp_sun.ra.deg*(np.pi/180)) * np.cos(tmp_sun.dec.deg*(np.pi/180)),
+            #                          np.sin(tmp_sun.ra.deg*(np.pi/180)) * np.cos(tmp_sun.dec.deg*(np.pi/180)),
+            #                          np.sin(tmp_sun.dec.deg*(np.pi/180))])
+            #self._sun_pos_norm=self.geo_to_gbm(sun_pos/ np.linalg.norm(sun_pos))
 
-        self._quaternion = quaternion
-        self._sc_pos = sc_pos
+            #position of earth in satellite frame:
+
+            self.earth_pos_norm = self.geo_to_gbm(-self._sc_pos / np.linalg.norm(self._sc_pos))
+            scxn, scyn, sczn = self.earth_pos_norm
+            earth_theta = np.arccos(sczn / np.sqrt(scxn * scxn + scyn * scyn + sczn * sczn))
+            earth_phi = np.arctan2(scyn, scxn)
+            earth_ra = earth_phi * (180 / np.pi)
+            if earth_ra < 0:
+                earth_ra = earth_ra + 360
+            earth_dec = 90 - earth_theta * 180 / np.pi
+
+            #earth as SkyCoord
+            self._earth_position = SkyCoord(earth_ra, earth_dec, unit='deg', frame=GBMFrame(quaternion_1=q1,
+                                               quaternion_2=q2,
+                                               quaternion_3=q3,
+                                               quaternion_4=q4,
+                                               sc_pos_X=scx,
+                                               sc_pos_Y=scy,
+                                               sc_pos_Z=scz,
+                                               ))
+
+
+        # position of detector in satellite reference frame
+        self.det_pos_norm = np.array([np.cos(self._az*(np.pi/180)) * np.cos(self._zen*(np.pi/180)),
+                                      np.sin(self._az*(np.pi/180)) * np.cos(self._zen*(np.pi/180)),
+                                      np.sin(self._zen*(np.pi/180))])
+
 
 
     def set_quaternion(self, quaternion):
@@ -186,11 +245,160 @@ class GBMDetector(object):
 
         return self._earth_position
 
+    def geo_to_gbm(self, pos_geo):
+        """ Compute the transformation from heliocentric Sgr coordinates to
+            spherical Galactic.
+        """
+        q1, q2, q3, q4 = self._quaternion  #q1,q2,q3,q4
+        sc_matrix = np.zeros((3, 3))
+
+        sc_matrix[0, 0] = (q1 ** 2 - q2 ** 2 - q3
+                           ** 2 + q4 ** 2)
+        sc_matrix[0, 1] = 2.0 * (
+                q1 * q2 + q4 * q3)
+        sc_matrix[0, 2] = 2.0 * (
+                q1 * q3 - q4 * q2)
+        sc_matrix[1, 0] = 2.0 * (
+                q1 * q2 - q4 * q3)
+        sc_matrix[1, 1] = (-q1 ** 2 + q2 ** 2 - q3
+                           ** 2 + q4 ** 2)
+        sc_matrix[1, 2] = 2.0 * (
+                q2 * q3 + q4 * q1)
+        sc_matrix[2, 0] = 2.0 * (
+                q1 * q3 + q4 * q2)
+        sc_matrix[2, 1] = 2.0 * (
+                q2 * q3 - q4 * q1)
+        sc_matrix[2, 2] = (-q1 ** 2 - q2 ** 2 + q3
+                           ** 2 + q4 ** 2)
+
+        X0 = np.dot(sc_matrix[0, :], pos_geo)
+        X1 = np.dot(sc_matrix[1, :], pos_geo)
+        X2 = np.clip(np.dot(sc_matrix[2, :], pos_geo), -1., 1.)
+        pos_sat=[X0,X1,X2]
+        return np.array(pos_sat)
+    def gbm_to_geo(self, pos_gbm):
+        """ Compute the transformation from heliocentric Sgr coordinates to
+            spherical Galactic.
+        """
+        q1,q2,q3,q4=self._quaternion #q1,q2,q3,q4
+        sc_matrix = np.zeros((3, 3))
+
+        sc_matrix[0, 0] = (q1 ** 2 - q2 ** 2 - q3
+                           ** 2 + q4 ** 2)
+        sc_matrix[0, 1] = 2.0 * (
+                q1 * q2 + q4 * q3)
+        sc_matrix[0, 2] = 2.0 * (
+                q1 * q3 - q4 * q2)
+        sc_matrix[1, 0] = 2.0 * (
+                q1 * q2 - q4 * q3)
+        sc_matrix[1, 1] = (-q1 ** 2 + q2 ** 2 - q3
+                           ** 2 + q4 ** 2)
+        sc_matrix[1, 2] = 2.0 * (
+                q2 * q3 + q4 * q1)
+        sc_matrix[2, 0] = 2.0 * (
+                q1 * q3 + q4 * q2)
+        sc_matrix[2, 1] = 2.0 * (
+                q2 * q3 - q4 * q1)
+        sc_matrix[2, 2] = (-q1 ** 2 - q2 ** 2 + q3
+                           ** 2 + q4 ** 2)
+
+        X0 = np.dot(sc_matrix[:, 0], pos_gbm)
+        X1 = np.dot(sc_matrix[:, 1], pos_gbm)
+        X2 = np.clip(np.dot(sc_matrix[:, 2], pos_gbm), -1., 1.)
+        pos_geo=[X0,X1,X2]
+        return np.array(pos_geo)
+
     @property
     def earth_angle(self):
 
         return self._center.separation(self._earth_position)
 
+    """ zum testen des zenith angles des satelliten
+    @property
+    def z_axis_in_earth_frame(self):
+        z_axis_satellit = np.array([0,0,1])
+        z_axis_earth = self.gbm_to_geo(z_axis_satellit)
+        return np.array(z_axis_earth)
+    @property
+    def earth_pos_in_earth_frame(self):
+        scx, scy, scz = -self._sc_pos
+        sc_theta=np.arccos(scz/np.sqrt(scx*scx+scy*scy+scz*scz))
+        sc_phi=np.arctan2(scy,scx)
+        sc_ra=sc_phi*(180/np.pi)
+        if sc_ra<0:
+            sc_ra=sc_ra+360
+        sc_dec=90-sc_theta*180/np.pi
+        pos_vector=np.array([np.cos(sc_ra*(np.pi/180))*np.cos(sc_dec*(np.pi/180)),np.sin(sc_ra*(np.pi/180))*np.cos(sc_dec*(np.pi/180)),np.sin(sc_dec*(np.pi/180))])
+        return pos_vector
+    @property
+    def sat_pos_norm(self):
+        return np.array(-self._sc_pos/np.linalg.norm(self._sc_pos))
+
+    @property
+    def earth_angle_z(self):
+
+        earth_pos_norm = self.gbm_to_geo(-self._sc_pos / np.linalg.norm(self._sc_pos))
+        z_az = 0*(np.pi/180) #0
+        z_zen = (90-0)*(np.pi/180) #90-0
+        z_pos_norm = np.array(
+            [np.cos(z_az) * np.cos(z_zen), np.sin(z_az) * np.cos(z_zen), np.sin(z_zen)])
+        earth_ang = np.arccos(np.dot(earth_pos_norm, z_pos_norm)) * (180 / np.pi)
+        return earth_ang * u.deg
+
+    @property
+    def earth_angle_z_earth_frame(self):
+
+        earth_pos_norm = -self._sc_pos / np.linalg.norm(self._sc_pos)
+        z_az = 0 * (np.pi / 180)  # 0
+        z_zen = (90 - 0) * (np.pi / 180)  # 90-0
+        z_pos_norm_satellite = np.array(
+            [np.cos(z_az) * np.cos(z_zen), np.sin(z_az) * np.cos(z_zen), np.sin(z_zen)])
+        z_pos_norm_earth = self.gbm_to_geo(z_pos_norm_satellite)
+        earth_ang = np.arccos(np.dot(earth_pos_norm, z_pos_norm_earth)) * (180 / np.pi)
+        return earth_ang * u.deg
+
+    @property
+    def earth_angle_x(self):
+
+        earth_pos_norm = self.gbm_to_geo(-self._sc_pos / np.linalg.norm(self._sc_pos))
+        z_az = 0*(np.pi/180) #0
+        z_zen = (90-90)*(np.pi/180) #90-0
+        z_pos_norm = np.array(
+            [np.cos(z_az) * np.cos(z_zen), np.sin(z_az) * np.cos(z_zen), np.sin(z_zen)])
+        earth_ang = np.arccos(np.dot(earth_pos_norm, z_pos_norm)) * (180 / np.pi)
+        return earth_ang * u.deg
+
+    @property
+    def earth_angle_y(self):
+
+        earth_pos_norm = self.gbm_to_geo(-self._sc_pos / np.linalg.norm(self._sc_pos))
+        z_az = 90*(np.pi/180) #0
+        z_zen = (90-90)*(np.pi/180) #90-0
+        z_pos_norm = np.array(
+            [np.cos(z_az) * np.cos(z_zen), np.sin(z_az) * np.cos(z_zen), np.sin(z_zen)])
+        earth_ang = np.arccos(np.dot(earth_pos_norm, z_pos_norm)) * (180 / np.pi)
+        return earth_ang * u.deg
+    """
+
+    @property
+    def angles_sun(self):
+
+        return self._sun_position.lon.deg, self._sun_position.lat.deg
+
+    @property
+    def seperation_y_and_sun(self):
+
+        return self._y.separation(self._sun_position)
+
+    @property
+    def seperation_z_and_sun(self):
+
+        return self._z.separation(self._sun_position)
+
+    @property
+    def sun_earth_angle(self):
+
+        return self._center.separation(self._sun_position)
 
     @property
     def center(self):

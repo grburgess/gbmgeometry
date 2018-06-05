@@ -124,7 +124,9 @@ class PositionInterpolator(object):
         return met
 
 
+    def maxtime(self):
 
+        return self._time
 
     def quaternion(self, t):
         """
