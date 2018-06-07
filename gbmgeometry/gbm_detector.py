@@ -1,8 +1,9 @@
 __author__ = "drjfunk"
 import numpy as np
-from astropy.coordinates import SkyCoord, get_sun, get_body
+from astropy.coordinates import SkyCoord, get_sun, get_body, get_body_barycentric
 from spherical_geometry.polygon import SphericalPolygon
 import astropy.units as u
+from astropy.time import Time
 
 from .gbm_frame import GBMFrame
 
@@ -95,14 +96,12 @@ class GBMDetector(object):
                                           ))
         if self._time is not None:
             # we can calculate the sun position
-            tmp_sun = get_sun(self._time).icrs
-
-            self._sun_position = SkyCoord(tmp_sun.ra.deg,tmp_sun.dec.deg,unit='deg', frame='icrs').transform_to(self._center.frame)
-
-            #sun_pos=np.array([np.cos(tmp_sun.ra.deg*(np.pi/180)) * np.cos(tmp_sun.dec.deg*(np.pi/180)),
-            #                          np.sin(tmp_sun.ra.deg*(np.pi/180)) * np.cos(tmp_sun.dec.deg*(np.pi/180)),
-            #                          np.sin(tmp_sun.dec.deg*(np.pi/180))])
-            #self._sun_pos_norm=self.geo_to_gbm(sun_pos/ np.linalg.norm(sun_pos))
+            #in GCRS
+            tmp_sun = get_sun(self._time)
+            #in ICRS
+            self._sun_position_icrs = SkyCoord(tmp_sun.ra.deg, tmp_sun.dec.deg, unit='deg', frame='gcrs',obstime=self._time).icrs
+            #in CenterFrame
+            self._sun_position = self._sun_position_icrs.transform_to(self._center.frame)
 
             #position of earth in satellite frame:
 
@@ -116,16 +115,20 @@ class GBMDetector(object):
             earth_dec = 90 - earth_theta * 180 / np.pi
 
             #earth as SkyCoord
-            self._earth_position = SkyCoord(earth_ra, earth_dec, unit='deg', frame=GBMFrame(quaternion_1=q1,
-                                               quaternion_2=q2,
-                                               quaternion_3=q3,
-                                               quaternion_4=q4,
-                                               sc_pos_X=scx,
-                                               sc_pos_Y=scy,
-                                               sc_pos_Z=scz,
-                                               ))
-
-
+            self._earth_position = SkyCoord(lon=earth_ra * u.deg,
+                                            lat=earth_dec * u.deg,
+                                            unit='deg',
+                                            frame=GBMFrame(quaternion_1=q1,
+                                                           quaternion_2=q2,
+                                                           quaternion_3=q3,
+                                                           quaternion_4=q4,
+                                                           sc_pos_X=scx,
+                                                           sc_pos_Y=scy,
+                                                           sc_pos_Z=scz,
+                                                           ))
+            print(self._earth_position.lon.deg,self._earth_position.lat.deg)
+            print(self._earth_position_2.lon.deg, self._earth_position_2.lat.deg)
+            print('--------------------')
         # position of detector in satellite reference frame
         self.det_pos_norm = np.array([np.cos(self._az*(np.pi/180)) * np.cos(self._zen*(np.pi/180)),
                                       np.sin(self._az*(np.pi/180)) * np.cos(self._zen*(np.pi/180)),
@@ -312,7 +315,51 @@ class GBMDetector(object):
     def earth_angle(self):
 
         return self._center.separation(self._earth_position)
+    @property
+    def x_axis_earth(self):
 
+        ra,dec=self._x.icrs.ra.deg, self._x.icrs.dec.deg
+        return np.array([np.cos(ra*(np.pi/180)) * np.cos(dec*(np.pi/180)),
+                                      np.sin(ra*(np.pi/180)) * np.cos(dec*(np.pi/180)),
+                                      np.sin(dec*(np.pi/180))])
+
+    @property
+    def sun_in_earth(self):
+
+        ra,dec=self.sun_position.icrs.ra.deg, self.sun_position.icrs.dec.deg
+        return np.array([np.cos(ra * (np.pi / 180)) * np.cos(dec * (np.pi / 180)),
+                         np.sin(ra * (np.pi / 180)) * np.cos(dec * (np.pi / 180)),
+                         np.sin(dec * (np.pi / 180))])
+
+    @property
+    def sun_x_sep_earth(self):
+
+        return (self.sun_position.icrs).separation(self._x)
+
+    @property
+    def earth_angle_zenith_earth_frame(self):
+
+        return self._earth_position.separation(self._z)
+
+    @property
+    def z_axis_in_earth_frame(self):
+        z_axis_satellit = np.array([0, 0, 1])
+        z_axis_earth = self.gbm_to_geo(z_axis_satellit)
+        return np.array(z_axis_earth)
+
+    @property
+    def earth_pos_in_earth_frame(self):
+        scx, scy, scz = -self._sc_pos
+        sc_theta = np.arccos(scz / np.sqrt(scx * scx + scy * scy + scz * scz))
+        sc_phi = np.arctan2(scy, scx)
+        sc_ra = sc_phi * (180 / np.pi)
+        if sc_ra < 0:
+            sc_ra = sc_ra + 360
+        sc_dec = 90 - sc_theta * 180 / np.pi
+        pos_vector = np.array([np.cos(sc_ra * (np.pi / 180)) * np.cos(sc_dec * (np.pi / 180)),
+                               np.sin(sc_ra * (np.pi / 180)) * np.cos(sc_dec * (np.pi / 180)),
+                               np.sin(sc_dec * (np.pi / 180))])
+        return pos_vector
     """ zum testen des zenith angles des satelliten
     @property
     def z_axis_in_earth_frame(self):
@@ -394,6 +441,11 @@ class GBMDetector(object):
     def seperation_z_and_sun(self):
 
         return self._z.separation(self._sun_position)
+
+    @property
+    def x_direction_heliocenter(self):
+
+        return self._x.hcrs.ra.deg, self._x.hcrs.dec.deg
 
     @property
     def sun_earth_angle(self):

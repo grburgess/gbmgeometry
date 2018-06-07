@@ -105,7 +105,7 @@ class PositionInterpolator(object):
 
 
         time = GBMTime.from_MET(met)
-
+        #print(time.time.fits)
         return time.time.fits
 
 
