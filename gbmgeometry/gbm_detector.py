@@ -279,7 +279,7 @@ class GBMDetector(object):
     @property
     def sun_earth_angle(self):
 
-        return self._center.separation(self._sun_position)
+        return self._earth_position.separation(self._sun_position)
 
     @property
     def center(self):
