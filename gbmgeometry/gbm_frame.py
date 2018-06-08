@@ -130,7 +130,6 @@ def j2000_to_gbm(j2000_frame, gbm_coord):
     X0 = np.dot(sc_matrix[0, :], pos)
     X1 = np.dot(sc_matrix[1, :], pos)
     X2 = np.clip(np.dot(sc_matrix[2, :], pos), -1., 1.)
-
     el = np.pi / 2. - np.arccos(X2)  # convert to proper frame
 
     idx = np.logical_and(np.abs(X0) < 1E-6, np.abs(X1) < 1E-6)

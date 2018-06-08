@@ -105,7 +105,7 @@ class PositionInterpolator(object):
 
 
         time = GBMTime.from_MET(met)
-
+        #print(time.time.fits)
         return time.time.fits
 
 
@@ -124,7 +124,9 @@ class PositionInterpolator(object):
         return met
 
 
+    def maxtime(self):
 
+        return self._time
 
     def quaternion(self, t):
         """
