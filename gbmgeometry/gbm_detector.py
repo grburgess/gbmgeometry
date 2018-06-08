@@ -3,7 +3,6 @@ import numpy as np
 from astropy.coordinates import SkyCoord, get_sun, get_body, get_body_barycentric
 from spherical_geometry.polygon import SphericalPolygon
 import astropy.units as u
-from astropy.time import Time
 
 from .gbm_frame import GBMFrame
 
@@ -49,7 +48,7 @@ class GBMDetector(object):
             scz = None
         self._quaternion = quaternion
         self._sc_pos = sc_pos
-
+        #define the direction of the detector in the GBMFrame
         self._center = SkyCoord(lon=self._az * u.deg,
                                 lat=self._zen * u.deg,
                                 unit='deg',
@@ -72,14 +71,14 @@ class GBMDetector(object):
 
             #position of earth in satellite frame:
 
-            self.earth_pos_norm = self.geo_to_gbm(-self._sc_pos / np.linalg.norm(self._sc_pos))
-            scxn, scyn, sczn = self.earth_pos_norm
+            self._earth_pos_norm = self.geo_to_gbm(-self._sc_pos / np.linalg.norm(self._sc_pos))
+            scxn, scyn, sczn = self._earth_pos_norm
             earth_theta = np.arccos(sczn / np.sqrt(scxn * scxn + scyn * scyn + sczn * sczn))
             earth_phi = np.arctan2(scyn, scxn)
-            earth_ra = earth_phi * (180 / np.pi)
+            earth_ra = np.rad2deg(earth_phi)
             if earth_ra < 0:
                 earth_ra = earth_ra + 360
-            earth_dec = 90 - earth_theta * 180 / np.pi
+            earth_dec = 90 - np.rad2deg(earth_theta)
 
             #earth as SkyCoord
             self._earth_position = SkyCoord(lon=earth_ra * u.deg,
@@ -93,8 +92,6 @@ class GBMDetector(object):
                                                            sc_pos_Y=scy,
                                                            sc_pos_Z=scz,
                                                            ))
-
-
 
     def set_quaternion(self, quaternion):
         """
