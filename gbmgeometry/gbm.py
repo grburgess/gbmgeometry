@@ -53,21 +53,40 @@ class GBM(object):
 
 
 
+        if self._gbm_time is not None:
 
-        self.n0 = NaI0(quaternion, sc_pos, self._gbm_time.time)
-        self.n1 = NaI1(quaternion, sc_pos, self._gbm_time.time)
-        self.n2 = NaI2(quaternion, sc_pos, self._gbm_time.time)
-        self.n3 = NaI3(quaternion, sc_pos, self._gbm_time.time)
-        self.n4 = NaI4(quaternion, sc_pos, self._gbm_time.time)
-        self.n5 = NaI5(quaternion, sc_pos, self._gbm_time.time)
-        self.n6 = NaI6(quaternion, sc_pos, self._gbm_time.time)
-        self.n7 = NaI7(quaternion, sc_pos, self._gbm_time.time)
-        self.n8 = NaI8(quaternion, sc_pos, self._gbm_time.time)
-        self.n9 = NaI9(quaternion, sc_pos, self._gbm_time.time)
-        self.na = NaIA(quaternion, sc_pos, self._gbm_time.time)
-        self.nb = NaIB(quaternion, sc_pos, self._gbm_time.time)
-        self.b0 = BGO0(quaternion, sc_pos, self._gbm_time.time)
-        self.b1 = BGO1(quaternion, sc_pos, self._gbm_time.time)
+            self.n0 = NaI0(quaternion, sc_pos, self._gbm_time.time)
+            self.n1 = NaI1(quaternion, sc_pos, self._gbm_time.time)
+            self.n2 = NaI2(quaternion, sc_pos, self._gbm_time.time)
+            self.n3 = NaI3(quaternion, sc_pos, self._gbm_time.time)
+            self.n4 = NaI4(quaternion, sc_pos, self._gbm_time.time)
+            self.n5 = NaI5(quaternion, sc_pos, self._gbm_time.time)
+            self.n6 = NaI6(quaternion, sc_pos, self._gbm_time.time)
+            self.n7 = NaI7(quaternion, sc_pos, self._gbm_time.time)
+            self.n8 = NaI8(quaternion, sc_pos, self._gbm_time.time)
+            self.n9 = NaI9(quaternion, sc_pos, self._gbm_time.time)
+            self.na = NaIA(quaternion, sc_pos, self._gbm_time.time)
+            self.nb = NaIB(quaternion, sc_pos, self._gbm_time.time)
+            self.b0 = BGO0(quaternion, sc_pos, self._gbm_time.time)
+            self.b1 = BGO1(quaternion, sc_pos, self._gbm_time.time)
+
+        else:
+
+            self.n0 = NaI0(quaternion, sc_pos, None)
+            self.n1 = NaI1(quaternion, sc_pos, None)
+            self.n2 = NaI2(quaternion, sc_pos, None)
+            self.n3 = NaI3(quaternion, sc_pos, None)
+            self.n4 = NaI4(quaternion, sc_pos, None)
+            self.n5 = NaI5(quaternion, sc_pos, None)
+            self.n6 = NaI6(quaternion, sc_pos, None)
+            self.n7 = NaI7(quaternion, sc_pos, None)
+            self.n8 = NaI8(quaternion, sc_pos, None)
+            self.n9 = NaI9(quaternion, sc_pos, None)
+            self.na = NaIA(quaternion, sc_pos, None)
+            self.nb = NaIB(quaternion, sc_pos, None)
+            self.b0 = BGO0(quaternion, sc_pos, None)
+            self.b1 = BGO1(quaternion, sc_pos, None)
+
 
         self._detectors = OrderedDict(n0=self.n0,
                                       n1=self.n1,
