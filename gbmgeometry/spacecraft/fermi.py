@@ -4,6 +4,7 @@ import healpy as hp
 import matplotlib.pyplot as plt
 import numpy as np
 from astropy.coordinates import SkyCoord
+from sympy import Point3D
 
 from gbmgeometry.gbm import GBM
 from gbmgeometry.utils.array_to_cmap import array_to_cmap
@@ -126,7 +127,9 @@ class Fermi(object):
 
                         plane, point, distance = component.intersection
 
-                        if plane is not None:
+                        current_ray_origin = Point3D(ray.ray_origin)
+                        
+                        if plane is not None and current_ray_origin.distance(Point3D(point)) <= current_ray_origin.distance(Point3D(ray.detector_origin)):
                             collision_info['surface'].append('%s %s' % (name, plane))
                             collision_info['point'].append(point)
                             collision_info['distance'].append(distance)

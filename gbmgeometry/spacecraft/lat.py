@@ -39,7 +39,7 @@ class LATRadiator(Volume):
 
         super(LATRadiator, self).__init__(name=name,
                                           x_origin=x_origin,
-                                          y_origin=y_origin,
+                                          y_origin=y_origin + sign * y_width/2,
                                           z_origin=z_origin,
                                           height=height,
                                           x_width=x_width,
@@ -51,13 +51,13 @@ class LATRadiator(Volume):
 
 class LATRadiatorMinus(LATRadiator):
     def __init__(self):
-        active_surfaces = ['-x']
+        active_surfaces = ['+x','-x','+y','-z']
 
         super(LATRadiatorMinus, self).__init__('LAT Radiator-', -1, active_surfaces)
 
 
 class LATRadiatorPlus(LATRadiator):
     def __init__(self):
-        active_surfaces = ['+x']
+        active_surfaces = ['+x','-x','-y','-z']
 
         super(LATRadiatorPlus, self).__init__('LAT Radiator+', 1, active_surfaces)
