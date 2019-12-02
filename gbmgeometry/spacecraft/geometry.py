@@ -24,8 +24,8 @@ class Ray(object):
         self._calculate_ray_origin()
 
     def _calculate_ray_origin(self):
-        theta = np.deg2rad(self._point_source.Zen.value)
-        phi = np.deg2rad(self._point_source.Az.value)
+        theta = np.deg2rad(90. - self._point_source.lat.value)
+        phi = np.deg2rad(self._point_source.lon.value)
 
         x = Ray._R * np.cos(phi) * np.sin(theta)
         y = Ray._R * np.sin(phi) * np.sin(theta)
