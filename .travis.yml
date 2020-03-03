@@ -1,0 +1,32 @@
+
+# Config file for automatic testing at travis-ci.org
+
+language: python
+python:
+  # We don't actually use the Travis Python, but this keeps it organized.
+ 
+  - "3.6"
+  - "3.7"
+# os:
+#   - linux
+#   - osx
+env:
+  NUMBA_DISABLE_JIT=1
+
+before_install:
+
+install:
+  - pip install --upgrade numpy scipy pytest-cov codecov
+  - python setup.py install
+script:
+  - python -m pytest -vv --log-cli-level=DEBUG  --cov=gbmgeometry/
+  - codecov --token=655c4d71-b348-4443-917d-73f7e20b2ace
+
+
+
+
+
+
+
+
+
