@@ -3,7 +3,6 @@ from gbmgeometry.gbm_detector import BGO0, BGO1
 from gbmgeometry.gbm_detector import NaI0, NaI1, NaI2, NaI3, NaI4, NaI5
 from gbmgeometry.gbm_detector import NaI6, NaI7, NaI8, NaI9, NaIA, NaIB
 from gbmgeometry.gbm_frame import GBMFrame
-from gbmgeometry.getgbmdata import GetGBMData
 from gbmgeometry.position_interpolator import PositionInterpolator
 from gbmgeometry.spacecraft.fermi import Fermi
 
@@ -47,7 +46,6 @@ __all__ = [
     "BGO1",
     "PositionInterpolator",
     "get_legal_pairs",
-    "GetGBMData",
     "Fermi",
     "GBMTime",
     "gbm_detector_list",

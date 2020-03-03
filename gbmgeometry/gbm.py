@@ -25,12 +25,15 @@ _det_color_cycle = np.linspace(0, 1, 12)
 
 class GBM(object):
     def __init__(self, quaternion, sc_pos=None, gbm_time=None):
-
         """
+        
 
-        Parameters
-        ----------
-        quaternion : Fermi GBM quarternion array
+        :param quaternion: 
+        :param sc_pos: 
+        :param gbm_time: 
+        :returns: 
+        :rtype: 
+
         """
 
         if gbm_time is not None:
@@ -103,22 +106,28 @@ class GBM(object):
         self._sc_pos = sc_pos
 
     def set_quaternion(self, quaternion):
+        """FIXME! briefly describe function
+
+        :param quaternion: 
+        :returns: 
+        :rtype: 
+
         """
-        Parameters
-        ----------
-        quaternion
-        """
+
         for key in self._detectors.keys():
             self._detectors[key].set_quaternion(quaternion)
 
         self._quaternion = quaternion
 
     def set_sc_pos(self, sc_pos):
+        """FIXME! briefly describe function
+
+        :param sc_pos: 
+        :returns: 
+        :rtype: 
+
         """
-        Parameters
-        ----------
-        sc_pos
-        """
+      
 
         for key in self._detectors.keys():
             self._detectors[key].set_sc_pos(sc_pos)

@@ -92,32 +92,35 @@ class GBMDetector(object):
 
             # position of earth in satellite frame:
 
-        self._earth_pos_norm = self.geo_to_gbm(
-            -self._sc_pos / np.linalg.norm(self._sc_pos)
-        )
-        scxn, scyn, sczn = self._earth_pos_norm
-        earth_theta = np.arccos(sczn / np.sqrt(scxn * scxn + scyn * scyn + sczn * sczn))
-        earth_phi = np.arctan2(scyn, scxn)
-        earth_ra = np.rad2deg(earth_phi)
-        if earth_ra < 0:
-            earth_ra = earth_ra + 360
-        earth_dec = 90 - np.rad2deg(earth_theta)
+        if sc_pos is not None:
+            
 
-        # earth as SkyCoord
-        self._earth_position = SkyCoord(
-            lon=earth_ra * u.deg,
-            lat=earth_dec * u.deg,
-            unit="deg",
-            frame=GBMFrame(
-                quaternion_1=q1,
-                quaternion_2=q2,
-                quaternion_3=q3,
-                quaternion_4=q4,
-                sc_pos_X=scx,
-                sc_pos_Y=scy,
-                sc_pos_Z=scz,
-            ),
-        )
+            self._earth_pos_norm = self.geo_to_gbm(
+                -self._sc_pos / np.linalg.norm(self._sc_pos)
+            )
+            scxn, scyn, sczn = self._earth_pos_norm
+            earth_theta = np.arccos(sczn / np.sqrt(scxn * scxn + scyn * scyn + sczn * sczn))
+            earth_phi = np.arctan2(scyn, scxn)
+            earth_ra = np.rad2deg(earth_phi)
+            if earth_ra < 0:
+                earth_ra = earth_ra + 360
+            earth_dec = 90 - np.rad2deg(earth_theta)
+
+            # earth as SkyCoord
+            self._earth_position = SkyCoord(
+                lon=earth_ra * u.deg,
+                lat=earth_dec * u.deg,
+                unit="deg",
+                frame=GBMFrame(
+                    quaternion_1=q1,
+                    quaternion_2=q2,
+                    quaternion_3=q3,
+                    quaternion_4=q4,
+                    sc_pos_X=scx,
+                    sc_pos_Y=scy,
+                    sc_pos_Z=scz,
+                ),
+            )
         self._scx = scx
         self._scy = scy
         self._scz = scz
