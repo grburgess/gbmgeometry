@@ -14,13 +14,11 @@ class GBMTime(object):
 
         self._calculate_met_from_mjd()
 
-
         self._utc_zero = self._calculate_MJD_from_MET(0)
 
         # this is when week 9 of the mission starts
-        self._utc_start_of_sc_data = '2008-08-07T03:35:44.0'
+        self._utc_start_of_sc_data = "2008-08-07T03:35:44.0"
         self._time_of_start_of_sc_data = time.Time(self._utc_start_of_sc_data)
-
 
     @property
     def met(self):
@@ -32,7 +30,6 @@ class GBMTime(object):
 
         return self._time_object.iso
 
-
     @property
     def time(self):
 
@@ -42,14 +39,11 @@ class GBMTime(object):
     def t_zero(self):
         return self._utc_zero
 
-
     @property
     def mission_week(self):
 
-
         dt = (self._time_object - self._time_of_start_of_sc_data).to(u.week)
-        return dt + 10* u.week
-
+        return dt + 10 * u.week
 
     @classmethod
     def from_UTC_fits(cls, date_string):
@@ -62,7 +56,7 @@ class GBMTime(object):
         :return: 
         """
 
-        time_object = time.Time(date_string, format='fits', scale='utc')
+        time_object = time.Time(date_string, format="fits", scale="utc")
 
         return cls(time_object)
 
@@ -87,11 +81,12 @@ class GBMTime(object):
         else:
             utc_tt_diff = 69.184
 
-        mjdutc = ((
-                  met - utc_tt_diff) / 86400.0) + 51910 + 0.0007428703703  # -68.184 added to account for diff between TT and UTC and the 4 leapseconds since 2001
+        mjdutc = (
+            ((met - utc_tt_diff) / 86400.0) + 51910 + 0.0007428703703
+        )  # -68.184 added to account for diff between TT and UTC and the 4 leapseconds since 2001
         # mjdtt = ((met) / 86400.0) + 51910 + 0.00074287037037
 
-        return time.Time(mjdutc, scale='utc', format='mjd')
+        return time.Time(mjdutc, scale="utc", format="mjd")
 
     def _calculate_met_from_mjd(self):
         """
@@ -110,7 +105,9 @@ class GBMTime(object):
         else:
             utc_tt_diff = 69.184
 
-        self._met = (self._current_mjd - 51910 - 0.0007428703703) * 86400.0 + utc_tt_diff  # convert it into MET
+        self._met = (
+            self._current_mjd - 51910 - 0.0007428703703
+        ) * 86400.0 + utc_tt_diff  # convert it into MET
 
     def __add__(self, other):
 
@@ -122,7 +119,7 @@ class GBMTime(object):
 
             # assuming second addition
 
-            dt = time.TimeDelta(other, format='sec')
+            dt = time.TimeDelta(other, format="sec")
 
             new_time = self._time_object + dt
 
@@ -140,22 +137,15 @@ class GBMTime(object):
 
             return dt
 
-
-
         else:
 
             # assuming second addition
 
-            dt = time.TimeDelta(other, format='sec')
+            dt = time.TimeDelta(other, format="sec")
 
             new_time = self._time_object - dt
 
         return GBMTime(new_time)
 
 
-#def mission_week(met):
-
-
-
-
-
+# def mission_week(met):

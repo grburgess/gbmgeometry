@@ -24,18 +24,25 @@ class PositionInterpolator(object):
         """
         if poshist is not None:
 
-
             with fits.open(poshist) as poshist:
-                #poshist = fits.open(poshist)
-                self._time = poshist['GLAST POS HIST'].data['SCLK_UTC']
-                self._quats = np.array([poshist['GLAST POS HIST'].data['QSJ_1'],
-                                        poshist['GLAST POS HIST'].data['QSJ_2'],
-                                        poshist['GLAST POS HIST'].data['QSJ_3'],
-                                        poshist['GLAST POS HIST'].data['QSJ_4']]).T
+                # poshist = fits.open(poshist)
+                self._time = poshist["GLAST POS HIST"].data["SCLK_UTC"]
+                self._quats = np.array(
+                    [
+                        poshist["GLAST POS HIST"].data["QSJ_1"],
+                        poshist["GLAST POS HIST"].data["QSJ_2"],
+                        poshist["GLAST POS HIST"].data["QSJ_3"],
+                        poshist["GLAST POS HIST"].data["QSJ_4"],
+                    ]
+                ).T
 
-                self._sc_pos = np.array([poshist['GLAST POS HIST'].data['POS_X'],
-                                         poshist['GLAST POS HIST'].data['POS_Y'],
-                                         poshist['GLAST POS HIST'].data['POS_Z']]).T
+                self._sc_pos = np.array(
+                    [
+                        poshist["GLAST POS HIST"].data["POS_X"],
+                        poshist["GLAST POS HIST"].data["POS_Y"],
+                        poshist["GLAST POS HIST"].data["POS_Z"],
+                    ]
+                ).T
 
                 # if using posthist then units are in m
 
@@ -44,28 +51,25 @@ class PositionInterpolator(object):
                 if T0 is not None:
                     self._time -= T0
 
-                    self._trigtime  = T0
+                    self._trigtime = T0
 
                 else:
 
                     self._trigtime = None
 
-            #poshist.close()
-
-
+            # poshist.close()
 
         elif trigdat is not None:
 
             with fits.open(trigdat) as trigdat:
-                #trigdat = fits.open(trigdat)
-                trigtime = trigdat['EVNTRATE'].header['TRIGTIME']
-                tstart = trigdat['EVNTRATE'].data['TIME'] - trigtime
-
+                # trigdat = fits.open(trigdat)
+                trigtime = trigdat["EVNTRATE"].header["TRIGTIME"]
+                tstart = trigdat["EVNTRATE"].data["TIME"] - trigtime
 
                 self._trigtime = trigtime
 
-                self._quats = trigdat['EVNTRATE'].data['SCATTITD']
-                self._sc_pos = trigdat['EVNTRATE'].data['EIC']
+                self._quats = trigdat["EVNTRATE"].data["SCATTITD"]
+                self._sc_pos = trigdat["EVNTRATE"].data["EIC"]
 
                 sort_mask = np.argsort(tstart)
                 tstart = tstart[sort_mask]
@@ -75,7 +79,7 @@ class PositionInterpolator(object):
 
                 self._time = tstart
 
-            #trigdat.close()
+            # trigdat.close()
 
             # the sc is in km so no need to convert
 
@@ -90,10 +94,7 @@ class PositionInterpolator(object):
         self._interpolate_quaternion()
         self._interpolate_sc_pos()
 
-
-    def utc(self,t):
-
-
+    def utc(self, t):
 
         if self._trigtime is not None:
 
@@ -103,15 +104,11 @@ class PositionInterpolator(object):
 
             met = t
 
-
         time = GBMTime.from_MET(met)
-        #print(time.time.fits)
+        # print(time.time.fits)
         return time.time.fits
 
-
-
-
-    def met(self,t):
+    def met(self, t):
 
         if self._trigtime is not None:
 
@@ -122,7 +119,6 @@ class PositionInterpolator(object):
             met = t
 
         return met
-
 
     def maxtime(self):
 
@@ -166,39 +162,26 @@ class PositionInterpolator(object):
 
         self._scxyz_t = interpolate.interp1d(self._time, self._sc_pos.T)
 
-
-
-
     def sc_matrix(self, t):
 
         q1, q2, q3, q4 = self.quaternion(t)
         sc_matrix = np.zeros((3, 3))
 
-        sc_matrix[0, 0] = (q1 ** 2 - q2 ** 2 - q3
-                           ** 2 + q4 ** 2)
-        sc_matrix[0, 1] = 2.0 * (
-            q1 * q2 + q4 * q3)
-        sc_matrix[0, 2] = 2.0 * (
-            q1 * q3 - q4 * q2)
-        sc_matrix[1, 0] = 2.0 * (
-            q1 * q2 - q4 * q3)
-        sc_matrix[1, 1] = (-q1 ** 2 + q2 ** 2 - q3
-                           ** 2 + q4 ** 2)
-        sc_matrix[1, 2] = 2.0 * (
-            q2 * q3 + q4 * q1)
-        sc_matrix[2, 0] = 2.0 * (
-            q1 * q3 + q4 * q2)
-        sc_matrix[2, 1] = 2.0 * (
-            q2 * q3 - q4 * q1)
-        sc_matrix[2, 2] = (-q1 ** 2 - q2 ** 2 + q3
-                           ** 2 + q4 ** 2)
+        sc_matrix[0, 0] = q1 ** 2 - q2 ** 2 - q3 ** 2 + q4 ** 2
+        sc_matrix[0, 1] = 2.0 * (q1 * q2 + q4 * q3)
+        sc_matrix[0, 2] = 2.0 * (q1 * q3 - q4 * q2)
+        sc_matrix[1, 0] = 2.0 * (q1 * q2 - q4 * q3)
+        sc_matrix[1, 1] = -(q1 ** 2) + q2 ** 2 - q3 ** 2 + q4 ** 2
+        sc_matrix[1, 2] = 2.0 * (q2 * q3 + q4 * q1)
+        sc_matrix[2, 0] = 2.0 * (q1 * q3 + q4 * q2)
+        sc_matrix[2, 1] = 2.0 * (q2 * q3 - q4 * q1)
+        sc_matrix[2, 2] = -(q1 ** 2) - q2 ** 2 + q3 ** 2 + q4 ** 2
 
         return sc_matrix
 
     def geo_matrix(self, t):
 
         return self.sc_matrix(t).T
-        
 
     def altitude(self, t):
         """
@@ -207,8 +190,8 @@ class PositionInterpolator(object):
         :return: 
         """
 
-        earth_radius = 6371.
-        fermi_radius = np.sqrt((self.sc_pos(t)**2).sum())
+        earth_radius = 6371.0
+        fermi_radius = np.sqrt((self.sc_pos(t) ** 2).sum())
 
         return fermi_radius - earth_radius
 

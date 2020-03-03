@@ -16,8 +16,6 @@ from gbmgeometry.spacecraft.solar_panels import SolarPanelMinus, SolarPanelPlus
 class Fermi(object):
     def __init__(self, quaternion, sc_pos=None):
 
-
-
         """
         
         A model of Fermi that can be plotted in 3D and read healpix maps.
@@ -51,17 +49,25 @@ class Fermi(object):
 
         self._spacecraft_components[self._lat.name] = self._lat
 
-        self._spacecraft_components[self._lat_radiator_minus.name] = self._lat_radiator_minus
-        self._spacecraft_components[self._lat_radiator_plus.name] = self._lat_radiator_plus
+        self._spacecraft_components[
+            self._lat_radiator_minus.name
+        ] = self._lat_radiator_minus
+        self._spacecraft_components[
+            self._lat_radiator_plus.name
+        ] = self._lat_radiator_plus
 
-        self._spacecraft_components[self._solar_panel_plus.name] = self._solar_panel_plus
-        self._spacecraft_components[self._solar_panel_minus.name] = self._solar_panel_minus
+        self._spacecraft_components[
+            self._solar_panel_plus.name
+        ] = self._solar_panel_plus
+        self._spacecraft_components[
+            self._solar_panel_minus.name
+        ] = self._solar_panel_minus
 
         # add lists for each detector to rays
 
         self._rays = collections.OrderedDict()
 
-        for name in self._gbm.detectors.iterkeys():
+        for name in self._gbm.detectors.keys():
             self._rays[name] = []
 
         self._intersection_points = None
@@ -76,7 +82,7 @@ class Fermi(object):
 
         return self._rays
 
-    def add_ray(self, ray_coordinate, probability=None, color='#29FC5C'):
+    def add_ray(self, ray_coordinate, probability=None, color="#29FC5C"):
 
         """
 
@@ -84,7 +90,7 @@ class Fermi(object):
         :param probability: 
         :param color: 
         """
-        for name, det in self._gbm.detectors.iteritems():
+        for name, det in self._gbm.detectors.items():
             ray = Ray(det, ray_coordinate, probability=probability, color=color)
 
             self._rays[name].append(ray)
@@ -100,7 +106,7 @@ class Fermi(object):
         if len(detectors) == 0:
             dets = self._rays.keys()
 
-        for det_name, det in self._rays.iteritems():
+        for det_name, det in self._rays.items():
 
             self._intersection_points[det_name] = []
 
@@ -115,11 +121,11 @@ class Fermi(object):
 
                     collision_info = collections.OrderedDict()
 
-                    collision_info['surface'] = []
-                    collision_info['point'] = []
-                    collision_info['distance'] = []
+                    collision_info["surface"] = []
+                    collision_info["point"] = []
+                    collision_info["distance"] = []
 
-                    for name, component in self._spacecraft_components.iteritems():
+                    for name, component in self._spacecraft_components.items():
 
                         # intersect the volume with the rays
 
@@ -128,11 +134,13 @@ class Fermi(object):
                         plane, point, distance = component.intersection
 
                         current_ray_origin = Point3D(ray.ray_origin)
-                        
-                        if plane is not None and current_ray_origin.distance(Point3D(point)) <= current_ray_origin.distance(Point3D(ray.detector_origin)):
-                            collision_info['surface'].append('%s %s' % (name, plane))
-                            collision_info['point'].append(point)
-                            collision_info['distance'].append(distance)
+
+                        if plane is not None and current_ray_origin.distance(
+                            Point3D(point)
+                        ) <= current_ray_origin.distance(Point3D(ray.detector_origin)):
+                            collision_info["surface"].append("%s %s" % (name, plane))
+                            collision_info["point"].append(point)
+                            collision_info["distance"].append(distance)
 
                             self._intersection_points[det_name].append(point)
 
@@ -142,7 +150,9 @@ class Fermi(object):
 
         return all_intersections
 
-    def plot_fermi(self, ax=None, detectors=None, with_rays=False, with_intersections=False):
+    def plot_fermi(
+        self, ax=None, detectors=None, with_rays=False, with_intersections=False
+    ):
 
         """
 
@@ -155,7 +165,7 @@ class Fermi(object):
         if ax is None:
 
             fig = plt.figure()
-            ax = fig.add_subplot(111, projection='3d')
+            ax = fig.add_subplot(111, projection="3d")
 
         else:
 
@@ -165,26 +175,25 @@ class Fermi(object):
 
             detectors = self._gbm.detectors.keys()
 
-
         else:
 
             for det in detectors:
-                assert det in self._gbm.detectors.keys(), 'invalid detector'
+                assert det in self._gbm.detectors.keys(), "invalid detector"
 
-        for name, component in self._spacecraft_components.iteritems():
+        for name, component in self._spacecraft_components.items():
             component.plot(ax)
 
-        for name, det in self._gbm.detectors.iteritems():
+        for name, det in self._gbm.detectors.items():
 
             if name in detectors:
-                ax.scatter(*det.mount_point, color='#FFC300')
+                ax.scatter(*det.mount_point, color="#FFC300")
                 ax.text3D(*det.mount_point, s=name)
 
         if with_rays:
 
             # for all the detectors plot the rays
 
-            for name, det in self._rays.iteritems():
+            for name, det in self._rays.items():
 
                 if name in detectors:
 
@@ -198,22 +207,22 @@ class Fermi(object):
 
             if self._intersection_points is not None:
 
-                for name, points in self._intersection_points.iteritems():
+                for name, points in self._intersection_points.items():
                     if name in detectors:
                         for point in points:
-                            ax.scatter(*point, c='r')
+                            ax.scatter(*point, c="r")
 
-        ax.set_xlabel('SCX')
-        ax.set_ylabel('SCY')
-        ax.set_zlabel('SCZ')
+        ax.set_xlabel("SCX")
+        ax.set_ylabel("SCY")
+        ax.set_zlabel("SCZ")
 
         ax.set_zlim(0, 300)
         ax.set_xlim(-400, 400)
         ax.set_ylim(-400, 400)
 
         ax.grid(False)
-        ax.xaxis.pane.set_edgecolor('black')
-        ax.yaxis.pane.set_edgecolor('black')
+        ax.xaxis.pane.set_edgecolor("black")
+        ax.yaxis.pane.set_edgecolor("black")
 
         ax.xaxis.pane.fill = False
         ax.yaxis.pane.fill = False
@@ -221,7 +230,7 @@ class Fermi(object):
 
         return fig
 
-    def read_healpix_map(self, healpix_map, cmap='viridis'):
+    def read_healpix_map(self, healpix_map, cmap="viridis"):
 
         # collect the nside of the map
 
@@ -248,7 +257,7 @@ class Fermi(object):
 
                 # now make a point source
 
-                ps = SkyCoord(ra, dec, unit='deg', frame='icrs')
+                ps = SkyCoord(ra, dec, unit="deg", frame="icrs")
 
                 # transform into the fermi frame
 

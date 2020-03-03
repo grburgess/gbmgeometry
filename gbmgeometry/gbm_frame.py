@@ -16,29 +16,34 @@ class GBMFrame(BaseCoordinateFrame):
         A representation object or None to have no data (or use the other keywords)
   
     """
+
     default_representation = coord.SphericalRepresentation
 
     frame_specific_representation_info = {
-        'spherical': [
+        "spherical": [
             RepresentationMapping(
-                reprname='lon', framename='lon', defaultunit=u.degree),
+                reprname="lon", framename="lon", defaultunit=u.degree
+            ),
             RepresentationMapping(
-                reprname='lat', framename='lat', defaultunit=u.degree),
+                reprname="lat", framename="lat", defaultunit=u.degree
+            ),
             RepresentationMapping(
-                reprname='distance', framename='DIST', defaultunit=None)
+                reprname="distance", framename="DIST", defaultunit=None
+            ),
         ],
-        'unitspherical': [
+        "unitspherical": [
             RepresentationMapping(
-                reprname='lon', framename='lon', defaultunit=u.degree),
+                reprname="lon", framename="lon", defaultunit=u.degree
+            ),
             RepresentationMapping(
-                reprname='lat', framename='lat', defaultunit=u.degree)
+                reprname="lat", framename="lat", defaultunit=u.degree
+            ),
         ],
-        'cartesian': [
-            RepresentationMapping(
-                reprname='x', framename='SCX'), RepresentationMapping(
-                reprname='y', framename='SCY'), RepresentationMapping(
-                reprname='z', framename='SCZ')
-        ]
+        "cartesian": [
+            RepresentationMapping(reprname="x", framename="SCX"),
+            RepresentationMapping(reprname="y", framename="SCY"),
+            RepresentationMapping(reprname="z", framename="SCZ"),
+        ],
     }
 
     # Specify frame attributes required to fully specify the frame
@@ -57,24 +62,15 @@ class GBMFrame(BaseCoordinateFrame):
     def _set_quaternion(q1, q2, q3, q4):
         sc_matrix = np.zeros((3, 3))
 
-        sc_matrix[0, 0] = (q1 ** 2 - q2 ** 2 - q3
-                           ** 2 + q4 ** 2)
-        sc_matrix[0, 1] = 2.0 * (
-            q1 * q2 + q4 * q3)
-        sc_matrix[0, 2] = 2.0 * (
-            q1 * q3 - q4 * q2)
-        sc_matrix[1, 0] = 2.0 * (
-            q1 * q2 - q4 * q3)
-        sc_matrix[1, 1] = (-q1 ** 2 + q2 ** 2 - q3
-                           ** 2 + q4 ** 2)
-        sc_matrix[1, 2] = 2.0 * (
-            q2 * q3 + q4 * q1)
-        sc_matrix[2, 0] = 2.0 * (
-            q1 * q3 + q4 * q2)
-        sc_matrix[2, 1] = 2.0 * (
-            q2 * q3 - q4 * q1)
-        sc_matrix[2, 2] = (-q1 ** 2 - q2 ** 2 + q3
-                           ** 2 + q4 ** 2)
+        sc_matrix[0, 0] = q1 ** 2 - q2 ** 2 - q3 ** 2 + q4 ** 2
+        sc_matrix[0, 1] = 2.0 * (q1 * q2 + q4 * q3)
+        sc_matrix[0, 2] = 2.0 * (q1 * q3 - q4 * q2)
+        sc_matrix[1, 0] = 2.0 * (q1 * q2 - q4 * q3)
+        sc_matrix[1, 1] = -(q1 ** 2) + q2 ** 2 - q3 ** 2 + q4 ** 2
+        sc_matrix[1, 2] = 2.0 * (q2 * q3 + q4 * q1)
+        sc_matrix[2, 0] = 2.0 * (q1 * q3 + q4 * q2)
+        sc_matrix[2, 1] = 2.0 * (q2 * q3 - q4 * q1)
+        sc_matrix[2, 2] = -(q1 ** 2) - q2 ** 2 + q3 ** 2 + q4 ** 2
 
         return sc_matrix
 
@@ -85,27 +81,26 @@ def gbm_to_j2000(gbm_coord, j2000_frame):
         spherical Galactic.
     """
 
-    sc_matrix = gbm_coord._set_quaternion(gbm_coord.quaternion_1,
-                                          gbm_coord.quaternion_2,
-                                          gbm_coord.quaternion_3,
-                                          gbm_coord.quaternion_4)
+    sc_matrix = gbm_coord._set_quaternion(
+        gbm_coord.quaternion_1,
+        gbm_coord.quaternion_2,
+        gbm_coord.quaternion_3,
+        gbm_coord.quaternion_4,
+    )
 
     # X,Y,Z = gbm_coord.cartesian
 
-    
-
-    
     pos = gbm_coord.cartesian.xyz.value
 
     X0 = np.dot(sc_matrix[:, 0], pos)
     X1 = np.dot(sc_matrix[:, 1], pos)
-    X2 = np.clip(np.dot(sc_matrix[:, 2], pos), -1., 1.)
+    X2 = np.clip(np.dot(sc_matrix[:, 2], pos), -1.0, 1.0)
 
-    #dec = np.arcsin(X2)
+    # dec = np.arcsin(X2)
 
-    dec = np.pi/2. - np.arccos(X2)
+    dec = np.pi / 2.0 - np.arccos(X2)
 
-    idx = np.logical_and(np.abs(X0) < 1E-6, np.abs(X1) < 1E-6)
+    idx = np.logical_and(np.abs(X0) < 1e-6, np.abs(X1) < 1e-6)
 
     ra = np.zeros_like(dec)
 
@@ -120,29 +115,33 @@ def j2000_to_gbm(j2000_frame, gbm_coord):
         spherical Galactic.
     """
 
-    sc_matrix = gbm_coord._set_quaternion(gbm_coord.quaternion_1,
-                                          gbm_coord.quaternion_2,
-                                          gbm_coord.quaternion_3,
-                                          gbm_coord.quaternion_4)
+    sc_matrix = gbm_coord._set_quaternion(
+        gbm_coord.quaternion_1,
+        gbm_coord.quaternion_2,
+        gbm_coord.quaternion_3,
+        gbm_coord.quaternion_4,
+    )
 
     pos = j2000_frame.cartesian.xyz.value
 
     X0 = np.dot(sc_matrix[0, :], pos)
     X1 = np.dot(sc_matrix[1, :], pos)
-    X2 = np.clip(np.dot(sc_matrix[2, :], pos), -1., 1.)
-    el = np.pi / 2. - np.arccos(X2)  # convert to proper frame
+    X2 = np.clip(np.dot(sc_matrix[2, :], pos), -1.0, 1.0)
+    el = np.pi / 2.0 - np.arccos(X2)  # convert to proper frame
 
-    idx = np.logical_and(np.abs(X0) < 1E-6, np.abs(X1) < 1E-6)
+    idx = np.logical_and(np.abs(X0) < 1e-6, np.abs(X1) < 1e-6)
 
     az = np.zeros_like(el)
 
     az[~idx] = np.arctan2(X1, X0) % (2 * np.pi)
 
-    az[np.rad2deg(el) == 90.] = 0.
+    az[np.rad2deg(el) == 90.0] = 0.0
 
     return GBMFrame(
-        lon=az * u.radian, lat=el * u.radian,
+        lon=az * u.radian,
+        lat=el * u.radian,
         quaternion_1=gbm_coord.quaternion_1,
         quaternion_2=gbm_coord.quaternion_2,
         quaternion_3=gbm_coord.quaternion_3,
-        quaternion_4=gbm_coord.quaternion_4)
+        quaternion_4=gbm_coord.quaternion_4,
+    )

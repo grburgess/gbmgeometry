@@ -9,10 +9,10 @@ from sympy import Plane, Point3D, Line3D
 
 class Ray(object):
     # scaling for distance of lines
-    _R = 1E10  # cm
-    _scale = 3E-8
+    _R = 1e10  # cm
+    _scale = 3e-8
 
-    def __init__(self, detector, point_source, color='#29FC5C', probability=None):
+    def __init__(self, detector, point_source, color="#29FC5C", probability=None):
         self._detector = detector
 
         self._probability = probability
@@ -24,7 +24,7 @@ class Ray(object):
         self._calculate_ray_origin()
 
     def _calculate_ray_origin(self):
-        theta = np.deg2rad(90. - self._point_source.lat.value)
+        theta = np.deg2rad(90.0 - self._point_source.lat.value)
         phi = np.deg2rad(self._point_source.lon.value)
 
         x = Ray._R * np.cos(phi) * np.sin(theta)
@@ -34,18 +34,20 @@ class Ray(object):
         # this is the "distant orgin of the ray"
         self._origin = np.array([x, y, z])
 
-        self._sympy_line = Line3D(Point3D(self._detector.mount_point), Point3D(self._origin))
-
-
+        self._sympy_line = Line3D(
+            Point3D(self._detector.mount_point), Point3D(self._origin)
+        )
 
         self._plot_origin = self.point_on_ray(Ray._scale)
 
     def plot(self, ax):
-        ax.plot([self._plot_origin[0], self.detector_origin[0]],
-                [self._plot_origin[1], self.detector_origin[1]],
-                [self._plot_origin[2], self.detector_origin[2]],
-                color=self._color,
-                alpha=0.8)
+        ax.plot(
+            [self._plot_origin[0], self.detector_origin[0]],
+            [self._plot_origin[1], self.detector_origin[1]],
+            [self._plot_origin[2], self.detector_origin[2]],
+            color=self._color,
+            alpha=0.8,
+        )
 
     @property
     def detector_name(self):
@@ -75,8 +77,7 @@ class Ray(object):
         :return: 
         """
 
-        assert 0. <= t <=1., 't must be between 0 and 1'
-
+        assert 0.0 <= t <= 1.0, "t must be between 0 and 1"
 
         return self.detector_origin + (self._origin - self.detector_origin) * t
 
@@ -88,17 +89,17 @@ class Surface(object):
 
         self._name = name
 
-        if '+' in name:
+        if "+" in name:
 
-            self._sign = 1.
+            self._sign = 1.0
 
-        elif '-' in name:
+        elif "-" in name:
 
-            self._sign = -1.
+            self._sign = -1.0
 
         else:
 
-            raise RuntimeError('the plane name is wrong')
+            raise RuntimeError("the plane name is wrong")
 
         self._calculate_origin()
 
@@ -111,43 +112,41 @@ class Surface(object):
         :return: 
         """
 
-        if 'x' in self._name:
+        if "x" in self._name:
 
-            assert len(np.unique(self._vertices[:, 0])) == 1, 'vertices are wrong!'
+            assert len(np.unique(self._vertices[:, 0])) == 1, "vertices are wrong!"
 
             self._normal = np.array([1, 0, 0]) * self._sign
 
             x_origin = self._vertices[0, 0]
 
-            y_origin = (min(self._vertices[:, 1]) + max(self._vertices[:, 1])) / 2.
+            y_origin = (min(self._vertices[:, 1]) + max(self._vertices[:, 1])) / 2.0
 
-            z_origin = (min(self._vertices[:, 2]) + max(self._vertices[:, 2])) / 2.
+            z_origin = (min(self._vertices[:, 2]) + max(self._vertices[:, 2])) / 2.0
 
             # self._edges = [self.]
 
+        elif "y" in self._name:
 
-        elif 'y' in self._name:
+            assert len(np.unique(self._vertices[:, 1])) == 1, "vertices are wrong!"
 
-            assert len(np.unique(self._vertices[:, 1])) == 1, 'vertices are wrong!'
+            self._normal = np.array([0, 1.0, 0]) * self._sign
 
-            self._normal = np.array([0, 1., 0]) * self._sign
-
-            x_origin = (min(self._vertices[:, 0]) + max(self._vertices[:, 0])) / 2.
+            x_origin = (min(self._vertices[:, 0]) + max(self._vertices[:, 0])) / 2.0
 
             y_origin = self._vertices[0, 1]
 
-            z_origin = (min(self._vertices[:, 2]) + max(self._vertices[:, 2])) / 2.
+            z_origin = (min(self._vertices[:, 2]) + max(self._vertices[:, 2])) / 2.0
 
+        elif "z" in self._name:
 
-        elif 'z' in self._name:
-
-            assert len(np.unique(self._vertices[:, 2])) == 1, 'vertices are wrong!'
+            assert len(np.unique(self._vertices[:, 2])) == 1, "vertices are wrong!"
 
             self._normal = np.array([0, 0, 1]) * self._sign
 
-            x_origin = (min(self._vertices[:, 0]) + max(self._vertices[:, 0])) / 2.
+            x_origin = (min(self._vertices[:, 0]) + max(self._vertices[:, 0])) / 2.0
 
-            y_origin = (min(self._vertices[:, 1]) + max(self._vertices[:, 1])) / 2.
+            y_origin = (min(self._vertices[:, 1]) + max(self._vertices[:, 1])) / 2.0
 
             z_origin = self._vertices[0, 2]
 
@@ -175,24 +174,62 @@ class Surface(object):
 
         intersecting_point = self._sympy_plane.intersection(ray.sympy_line)[0]
 
-        if 'x' in self._name:
+        if "x" in self._name:
 
-            if self._within_y_bounds(intersecting_point.y) and self._within_z_bounds(intersecting_point.z):
-                return True, np.array(map(float, [intersecting_point.x, intersecting_point.y, intersecting_point.z]))
+            if self._within_y_bounds(intersecting_point.y) and self._within_z_bounds(
+                intersecting_point.z
+            ):
+                return (
+                    True,
+                    np.array(
+                        map(
+                            float,
+                            [
+                                intersecting_point.x,
+                                intersecting_point.y,
+                                intersecting_point.z,
+                            ],
+                        )
+                    ),
+                )
 
+        elif "y" in self._name:
 
+            if self._within_x_bounds(intersecting_point.x) and self._within_z_bounds(
+                intersecting_point.z
+            ):
+                return (
+                    True,
+                    np.array(
+                        map(
+                            float,
+                            [
+                                intersecting_point.x,
+                                intersecting_point.y,
+                                intersecting_point.z,
+                            ],
+                        )
+                    ),
+                )
 
-        elif 'y' in self._name:
+        elif "z" in self._name:
 
-            if self._within_x_bounds(intersecting_point.x) and self._within_z_bounds(intersecting_point.z):
-                return True, np.array(map(float, [intersecting_point.x, intersecting_point.y, intersecting_point.z]))
-
-
-
-        elif 'z' in self._name:
-
-            if self._within_y_bounds(intersecting_point.y) and self._within_x_bounds(intersecting_point.x):
-                return True, np.array(map(float, [intersecting_point.x, intersecting_point.y, intersecting_point.z]))
+            if self._within_y_bounds(intersecting_point.y) and self._within_x_bounds(
+                intersecting_point.x
+            ):
+                return (
+                    True,
+                    np.array(
+                        map(
+                            float,
+                            [
+                                intersecting_point.x,
+                                intersecting_point.y,
+                                intersecting_point.z,
+                            ],
+                        )
+                    ),
+                )
 
         return False, None
 
@@ -233,18 +270,34 @@ class Surface(object):
 
 
 class Volume(object):
-    def __init__(self, name, x_origin, y_origin, z_origin, height, x_width, y_width, color='grey',
-                 active_surfaces=None):
+    def __init__(
+        self,
+        name,
+        x_origin,
+        y_origin,
+        z_origin,
+        height,
+        x_width,
+        y_width,
+        color="grey",
+        active_surfaces=None,
+    ):
 
         if active_surfaces is None:
 
-            self._active_surfaces = ('+x', '-x', '+y', '-y', '+z', '-z')
-
+            self._active_surfaces = ("+x", "-x", "+y", "-y", "+z", "-z")
 
         else:
 
             for surface in active_surfaces:
-                assert surface in ['+x', '-x', '+y', '-y', '+z', '-z'], 'not a valid surface!'
+                assert surface in [
+                    "+x",
+                    "-x",
+                    "+y",
+                    "-y",
+                    "+z",
+                    "-z",
+                ], "not a valid surface!"
 
             self._active_surfaces = active_surfaces
 
@@ -254,17 +307,23 @@ class Volume(object):
 
         self._name = name
 
-        self._build_cube(origin=(x_origin - x_width / 2., z_origin - height / 2., y_origin - y_width / 2.),
-                         width=x_width,
-                         depth=y_width,
-                         height=height)
+        self._build_cube(
+            origin=(
+                x_origin - x_width / 2.0,
+                z_origin - height / 2.0,
+                y_origin - y_width / 2.0,
+            ),
+            width=x_width,
+            depth=y_width,
+            height=height,
+        )
 
         self._intersections = None
 
     def _build_cube(self, origin=None, width=1, height=1, depth=1):
 
         self._planes = collections.OrderedDict()
-        for plane in ['+x', '-x', '+y', '-y', '+z', '-z']:
+        for plane in ["+x", "-x", "+y", "-y", "+z", "-z"]:
             self._planes[plane] = None
 
         u, v, w = (0, 0, 0) if origin is None else origin
@@ -273,43 +332,43 @@ class Volume(object):
 
         for plane in self._planes.keys():
 
-            if '-z' in plane:
-                this_grid = self._grid('xy', (u, w), width, depth, v)
+            if "-z" in plane:
+                this_grid = self._grid("xy", (u, w), width, depth, v)
 
                 self._planes[plane] = Surface(plane, this_grid[0])
 
                 grids.extend(this_grid)
 
-            if '+z' in plane:
-                this_grid = self._grid('xy', (u, w), width, depth, v + height)
+            if "+z" in plane:
+                this_grid = self._grid("xy", (u, w), width, depth, v + height)
 
                 self._planes[plane] = Surface(plane, this_grid[0])
 
                 grids.extend(this_grid)
 
-            if '-y' in plane:
-                this_grid = self._grid('xz', (u, v), width, height, w)
+            if "-y" in plane:
+                this_grid = self._grid("xz", (u, v), width, height, w)
 
                 self._planes[plane] = Surface(plane, this_grid[0])
 
                 grids.extend(this_grid)
 
-            if '+y' in plane:
-                this_grid = self._grid('xz', (u, v), width, height, w + depth)
+            if "+y" in plane:
+                this_grid = self._grid("xz", (u, v), width, height, w + depth)
 
                 self._planes[plane] = Surface(plane, this_grid[0])
 
                 grids.extend(this_grid)
 
-            if '-x' in plane:
-                this_grid = self._grid('yz', (w, v), depth, height, u)
+            if "-x" in plane:
+                this_grid = self._grid("yz", (w, v), depth, height, u)
 
                 self._planes[plane] = Surface(plane, this_grid[0])
 
                 grids.extend(this_grid)
 
-            if '+x' in plane:
-                this_grid = self._grid('yz', (w, v), depth, height, u + width)
+            if "+x" in plane:
+                this_grid = self._grid("yz", (w, v), depth, height, u + width)
 
                 self._planes[plane] = Surface(plane, this_grid[0])
 
@@ -318,7 +377,7 @@ class Volume(object):
         self._quads = np.array(grids)
 
     @staticmethod
-    def _grid(plane='xy', origin=None, width=1, height=1, depth=0):
+    def _grid(plane="xy", origin=None, width=1, height=1, depth=0):
 
         u, v = (0, 0) if origin is None else origin
 
@@ -333,30 +392,37 @@ class Volume(object):
         for i in range(width_segments):
             for j in range(height_segments):
                 quads.append(
-                    Volume._quad(plane, (i * w_x + u, j * h_y + v), w_x, h_y, depth))
+                    Volume._quad(plane, (i * w_x + u, j * h_y + v), w_x, h_y, depth)
+                )
 
         return np.array(quads)
 
     @staticmethod
-    def _quad(plane='xy', origin=None, width=1, height=1, depth=0):
+    def _quad(plane="xy", origin=None, width=1, height=1, depth=0):
         u, v = (0, 0) if origin is None else origin
 
         plane = plane.lower()
-        if plane == 'xy':
-            vertices = ((u, v, depth),
-                        (u + width, v, depth),
-                        (u + width, v + height, depth),
-                        (u, v + height, depth))
-        elif plane == 'xz':
-            vertices = ((u, depth, v),
-                        (u + width, depth, v),
-                        (u + width, depth, v + height),
-                        (u, depth, v + height))
-        elif plane == 'yz':
-            vertices = ((depth, u, v),
-                        (depth, u + width, v),
-                        (depth, u + width, v + height),
-                        (depth, u, v + height))
+        if plane == "xy":
+            vertices = (
+                (u, v, depth),
+                (u + width, v, depth),
+                (u + width, v + height, depth),
+                (u, v + height, depth),
+            )
+        elif plane == "xz":
+            vertices = (
+                (u, depth, v),
+                (u + width, depth, v),
+                (u + width, depth, v + height),
+                (u, depth, v + height),
+            )
+        elif plane == "yz":
+            vertices = (
+                (depth, u, v),
+                (depth, u + width, v),
+                (depth, u + width, v + height),
+                (depth, u, v + height),
+            )
         else:
             raise ValueError('"{0}" is not a supported plane!'.format(plane))
 
@@ -375,11 +441,9 @@ class Volume(object):
 
         return self._name
 
-    def plot(self, ax, alpha=.1):
+    def plot(self, ax, alpha=0.1):
 
-        collection = Poly3DCollection(self._quads,
-                                      facecolors=self._color,
-                                      alpha=.25)
+        collection = Poly3DCollection(self._quads, facecolors=self._color, alpha=0.25)
 
         c = []
 
@@ -405,13 +469,13 @@ class Volume(object):
                 is_intersecting, point = v.is_intersecting(ray)
 
                 if is_intersecting:
-                    intersection_info['intersection point'] = point
+                    intersection_info["intersection point"] = point
 
                     # now get the distance between the points
 
                     d2 = (np.power(point - ray.detector_origin, 2)).sum()
 
-                    intersection_info['distance'] = np.sqrt(d2)
+                    intersection_info["distance"] = np.sqrt(d2)
 
                     intersections[k] = intersection_info
 
@@ -427,18 +491,21 @@ class Volume(object):
 
         # return the first intersection
 
-        max_distance = 0.
+        max_distance = 0.0
 
         intersection = None
 
         for k, v in self._intersections.iteritems():
 
-            if v['distance'] > max_distance:
+            if v["distance"] > max_distance:
                 intersection = k
-                max_distance = v['distance']
+                max_distance = v["distance"]
 
         if intersection is None:
             return None, None, None
 
-        return intersection, self._intersections[intersection]['intersection point'], self._intersections[intersection][
-            'distance']
+        return (
+            intersection,
+            self._intersections[intersection]["intersection point"],
+            self._intersections[intersection]["distance"],
+        )
