@@ -3,7 +3,8 @@ from collections import OrderedDict
 import astropy.coordinates as coord
 import astropy.units as u
 import matplotlib.pyplot as plt
-#import mpl_toolkits.basemap as bm
+
+# import mpl_toolkits.basemap as bm
 import numpy as np
 import spherical_geometry.polygon as sp
 from astropy.table import Table
@@ -36,7 +37,7 @@ class GBM(object):
 
             if isinstance(gbm_time, str):
 
-               self._gbm_time = GBMTime.from_UTC_fits(gbm_time)
+                self._gbm_time = GBMTime.from_UTC_fits(gbm_time)
 
             else:
 
@@ -47,11 +48,6 @@ class GBM(object):
         else:
 
             self._gbm_time = None
-
-
-
-
-
 
         if self._gbm_time is not None:
 
@@ -87,21 +83,22 @@ class GBM(object):
             self.b0 = BGO0(quaternion, sc_pos, None)
             self.b1 = BGO1(quaternion, sc_pos, None)
 
-
-        self._detectors = OrderedDict(n0=self.n0,
-                                      n1=self.n1,
-                                      n2=self.n2,
-                                      n3=self.n3,
-                                      n4=self.n4,
-                                      n5=self.n5,
-                                      n6=self.n6,
-                                      n7=self.n7,
-                                      n8=self.n8,
-                                      n9=self.n9,
-                                      na=self.na,
-                                      nb=self.nb,
-                                      b0=self.b0,
-                                      b1=self.b1)
+        self._detectors = OrderedDict(
+            n0=self.n0,
+            n1=self.n1,
+            n2=self.n2,
+            n3=self.n3,
+            n4=self.n4,
+            n5=self.n5,
+            n6=self.n6,
+            n7=self.n7,
+            n8=self.n8,
+            n9=self.n9,
+            na=self.na,
+            nb=self.nb,
+            b0=self.b0,
+            b1=self.b1,
+        )
         self._quaternion = quaternion
         self._sc_pos = sc_pos
 
@@ -159,7 +156,7 @@ class GBM(object):
 
         for key in self._detectors.keys():
 
-            if key[0] == 'b':
+            if key[0] == "b":
                 this_rad = 90
 
             else:
@@ -193,7 +190,6 @@ class GBM(object):
 
         return [polys, good_detectors]
 
-
     def get_sun_angle(self, keys=None):
 
         """
@@ -215,9 +211,6 @@ class GBM(object):
                 angles.append(self._detectors[key].sun_angle)
 
         return angles
-
-
-
 
     def get_centers(self, keys=None):
 
@@ -241,8 +234,6 @@ class GBM(object):
 
         return centers
 
-
-
     def get_separation(self, source):
         """
         Get the andular separation of the detectors from a point
@@ -261,7 +252,7 @@ class GBM(object):
             sep = self._detectors[key].get_center().separation(source)
             tab.add_row([key, sep])
 
-        tab['Separation'].unit = u.degree
+        tab["Separation"].unit = u.degree
 
         tab.sort("Separation")
 
@@ -286,16 +277,20 @@ class GBM(object):
 
     def _calc_earth_points(self, fermi_frame):
 
-        xyz_position = coord.SkyCoord(x=self._sc_pos[0],
-                                      y=self._sc_pos[1],
-                                      z=self._sc_pos[2],
-                                      frame='icrs',
-                                      representation='cartesian')
+        xyz_position = coord.SkyCoord(
+            x=self._sc_pos[0],
+            y=self._sc_pos[1],
+            z=self._sc_pos[2],
+            frame="icrs",
+            representation="cartesian",
+        )
 
-        earth_radius = 6371. * u.km
+        earth_radius = 6371.0 * u.km
         fermi_radius = np.sqrt((self._sc_pos ** 2).sum())
 
-        horizon_angle = 90 - np.rad2deg(np.arccos((earth_radius / fermi_radius).to(u.dimensionless_unscaled)).value)
+        horizon_angle = 90 - np.rad2deg(
+            np.arccos((earth_radius / fermi_radius).to(u.dimensionless_unscaled)).value
+        )
 
         horizon_angle = (180 - horizon_angle) * u.degree
 
@@ -310,7 +305,7 @@ class GBM(object):
         v = np.linspace(cosdec_min, cosdec_max, num_points)
         v = np.arccos(v)
         v = np.rad2deg(v)
-        v -= 90.
+        v -= 90.0
 
         dec_grid_tmp = v
 
@@ -325,9 +320,14 @@ class GBM(object):
                 itr += 1
 
         if fermi_frame:
-            all_sky = coord.SkyCoord(Az=ra_grid, Zen=dec_grid, frame=GBMFrame(quaternion=self._quaternion), unit='deg')
+            all_sky = coord.SkyCoord(
+                Az=ra_grid,
+                Zen=dec_grid,
+                frame=GBMFrame(quaternion=self._quaternion),
+                unit="deg",
+            )
         else:
-            all_sky = coord.SkyCoord(ra=ra_grid, dec=dec_grid, frame='icrs', unit='deg')
+            all_sky = coord.SkyCoord(ra=ra_grid, dec=dec_grid, frame="icrs", unit="deg")
 
         condition = all_sky.separation(xyz_position) > horizon_angle
 
@@ -351,17 +351,16 @@ class GBM(object):
 
         for key in self._detectors.keys():
 
-            if key[0] == 'b':
+            if key[0] == "b":
                 this_rad = 90
             else:
                 this_rad = radius
 
             j2000 = self._detectors[key]._center.icrs
 
-            poly = sp.SphericalPolygon.from_cone(j2000.ra.value,
-                                                 j2000.dec.value,
-                                                 this_rad,
-                                                 steps=steps)
+            poly = sp.SphericalPolygon.from_cone(
+                j2000.ra.value, j2000.dec.value, this_rad, steps=steps
+            )
 
             if poly.contains_point(point.cartesian.xyz.value):
                 condition.append(key)
@@ -378,19 +377,23 @@ def get_legal_pairs():
 
     """
 
-    dlp = np.array([[0, 274, 39, 171, 12, 29, 0, 5, 1, 6, 1, 0],
-                    [258, 0, 233, 55, 4, 100, 2, 1, 1, 12, 27, 0],
-                    [55, 437, 0, 2, 2, 311, 0, 1, 1, 13, 235, 0],
-                    [215, 80, 3, 0, 330, 107, 4, 8, 19, 2, 1, 0],
-                    [13, 4, 8, 508, 0, 269, 2, 29, 236, 0, 1, 0],
-                    [44, 188, 337, 166, 279, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 1, 1, 2, 2, 0, 0, 238, 46, 180, 12, 33],
-                    [0, 2, 0, 18, 35, 0, 222, 0, 221, 61, 3, 109],
-                    [0, 0, 1, 16, 215, 0, 51, 399, 0, 4, 2, 303],
-                    [3, 18, 21, 4, 0, 0, 190, 82, 1, 0, 324, 110],
-                    [1, 25, 191, 0, 0, 0, 16, 6, 4, 516, 0, 293],
-                    [0, 0, 0, 0, 0, 0, 32, 147, 297, 138, 263, 0]])
+    dlp = np.array(
+        [
+            [0, 274, 39, 171, 12, 29, 0, 5, 1, 6, 1, 0],
+            [258, 0, 233, 55, 4, 100, 2, 1, 1, 12, 27, 0],
+            [55, 437, 0, 2, 2, 311, 0, 1, 1, 13, 235, 0],
+            [215, 80, 3, 0, 330, 107, 4, 8, 19, 2, 1, 0],
+            [13, 4, 8, 508, 0, 269, 2, 29, 236, 0, 1, 0],
+            [44, 188, 337, 166, 279, 0, 0, 0, 0, 0, 0, 0],
+            [0, 1, 1, 2, 2, 0, 0, 238, 46, 180, 12, 33],
+            [0, 2, 0, 18, 35, 0, 222, 0, 221, 61, 3, 109],
+            [0, 0, 1, 16, 215, 0, 51, 399, 0, 4, 2, 303],
+            [3, 18, 21, 4, 0, 0, 190, 82, 1, 0, 324, 110],
+            [1, 25, 191, 0, 0, 0, 16, 6, 4, 516, 0, 293],
+            [0, 0, 0, 0, 0, 0, 32, 147, 297, 138, 263, 0],
+        ]
+    )
 
-    sns.heatmap(dlp, annot=True, fmt='d', cmap="YlGnBu")
+    sns.heatmap(dlp, annot=True, fmt="d", cmap="YlGnBu")
     plt.ylabel("NaI")
     plt.xlabel("NaI")

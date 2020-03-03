@@ -9,23 +9,32 @@ import time
 class GetGBMData(object):
     def __init__(self, trigger=None, daily=None):
 
-        self.ftp = ftplib.FTP('legacy.gsfc.nasa.gov', 'anonymous', 'crap@gmail.com')
+        self.ftp = ftplib.FTP("legacy.gsfc.nasa.gov", "anonymous", "crap@gmail.com")
 
         if trigger is not None:
 
-            self._type = 'triggered'
+            self._type = "triggered"
 
-            year = '20' + trigger[:2]
-            self._directory = 'fermi/data/gbm/triggers/' + year + '/bn' + trigger + '/current'
+            year = "20" + trigger[:2]
+            self._directory = (
+                "fermi/data/gbm/triggers/" + year + "/bn" + trigger + "/current"
+            )
 
         elif daily is not None:
 
-            self._type = 'daily'
+            self._type = "daily"
 
-            date = daily.split('/')
+            date = daily.split("/")
 
-            self._directory = 'fermi/data/gbm/daily/20' + date[2] + '/' + date[0] + '/' + date[1] + '/current'
-
+            self._directory = (
+                "fermi/data/gbm/daily/20"
+                + date[2]
+                + "/"
+                + date[0]
+                + "/"
+                + date[1]
+                + "/current"
+            )
 
         else:
 
@@ -42,9 +51,24 @@ class GetGBMData(object):
 
         self._file_list = self.ftp.nlst()
 
-        self._detectors = ['n0', 'n1', 'n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'n8', 'n9', 'na', 'nb', 'b0', 'b1']
+        self._detectors = [
+            "n0",
+            "n1",
+            "n2",
+            "n3",
+            "n4",
+            "n5",
+            "n6",
+            "n7",
+            "n8",
+            "n9",
+            "na",
+            "nb",
+            "b0",
+            "b1",
+        ]
 
-        self._where = ''
+        self._where = ""
 
     def select_detectors(self, *dets):
         self._detectors = dets
@@ -68,7 +92,7 @@ class GetGBMData(object):
             if i % progress_bar_iter == 0:
                 progress.animate((i + 1))
 
-            self.ftp.retrbinary('RETR ' + item, open(self._where + item, 'wb').write)
+            self.ftp.retrbinary("RETR " + item, open(self._where + item, "wb").write)
 
         progress.animate(n_items)
 
@@ -78,7 +102,7 @@ class GetGBMData(object):
 
         for i in self._file_list:
             for j in self._detectors:
-                if ".rsp" in i and "cspec" in i and j + '_' in i:
+                if ".rsp" in i and "cspec" in i and j + "_" in i:
                     to_get.append(i)
         self._get(to_get)
 
@@ -88,7 +112,7 @@ class GetGBMData(object):
 
         for i in self._file_list:
             for j in self._detectors:
-                if ".rsp" in i and "ctime" in i and j + '_' in i:
+                if ".rsp" in i and "ctime" in i and j + "_" in i:
                     to_get.append(i)
         self._get(to_get)
 
@@ -98,7 +122,7 @@ class GetGBMData(object):
 
         for i in self._file_list:
             for j in self._detectors:
-                if "ctime" in i and j + '_' in i and 'rsp' not in i:
+                if "ctime" in i and j + "_" in i and "rsp" not in i:
                     to_get.append(i)
         self._get(to_get)
 
@@ -108,7 +132,7 @@ class GetGBMData(object):
 
         for i in self._file_list:
             for j in self._detectors:
-                if "cspec" in i and j + '_' in i and 'rsp' not in i:
+                if "cspec" in i and j + "_" in i and "rsp" not in i:
                     to_get.append(i)
 
         self._get(to_get)
@@ -129,7 +153,7 @@ class GetGBMData(object):
 
         for i in self._file_list:
             for j in self._detectors:
-                if "tte" in i and j + '_' in i:
+                if "tte" in i and j + "_" in i:
                     to_get.append(i)
 
         self._get(to_get)
@@ -164,13 +188,13 @@ class GetGBMData(object):
 
         self._get(to_get)
 
-    def get_spechist(self, det='g'):
+    def get_spechist(self, det="g"):
 
         to_get = []
 
         for i in self._file_list:
             for j in det:
-                if "spechist" in i and '_' + j + '_' in i:
+                if "spechist" in i and "_" + j + "_" in i:
                     to_get.append(i)
 
         self._get(to_get)
@@ -179,8 +203,8 @@ class GetGBMData(object):
 class ProgressBar:
     def __init__(self, iterations):
         self.iterations = iterations
-        self.prog_bar = '[]'
-        self.fill_char = '*'
+        self.prog_bar = "[]"
+        self.fill_char = "*"
         self.width = 50
         self.startTime = time.time()
         self.lastIter = 0
@@ -190,7 +214,7 @@ class ProgressBar:
 
         try:
 
-            print('\r', self, end='')
+            print("\r", self, end="")
             sys.stdout.flush()
             self.lastIter = iter
             self.update_iteration(iter + 1)
@@ -224,23 +248,30 @@ class ProgressBar:
         if elapsed_iter < self.iterations:
 
             self.__update_amount((elapsed_iter / float(self.iterations)) * 100.0)
-            self.prog_bar += '  %d / %s in %.1f s' % (elapsed_iter, self.iterations, delta_t)
-            self.prog_bar += ' (%s remaining)' % self._check_remaining_time(delta_t)
+            self.prog_bar += "  %d / %s in %.1f s" % (
+                elapsed_iter,
+                self.iterations,
+                delta_t,
+            )
+            self.prog_bar += " (%s remaining)" % self._check_remaining_time(delta_t)
 
         else:
 
             self.__update_amount(100)
-            self.prog_bar += '  completed in %.1f s' % (time.time() - self.startTime)
+            self.prog_bar += "  completed in %.1f s" % (time.time() - self.startTime)
 
     def __update_amount(self, new_amount):
         percent_done = min(int(round((new_amount / 100.0) * 100.0)), 100)
         all_full = self.width - 2
         num_hashes = int(round((percent_done / 100.0) * all_full))
-        self.prog_bar = '[' + self.fill_char * num_hashes + ' ' * (all_full - num_hashes) + ']'
+        self.prog_bar = (
+            "[" + self.fill_char * num_hashes + " " * (all_full - num_hashes) + "]"
+        )
         pct_place = (len(self.prog_bar) // 2) - len(str(percent_done))
-        pct_string = '%d%%' % percent_done
-        self.prog_bar = self.prog_bar[0:pct_place] + \
-                        (pct_string + self.prog_bar[pct_place + len(pct_string):])
+        pct_string = "%d%%" % percent_done
+        self.prog_bar = self.prog_bar[0:pct_place] + (
+            pct_string + self.prog_bar[pct_place + len(pct_string) :]
+        )
 
     def __str__(self):
         return str(self.prog_bar)
