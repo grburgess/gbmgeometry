@@ -67,7 +67,7 @@ class Fermi(object):
 
         self._rays = collections.OrderedDict()
 
-        for name in self._gbm.detectors.iterkeys():
+        for name in self._gbm.detectors.keys():
             self._rays[name] = []
 
         self._intersection_points = None
@@ -90,7 +90,7 @@ class Fermi(object):
         :param probability: 
         :param color: 
         """
-        for name, det in self._gbm.detectors.iteritems():
+        for name, det in self._gbm.detectors.items():
             ray = Ray(det, ray_coordinate, probability=probability, color=color)
 
             self._rays[name].append(ray)
@@ -106,7 +106,7 @@ class Fermi(object):
         if len(detectors) == 0:
             dets = self._rays.keys()
 
-        for det_name, det in self._rays.iteritems():
+        for det_name, det in self._rays.items():
 
             self._intersection_points[det_name] = []
 
@@ -125,7 +125,7 @@ class Fermi(object):
                     collision_info["point"] = []
                     collision_info["distance"] = []
 
-                    for name, component in self._spacecraft_components.iteritems():
+                    for name, component in self._spacecraft_components.items():
 
                         # intersect the volume with the rays
 
@@ -180,10 +180,10 @@ class Fermi(object):
             for det in detectors:
                 assert det in self._gbm.detectors.keys(), "invalid detector"
 
-        for name, component in self._spacecraft_components.iteritems():
+        for name, component in self._spacecraft_components.items():
             component.plot(ax)
 
-        for name, det in self._gbm.detectors.iteritems():
+        for name, det in self._gbm.detectors.items():
 
             if name in detectors:
                 ax.scatter(*det.mount_point, color="#FFC300")
@@ -193,7 +193,7 @@ class Fermi(object):
 
             # for all the detectors plot the rays
 
-            for name, det in self._rays.iteritems():
+            for name, det in self._rays.items():
 
                 if name in detectors:
 
@@ -207,7 +207,7 @@ class Fermi(object):
 
             if self._intersection_points is not None:
 
-                for name, points in self._intersection_points.iteritems():
+                for name, points in self._intersection_points.items():
                     if name in detectors:
                         for point in points:
                             ax.scatter(*point, c="r")
