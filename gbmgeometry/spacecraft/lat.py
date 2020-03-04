@@ -22,7 +22,7 @@ class LAT(Volume):
             height=height,
             x_width=x_width,
             y_width=y_width,
-            color="#777777",
+            color="#0000CE",
             active_surfaces=active_surfaces,
         )
 

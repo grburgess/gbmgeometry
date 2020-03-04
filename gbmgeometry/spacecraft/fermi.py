@@ -12,6 +12,7 @@ from gbmgeometry.spacecraft.geometry import Ray
 from gbmgeometry.spacecraft.lat import LAT, LATRadiatorMinus, LATRadiatorPlus
 from gbmgeometry.spacecraft.solar_panels import SolarPanelMinus, SolarPanelPlus
 
+from gbmgeometry.spacecraft.gbm_detectors import add_rotated_cylinder
 
 class Fermi(object):
     def __init__(self, quaternion, sc_pos=None):
@@ -151,7 +152,8 @@ class Fermi(object):
         return all_intersections
 
     def plot_fermi(
-        self, ax=None, detectors=None, with_rays=False, with_intersections=False
+            self, ax=None, detectors=None, with_rays=False, with_intersections=False,
+            plot_det_label=False, color_dets_different=False
     ):
 
         """
@@ -186,8 +188,27 @@ class Fermi(object):
         for name, det in self._gbm.detectors.items():
 
             if name in detectors:
-                ax.scatter(*det.mount_point, color="#FFC300")
-                ax.text3D(*det.mount_point, s=name)
+
+                add_rotated_cylinder(ax, theta=np.pi/2-np.deg2rad(det.zen), phi=np.deg2rad(det.az),
+                                     x_center=det.mount_point[0], y_center=det.mount_point[1],
+                                     z_center=det.mount_point[2])
+                
+                if plot_det_label:
+                    ax.text3D(det.mount_point[0]-10, det.mount_point[1]-20, det.mount_point[2]+20,
+                              det.name, color='black', fontweight='bold', size=30)
+                if color_dets_different:
+
+                    colors = {"n0":"#FF4848","n1":"#D4AE00","n2":"#DD69FE","n3":"#FF8A1F",
+                              "n4":"#9669FE","n5":"#B05F3C","n6":"#9219F1","n7":"#F70000",
+                              "n8":"#3923D6","n9":"#A91374","na":"#62A9FF","nb":"#4A9586",
+                              "b0":"#02EF72","b1":"#59955C"}
+                    
+                    add_rotated_cylinder(ax, theta=np.pi/2-np.deg2rad(det.zen), phi=np.deg2rad(det.az),
+                                     x_center=det.mount_point[0], y_center=det.mount_point[1],
+                                         z_center=det.mount_point[2], color=colors[det.name],
+                                         label=det.name, alpha=0.9)
+                    ax.legend()
+                    
 
         if with_rays:
 
@@ -216,17 +237,20 @@ class Fermi(object):
         ax.set_ylabel("SCY")
         ax.set_zlabel("SCZ")
 
-        ax.set_zlim(0, 300)
-        ax.set_xlim(-400, 400)
-        ax.set_ylim(-400, 400)
-
+        ax.set_xlim(-(158.6+106)/2,(158.6+106)/2)
+        ax.set_ylim(-(158.6+106)/2,(158.6+106)/2)
+        ax.set_zlim(0,158.6+106)
+        
         ax.grid(False)
         ax.xaxis.pane.set_edgecolor("black")
         ax.yaxis.pane.set_edgecolor("black")
 
-        ax.xaxis.pane.fill = False
-        ax.yaxis.pane.fill = False
-        ax.zaxis.pane.fill = False
+        ax.view_init(10, 15)
+        ax.axis('off')
+        
+        #ax.xaxis.pane.fill = False
+        #ax.yaxis.pane.fill = False
+        #ax.zaxis.pane.fill = False
 
         return fig
 
