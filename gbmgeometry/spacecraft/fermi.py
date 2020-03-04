@@ -237,17 +237,20 @@ class Fermi(object):
         ax.set_ylabel("SCY")
         ax.set_zlabel("SCZ")
 
-        ax.set_zlim(0, 300)
-        ax.set_xlim(-400, 400)
-        ax.set_ylim(-400, 400)
-
+        ax.set_xlim(-(158.6+106)/2,(158.6+106)/2)
+        ax.set_ylim(-(158.6+106)/2,(158.6+106)/2)
+        ax.set_zlim(0,158.6+106)
+        
         ax.grid(False)
         ax.xaxis.pane.set_edgecolor("black")
         ax.yaxis.pane.set_edgecolor("black")
 
-        ax.xaxis.pane.fill = False
-        ax.yaxis.pane.fill = False
-        ax.zaxis.pane.fill = False
+        ax.view_init(10, 15)
+        ax.axis('off')
+        
+        #ax.xaxis.pane.fill = False
+        #ax.yaxis.pane.fill = False
+        #ax.zaxis.pane.fill = False
 
         return fig
 
