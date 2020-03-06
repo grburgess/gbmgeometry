@@ -1,4 +1,4 @@
-from gbmgeometry.gbm import GBM, get_legal_pairs
+from gbmgeometry.gbm import GBM#, get_legal_pairs
 from gbmgeometry.gbm_detector import BGO0, BGO1
 from gbmgeometry.gbm_detector import NaI0, NaI1, NaI2, NaI3, NaI4, NaI5
 from gbmgeometry.gbm_detector import NaI6, NaI7, NaI8, NaI9, NaIA, NaIB
