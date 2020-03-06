@@ -45,7 +45,7 @@ __all__ = [
     "BGO0",
     "BGO1",
     "PositionInterpolator",
-    "get_legal_pairs",
+#    "get_legal_pairs",
     "Fermi",
     "GBMTime",
     "gbm_detector_list",
