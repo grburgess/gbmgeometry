@@ -21,7 +21,6 @@ REQUIRED = [
     "sympy",
     "healpy",
     "spherical_geometry",
-    "seaborn",
 ]
 
 # What packages are optional?
