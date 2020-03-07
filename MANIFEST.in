@@ -1,0 +1,2 @@
+include versioneer.py
+include gbmgeometry/__version__.py
