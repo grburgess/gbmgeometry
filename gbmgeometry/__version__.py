@@ -42,7 +42,7 @@ def get_config():
     cfg.VCS = "git"
     cfg.style = ""
     cfg.tag_prefix = "v"
-    cfg.parentdir_prefix = "None"
+    cfg.parentdir_prefix = "gbmgeometry-"
     cfg.versionfile_source = "gbmgeometry/__version__.py"
     cfg.verbose = False
     return cfg
