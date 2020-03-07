@@ -40,10 +40,10 @@ def get_config():
     # _version.py
     cfg = VersioneerConfig()
     cfg.VCS = "git"
-    cfg.style = ""
+    cfg.style = "pep440"
     cfg.tag_prefix = "v"
     cfg.parentdir_prefix = "gbmgeometry-"
-    cfg.versionfile_source = "gbmgeometry/__version__.py"
+    cfg.versionfile_source = "gbmgeometry/_version.py"
     cfg.verbose = False
     return cfg
 
