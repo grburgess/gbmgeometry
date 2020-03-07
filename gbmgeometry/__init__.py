@@ -50,3 +50,7 @@ __all__ = [
     "GBMTime",
     "gbm_detector_list",
 ]
+
+from ._version import get_versions
+__version__ = get_versions()['version']
+del get_versions
