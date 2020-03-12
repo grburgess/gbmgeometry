@@ -3,17 +3,12 @@
 [![PyPI version fury.io](https://badge.fury.io/py/gbmgeometry.svg)](https://pypi.python.org/pypi/gbmgeometry/)
 
 # gbmgeometry
-Routines to handle GBM geometry and plotting 
+![alt text](https://raw.githubusercontent.com/grburgess/gbmgeometry/master/logo.png)
 
-## Requirements
-* astropy
-* numpy
-* matplotlib
-* scipy
-* Basemap
-* seaborn
-* spherical_geometry
+Routines to handle GBM geometry and plotting 
 
 ## Install
 
-$> python setup.py install
+```bash
+$> pip install gbmgeometry
+```
