@@ -18,6 +18,6 @@ deploy:
 
 
     on:
-    tags: true
+      tags: true
   distributions: "sdist bdist_wheel" # Your distributions here
   skip_existing: true
