@@ -28,7 +28,7 @@ import os
 
 
 
-
+import sphinx_rtd_theme
 
 sys.path.insert(0, os.path.abspath('../'))
 
@@ -76,6 +76,22 @@ htmlhelp_basename = 'gbmgeometrydoc'
 
 html_logo ='media/logo.png'
 
+# The name of the Pygments (syntax highlighting) style to use.
+pygments_style = 'sphinx'
+
+html_theme_options = {
+ #   'canonical_url': 'https://johannesbuchner.github.io/UltraNest/',
+    'style_external_links': True,
+    # 'vcs_pageview_mode': 'edit',
+    'style_nav_header_background': '#2980B9',
+    #'only_logo': False,
+}
+
+html_logo = "media/logo.png"
+html_show_sourcelink = False
+html_favicon = "media/favicon.ico"
+
+html_show_sphinx = False
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
