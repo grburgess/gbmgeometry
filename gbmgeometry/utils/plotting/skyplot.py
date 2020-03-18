@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from gbmgeometry.utils.plotting.projections import *
 
 
-def skyplot(ax = None, projection="astro degrees mollweide",center=None, radius=10., background_color="#47496Cs"):
+def skyplot(ax = None, projection="astro degrees mollweide",center=None, radius=10., background_color="#47496C"):
 
     if ax is None:
 
