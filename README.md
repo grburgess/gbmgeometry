@@ -2,7 +2,7 @@
 [![PyPi Downloads](http://pepy.tech/badge/gbmgeometry)](http://pepy.tech/project/gbmgeometry)
 [![PyPI version fury.io](https://badge.fury.io/py/gbmgeometry.svg)](https://pypi.python.org/pypi/gbmgeometry/)
 [![Documentation Status](https://readthedocs.org/projects/gbmgeometry/badge/?version=latest)](https://gbmgeometry.readthedocs.io/?badge=latest)
-![GitHub contributors](https://img.shields.io/github/contributors/grburgess/gbmgeomerty)
+![GitHub contributors](https://img.shields.io/github/contributors/grburgess/gbmgeometry)
 
 
 # gbmgeometry
