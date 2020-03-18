@@ -162,7 +162,7 @@ from matplotlib.offsetbox import AnchoredOffsetbox
 from matplotlib.patches import ConnectionPatch, FancyArrowPatch, PathPatch
 from matplotlib.projections import projection_registry
 import numpy as np
-from reproject import reproject_from_healpix
+#from reproject import reproject_from_healpix
 from scipy.optimize import minimize_scalar
 from .angle import reference_angle_deg
 from . import itrs_frame_monkeypatch
@@ -342,119 +342,119 @@ class AutoScaledWCSAxes(WCSAxes):
         """
         return self.add_patch(ScaleBar(self, *args, **kwargs))
 
-    def _reproject_hpx(self, data, hdu_in=None, order='bilinear',
-                       nested=False, field=0, smooth=None):
-        if isinstance(data, np.ndarray):
-            data = (data, self.header['RADESYS'])
+    # def _reproject_hpx(self, data, hdu_in=None, order='bilinear',
+    #                    nested=False, field=0, smooth=None):
+    #     if isinstance(data, np.ndarray):
+    #         data = (data, self.header['RADESYS'])
 
-        # It's normal for reproject_from_healpix to produce some Numpy invalid
-        # value warnings for points that land outside the projection.
-        with np.errstate(invalid='ignore'):
-            img, mask = reproject_from_healpix(
-                data, self.header, hdu_in=hdu_in, order=order, nested=nested,
-                field=field)
-        img = np.ma.array(img, mask=~mask.astype(bool))
+    #     # It's normal for reproject_from_healpix to produce some Numpy invalid
+    #     # value warnings for points that land outside the projection.
+    #     with np.errstate(invalid='ignore'):
+    #         img, mask = reproject_from_healpix(
+    #             data, self.header, hdu_in=hdu_in, order=order, nested=nested,
+    #             field=field)
+    #     img = np.ma.array(img, mask=~mask.astype(bool))
 
-        if smooth is not None:
-            pixsize = np.mean(np.abs(self.wcs.wcs.cdelt)) * u.deg
-            smooth = (smooth / pixsize).to(u.dimensionless_unscaled).value
-            kernel = Gaussian2DKernel(smooth)
-            # Ignore divide by zero warnings for pixels that have no valid
-            # neighbors.
-            with np.errstate(invalid='ignore'):
-                img = convolve_fft(img, kernel, fill_value=np.nan)
+    #     if smooth is not None:
+    #         pixsize = np.mean(np.abs(self.wcs.wcs.cdelt)) * u.deg
+    #         smooth = (smooth / pixsize).to(u.dimensionless_unscaled).value
+    #         kernel = Gaussian2DKernel(smooth)
+    #         # Ignore divide by zero warnings for pixels that have no valid
+    #         # neighbors.
+    #         with np.errstate(invalid='ignore'):
+    #             img = convolve_fft(img, kernel, fill_value=np.nan)
 
-        return img
+    #     return img
 
-    def contour_hpx(self, data, hdu_in=None, order='bilinear', nested=False,
-                    field=0, smooth=None, **kwargs):
-        """Add contour levels for a HEALPix data set.
+    # def contour_hpx(self, data, hdu_in=None, order='bilinear', nested=False,
+    #                 field=0, smooth=None, **kwargs):
+    #     """Add contour levels for a HEALPix data set.
 
-        Parameters
-        ----------
-        data : `numpy.ndarray` or str or `~astropy.io.fits.TableHDU` or `~astropy.io.fits.BinTableHDU` or tuple
-            The HEALPix data set. If this is a `numpy.ndarray`, then it is
-            interpreted as the HEALPix array in the same coordinate system as
-            the axes. Otherwise, the input data can be any type that is
-            understood by `reproject.reproject_from_healpix`.
-        smooth : `astropy.units.Quantity`, optional
-            An optional smoothing length in angle-compatible units.
+    #     Parameters
+    #     ----------
+    #     data : `numpy.ndarray` or str or `~astropy.io.fits.TableHDU` or `~astropy.io.fits.BinTableHDU` or tuple
+    #         The HEALPix data set. If this is a `numpy.ndarray`, then it is
+    #         interpreted as the HEALPix array in the same coordinate system as
+    #         the axes. Otherwise, the input data can be any type that is
+    #         understood by `reproject.reproject_from_healpix`.
+    #     smooth : `astropy.units.Quantity`, optional
+    #         An optional smoothing length in angle-compatible units.
 
-        Other parameters
-        ----------------
-        hdu_in, order, nested, field, smooth :
-            Extra arguments for `reproject.reproject_from_healpix`
-        kwargs :
-            Extra keyword arguments for `matplotlib.axes.Axes.contour`
+    #     Other parameters
+    #     ----------------
+    #     hdu_in, order, nested, field, smooth :
+    #         Extra arguments for `reproject.reproject_from_healpix`
+    #     kwargs :
+    #         Extra keyword arguments for `matplotlib.axes.Axes.contour`
 
-        Returns
-        -------
-        countours : `matplotlib.contour.QuadContourSet`
+    #     Returns
+    #     -------
+    #     countours : `matplotlib.contour.QuadContourSet`
 
-        """  # noqa: E501
-        img = self._reproject_hpx(data, hdu_in=hdu_in, order=order,
-                                  nested=nested, field=field, smooth=smooth)
-        return self.contour(img, **kwargs)
+    #     """  # noqa: E501
+    #     img = self._reproject_hpx(data, hdu_in=hdu_in, order=order,
+    #                               nested=nested, field=field, smooth=smooth)
+    #     return self.contour(img, **kwargs)
 
-    def contourf_hpx(self, data, hdu_in=None, order='bilinear', nested=False,
-                     field=0, smooth=None, **kwargs):
-        """Add filled contour levels for a HEALPix data set.
+    # def contourf_hpx(self, data, hdu_in=None, order='bilinear', nested=False,
+    #                  field=0, smooth=None, **kwargs):
+    #     """Add filled contour levels for a HEALPix data set.
 
-        Parameters
-        ----------
-        data : `numpy.ndarray` or str or `~astropy.io.fits.TableHDU` or `~astropy.io.fits.BinTableHDU` or tuple
-            The HEALPix data set. If this is a `numpy.ndarray`, then it is
-            interpreted as the HEALPix array in the same coordinate system as
-            the axes. Otherwise, the input data can be any type that is
-            understood by `reproject.reproject_from_healpix`.
-        smooth : `astropy.units.Quantity`, optional
-            An optional smoothing length in angle-compatible units.
+    #     Parameters
+    #     ----------
+    #     data : `numpy.ndarray` or str or `~astropy.io.fits.TableHDU` or `~astropy.io.fits.BinTableHDU` or tuple
+    #         The HEALPix data set. If this is a `numpy.ndarray`, then it is
+    #         interpreted as the HEALPix array in the same coordinate system as
+    #         the axes. Otherwise, the input data can be any type that is
+    #         understood by `reproject.reproject_from_healpix`.
+    #     smooth : `astropy.units.Quantity`, optional
+    #         An optional smoothing length in angle-compatible units.
 
-        Other parameters
-        ----------------
-        hdu_in, order, nested, field, smooth :
-            Extra arguments for `reproject.reproject_from_healpix`
-        kwargs :
-            Extra keyword arguments for `matplotlib.axes.Axes.contour`
+    #     Other parameters
+    #     ----------------
+    #     hdu_in, order, nested, field, smooth :
+    #         Extra arguments for `reproject.reproject_from_healpix`
+    #     kwargs :
+    #         Extra keyword arguments for `matplotlib.axes.Axes.contour`
 
-        Returns
-        -------
-        contours : `matplotlib.contour.QuadContourSet`
+    #     Returns
+    #     -------
+    #     contours : `matplotlib.contour.QuadContourSet`
 
-        """  # noqa: E501
-        img = self._reproject_hpx(data, hdu_in=hdu_in, order=order,
-                                  nested=nested, field=field, smooth=smooth)
-        return self.contourf(img, **kwargs)
+    #     """  # noqa: E501
+    #     img = self._reproject_hpx(data, hdu_in=hdu_in, order=order,
+    #                               nested=nested, field=field, smooth=smooth)
+    #     return self.contourf(img, **kwargs)
 
-    def imshow_hpx(self, data, hdu_in=None, order='bilinear', nested=False,
-                   field=0, smooth=None, **kwargs):
-        """Add an image for a HEALPix data set.
+    # def imshow_hpx(self, data, hdu_in=None, order='bilinear', nested=False,
+    #                field=0, smooth=None, **kwargs):
+    #     """Add an image for a HEALPix data set.
 
-        Parameters
-        ----------
-        data : `numpy.ndarray` or str or `~astropy.io.fits.TableHDU` or `~astropy.io.fits.BinTableHDU` or tuple
-            The HEALPix data set. If this is a `numpy.ndarray`, then it is
-            interpreted as the HEALPix array in the same coordinate system as
-            the axes. Otherwise, the input data can be any type that is
-            understood by `reproject.reproject_from_healpix`.
-        smooth : `astropy.units.Quantity`, optional
-            An optional smoothing length in angle-compatible units.
+    #     Parameters
+    #     ----------
+    #     data : `numpy.ndarray` or str or `~astropy.io.fits.TableHDU` or `~astropy.io.fits.BinTableHDU` or tuple
+    #         The HEALPix data set. If this is a `numpy.ndarray`, then it is
+    #         interpreted as the HEALPix array in the same coordinate system as
+    #         the axes. Otherwise, the input data can be any type that is
+    #         understood by `reproject.reproject_from_healpix`.
+    #     smooth : `astropy.units.Quantity`, optional
+    #         An optional smoothing length in angle-compatible units.
 
-        Other parameters
-        ----------------
-        hdu_in, order, nested, field, smooth :
-            Extra arguments for `reproject.reproject_from_healpix`
-        kwargs :
-            Extra keyword arguments for `matplotlib.axes.Axes.contour`
+    #     Other parameters
+    #     ----------------
+    #     hdu_in, order, nested, field, smooth :
+    #         Extra arguments for `reproject.reproject_from_healpix`
+    #     kwargs :
+    #         Extra keyword arguments for `matplotlib.axes.Axes.contour`
 
-        Returns
-        -------
-        image : `matplotlib.image.AxesImage`
+    #     Returns
+    #     -------
+    #     image : `matplotlib.image.AxesImage`
 
-        """  # noqa: E501
-        img = self._reproject_hpx(data, hdu_in=hdu_in, order=order,
-                                  nested=nested, field=field, smooth=smooth)
-        return self.imshow(img, **kwargs)
+    #     """  # noqa: E501
+    #     img = self._reproject_hpx(data, hdu_in=hdu_in, order=order,
+    #                               nested=nested, field=field, smooth=smooth)
+    #     return self.imshow(img, **kwargs)
 
 
 class ScaleBar(FancyArrowPatch):
