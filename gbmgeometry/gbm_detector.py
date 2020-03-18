@@ -468,6 +468,11 @@ class GBMDetector(object):
 
             ax.add_patch(circle)
 
+        else:
+
+            ax.scatter(self._center_icrs.ra.deg, self.center_icrs.dec.deg,transform=ax.get_transform("icrs"), **kwargs)
+
+            
         return ax
 
 

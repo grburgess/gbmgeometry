@@ -1,9 +1,0 @@
-mock
-numpy
-scipy
-astropy
-seaborn
-matplotlib
-numpydoc
-autoapi
-spherical_geometry
