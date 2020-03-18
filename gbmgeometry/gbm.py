@@ -18,7 +18,7 @@ from .gbm_frame import GBMFrame
 
 from gbmgeometry.utils.gbm_time import GBMTime
 
-#import seaborn as sns
+# import seaborn as sns
 
 _det_color_cycle = np.linspace(0, 1, 12)
 
@@ -127,7 +127,6 @@ class GBM(object):
         :rtype: 
 
         """
-      
 
         for key in self._detectors.keys():
             self._detectors[key].set_sc_pos(sc_pos)

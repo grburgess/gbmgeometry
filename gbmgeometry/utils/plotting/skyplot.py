@@ -3,7 +3,13 @@ import matplotlib.pyplot as plt
 from gbmgeometry.utils.plotting.projections import *
 
 
-def skyplot(ax = None, projection="astro degrees mollweide",center=None, radius=10., background_color="#47496C"):
+def skyplot(
+    ax=None,
+    projection="astro degrees mollweide",
+    center=None,
+    radius=10.0,
+    background_color="#47496C",
+):
 
     if ax is None:
 
@@ -21,8 +27,8 @@ def skyplot(ax = None, projection="astro degrees mollweide",center=None, radius=
         if projection in ["astro globe", "astro zoom"]:
 
             if center is None:
-                
-                center = SkyCoord(0,0, unit='deg')
+
+                center = SkyCoord(0, 0, unit="deg")
 
             skw_dict = dict(projection=projection, center=center)
 
@@ -37,7 +43,6 @@ def skyplot(ax = None, projection="astro degrees mollweide",center=None, radius=
     else:
 
         fig = ax.get_figure()
-
 
     ax.set_facecolor(background_color)
     ax.grid()

@@ -77,7 +77,7 @@ class GBMDetector(object):
         )
 
         self._center_icrs = self._center.icrs
-        
+
         if self._time is not None:
             # we can calculate the sun position
             # in GCRS
@@ -407,7 +407,6 @@ class GBMDetector(object):
 
         return self._center_icrs
 
-    
     @property
     def name(self):
 
@@ -416,7 +415,7 @@ class GBMDetector(object):
     @property
     def az(self):
 
-        return self._a__icrsicrsz
+        return self._az
 
     @property
     def zen(self):
@@ -454,8 +453,8 @@ class GBMDetector(object):
 
         if fov is not None:
 
-            assert fov>0, 'fov must be a positive number in units of deg'
-            
+            assert fov > 0, "fov must be a positive number in units of deg"
+
             circle = SphericalCircle(
                 self._center_icrs.ra,
                 self._center_icrs.dec,

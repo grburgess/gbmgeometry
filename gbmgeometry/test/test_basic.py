@@ -5,6 +5,7 @@ from gbmgeometry import *
 from gbmgeometry.utils.package_utils import get_path_of_data_file
 from gbmgeometry.utils.plotting.skyplot import skyplot
 
+
 def test_interp():
 
     trigdat = get_path_of_data_file("glg_trigdat_all_bn080916009_v02.fit")
@@ -25,7 +26,7 @@ def test_detector():
     na = NaIA(interp.quaternion(1))
 
     na.plot_pointing(fov=5)
-    
+
     na.get_center()
 
     na.set_quaternion(interp.quaternion(100))
@@ -68,7 +69,8 @@ def test_all_gbm():
 
     ax = skyplot(background_color="#47496C")
 
-    for k,v in myGBM.detectors.items():
-    
-        v.plot_pointing(ax=ax,fov=5, edgecolor='limegreen', lw=1, facecolor='limegreen', alpha=.4)
+    for k, v in myGBM.detectors.items():
 
+        v.plot_pointing(
+            ax=ax, fov=5, edgecolor="limegreen", lw=1, facecolor="limegreen", alpha=0.4
+        )
