@@ -10,6 +10,8 @@ from astropy.coordinates import (
 from spherical_geometry.polygon import SphericalPolygon
 import astropy.units as u
 
+from gbmgeometry.utils.plotting import skyplot, SphericalCircle
+
 from .gbm_frame import GBMFrame
 
 
@@ -73,6 +75,9 @@ class GBMDetector(object):
                 sc_pos_Z=scz,
             ),
         )
+
+        self._center_icrs = self._center.icrs
+
         if self._time is not None:
             # we can calculate the sun position
             # in GCRS
@@ -93,13 +98,14 @@ class GBMDetector(object):
             # position of earth in satellite frame:
 
         if sc_pos is not None:
-            
 
             self._earth_pos_norm = self.geo_to_gbm(
                 -self._sc_pos / np.linalg.norm(self._sc_pos)
             )
             scxn, scyn, sczn = self._earth_pos_norm
-            earth_theta = np.arccos(sczn / np.sqrt(scxn * scxn + scyn * scyn + sczn * sczn))
+            earth_theta = np.arccos(
+                sczn / np.sqrt(scxn * scxn + scyn * scyn + sczn * sczn)
+            )
             earth_phi = np.arctan2(scyn, scxn)
             earth_ra = np.rad2deg(earth_phi)
             if earth_ra < 0:
@@ -160,6 +166,8 @@ class GBMDetector(object):
             ),
         )
 
+        self._center_icrs = self._center.icrs
+
     def set_sc_pos(self, sc_pos):
         """
         Parameters
@@ -192,6 +200,8 @@ class GBMDetector(object):
                 sc_pos_Z=scz,
             ),
         )
+
+        self._center_icrs = self._center.icrs
 
     def get_fov(self, radius, fermi_frame=False):
         """
@@ -393,6 +403,11 @@ class GBMDetector(object):
         return self._center
 
     @property
+    def center_icrs(self):
+
+        return self._center_icrs
+
+    @property
     def name(self):
 
         return self._name
@@ -416,6 +431,49 @@ class GBMDetector(object):
     def mount_point(self):
 
         return self._mount_point
+
+    def plot_pointing(self, ax=None, fov=None, **kwargs):
+
+        if ax is None:
+
+            skymap_kwargs = {}
+
+            if "projection" in kwargs:
+                skymap_kwargs["projection"] = kwargs.pop("projection")
+
+            if "center" in kwargs:
+                skymap_kwargs["center"] = kwargs.pop("center")
+
+            if "radius" in kwargs:
+                skymap_kwargs["radius"] = kwargs.pop("radius")
+
+            ax = skyplot(**skymap_kwargs)
+
+        # compute the annulus for this set of detectors
+
+        if fov is not None:
+
+            assert fov > 0, "fov must be a positive number in units of deg"
+
+            circle = SphericalCircle(
+                self._center_icrs.ra,
+                self._center_icrs.dec,
+                fov,
+                vertex_unit=u.deg,
+                resolution=5000,
+                #            edgecolor=color,
+                transform=ax.get_transform("icrs"),
+                **kwargs
+            )
+
+            ax.add_patch(circle)
+
+        else:
+
+            ax.scatter(self._center_icrs.ra.deg, self.center_icrs.dec.deg,transform=ax.get_transform("icrs"), **kwargs)
+
+            
+        return ax
 
 
 class NaI0(GBMDetector):

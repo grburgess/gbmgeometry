@@ -8,20 +8,16 @@ from gbmgeometry.utils.gbm_time import GBMTime
 
 class PositionInterpolator(object):
     def __init__(self, poshist=None, T0=None, trigdat=None):
+        """FIXME! briefly describe function
 
-        # Use position history file
-        """
-
-        Parameters
-        ----------
-        poshist
-        T0
-        trigdat
-
-        Returns
-        -------
+        :param poshist: 
+        :param T0: 
+        :param trigdat: 
+        :returns: 
+        :rtype: 
 
         """
+
         if poshist is not None:
 
             with fits.open(poshist) as poshist:
@@ -139,7 +135,14 @@ class PositionInterpolator(object):
         """
 
         return self._quaternion_t(t)
+    def quaternion_dict(self, t):
 
+        names= [f"quaternion_{i+1}" for i in range(4)]
+        
+        return dict(zip(names, self._quaternion_t(t) ))
+        
+
+    
     def sc_pos(self, t):
         """
 
@@ -154,6 +157,12 @@ class PositionInterpolator(object):
         """
         return self._scxyz_t(t) * self._factor
 
+    def sc_pos_dict(self, t):
+
+        names = [f"sc_pos_{s}" for s in ['X','Y','Z']]
+        return dict(zip(names, self._scxyz_t(t) * self._factor ))
+
+        
     def _interpolate_quaternion(self):
 
         self._quaternion_t = interpolate.interp1d(self._time, self._quats.T)

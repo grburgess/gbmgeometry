@@ -17,8 +17,10 @@ from .gbm_frame import GBMFrame
 
 
 from gbmgeometry.utils.gbm_time import GBMTime
+from gbmgeometry.utils.plotting import skyplot, SphericalCircle
 
-#import seaborn as sns
+
+# import seaborn as sns
 
 _det_color_cycle = np.linspace(0, 1, 12)
 
@@ -52,6 +54,45 @@ class GBM(object):
 
             self._gbm_time = None
 
+        
+
+        self._quaternion = quaternion
+        self._sc_pos = sc_pos
+
+        
+        if sc_pos is not None:
+                   
+            self._earth_pos_norm = self.geo_to_gbm(
+                -self._sc_pos / np.linalg.norm(self._sc_pos)
+            )
+            scxn, scyn, sczn = self._earth_pos_norm
+            earth_theta = np.arccos(
+                sczn / np.sqrt(scxn * scxn + scyn * scyn + sczn * sczn)
+            )
+            earth_phi = np.arctan2(scyn, scxn)
+            earth_ra = np.rad2deg(earth_phi)
+            if earth_ra < 0:
+                earth_ra = earth_ra + 360
+            earth_dec = 90 - np.rad2deg(earth_theta)
+
+            # earth as SkyCoord
+            self._earth_position = coord.SkyCoord(
+                lon=earth_ra * u.deg,
+                lat=earth_dec * u.deg,
+                unit="deg",
+                frame=GBMFrame(
+                    quaternion_1=quaternion[0],
+                    quaternion_2=quaternion[1],
+                    quaternion_3=quaternion[2],
+                    quaternion_4=quaternion[3],
+                    sc_pos_X=sc_pos[0],
+                    sc_pos_Y=sc_pos[1],
+                    sc_pos_Z=sc_pos[2],
+                ),
+            )
+ 
+
+            
         if self._gbm_time is not None:
 
             self.n0 = NaI0(quaternion, sc_pos, self._gbm_time.time)
@@ -102,9 +143,7 @@ class GBM(object):
             b0=self.b0,
             b1=self.b1,
         )
-        self._quaternion = quaternion
-        self._sc_pos = sc_pos
-
+ 
     def set_quaternion(self, quaternion):
         """FIXME! briefly describe function
 
@@ -127,7 +166,6 @@ class GBM(object):
         :rtype: 
 
         """
-      
 
         for key in self._detectors.keys():
             self._detectors[key].set_sc_pos(sc_pos)
@@ -376,6 +414,107 @@ class GBM(object):
 
         return condition
 
+    def plot_detector_pointings(self, ax=None, fov=None, show_earth=True, **kwargs):
+
+        if ax is None:
+
+            skymap_kwargs = {}
+
+            if "projection" in kwargs:
+                skymap_kwargs["projection"] = kwargs.pop("projection")
+
+            if "center" in kwargs:
+                skymap_kwargs["center"] = kwargs.pop("center")
+
+            if "radius" in kwargs:
+                skymap_kwargs["radius"] = kwargs.pop("radius")
+
+            ax = skyplot(**skymap_kwargs)
+
+
+        _defaults = dict(edgecolor='#13ED9B', lw=1, facecolor='#13ED9B', alpha=0.3)
+        for k,v in _defaults.items():
+            if k not in kwargs:
+                kwargs[k] = v
+        
+        
+        for k, v in self._detectors.items():
+
+            v.plot_pointing(
+                ax=ax,
+                fov=fov,
+                **kwargs
+            )
+
+        if show_earth:
+
+            circle = SphericalCircle(
+                self._earth_position.icrs.ra,
+                self._earth_position.icrs.dec,
+                67,
+                vertex_unit=u.deg,
+                resolution=5000,
+                #            edgecolor=color,
+                transform=ax.get_transform("icrs"),
+                edgecolor="none",
+                facecolor="#13ACED",
+                alpha=0.1,
+                zorder=-3000
+                
+            )
+
+            ax.add_patch(circle)
+
+
+        return ax.get_figure()
+
+    def geo_to_gbm(self, pos_geo):
+        """ Compute the transformation from heliocentric Sgr coordinates to
+            spherical Galactic.
+        """
+        q1, q2, q3, q4 = self._quaternion  # q1,q2,q3,q4
+        sc_matrix = np.zeros((3, 3))
+
+        sc_matrix[0, 0] = q1 ** 2 - q2 ** 2 - q3 ** 2 + q4 ** 2
+        sc_matrix[0, 1] = 2.0 * (q1 * q2 + q4 * q3)
+        sc_matrix[0, 2] = 2.0 * (q1 * q3 - q4 * q2)
+        sc_matrix[1, 0] = 2.0 * (q1 * q2 - q4 * q3)
+        sc_matrix[1, 1] = -(q1 ** 2) + q2 ** 2 - q3 ** 2 + q4 ** 2
+        sc_matrix[1, 2] = 2.0 * (q2 * q3 + q4 * q1)
+        sc_matrix[2, 0] = 2.0 * (q1 * q3 + q4 * q2)
+        sc_matrix[2, 1] = 2.0 * (q2 * q3 - q4 * q1)
+        sc_matrix[2, 2] = -(q1 ** 2) - q2 ** 2 + q3 ** 2 + q4 ** 2
+
+        X0 = np.dot(sc_matrix[0, :], pos_geo)
+        X1 = np.dot(sc_matrix[1, :], pos_geo)
+        X2 = np.clip(np.dot(sc_matrix[2, :], pos_geo), -1.0, 1.0)
+        pos_sat = [X0, X1, X2]
+        return np.array(pos_sat)
+
+    def gbm_to_geo(self, pos_gbm):
+        """ Compute the transformation from heliocentric Sgr coordinates to
+            spherical Galactic.
+        """
+        q1, q2, q3, q4 = self._quaternion  # q1,q2,q3,q4
+        sc_matrix = np.zeros((3, 3))
+
+        sc_matrix[0, 0] = q1 ** 2 - q2 ** 2 - q3 ** 2 + q4 ** 2
+        sc_matrix[0, 1] = 2.0 * (q1 * q2 + q4 * q3)
+        sc_matrix[0, 2] = 2.0 * (q1 * q3 - q4 * q2)
+        sc_matrix[1, 0] = 2.0 * (q1 * q2 - q4 * q3)
+        sc_matrix[1, 1] = -(q1 ** 2) + q2 ** 2 - q3 ** 2 + q4 ** 2
+        sc_matrix[1, 2] = 2.0 * (q2 * q3 + q4 * q1)
+        sc_matrix[2, 0] = 2.0 * (q1 * q3 + q4 * q2)
+        sc_matrix[2, 1] = 2.0 * (q2 * q3 - q4 * q1)
+        sc_matrix[2, 2] = -(q1 ** 2) - q2 ** 2 + q3 ** 2 + q4 ** 2
+
+        X0 = np.dot(sc_matrix[:, 0], pos_gbm)
+        X1 = np.dot(sc_matrix[:, 1], pos_gbm)
+        X2 = np.clip(np.dot(sc_matrix[:, 2], pos_gbm), -1.0, 1.0)
+        pos_geo = [X0, X1, X2]
+        return np.array(pos_geo)
+
+            
 
 # def get_legal_pairs():
 #     """

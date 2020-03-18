@@ -3,6 +3,7 @@ import astropy.coordinates as coord
 import astropy.units as u
 from gbmgeometry import *
 from gbmgeometry.utils.package_utils import get_path_of_data_file
+from gbmgeometry.utils.plotting.skyplot import skyplot
 
 
 def test_interp():
@@ -23,6 +24,8 @@ def test_detector():
     interp = PositionInterpolator(trigdat=trigdat)
 
     na = NaIA(interp.quaternion(1))
+
+    na.plot_pointing(fov=5)
 
     na.get_center()
 
@@ -63,3 +66,11 @@ def test_all_gbm():
     myGBM.get_centers()
 
     [x.icrs for x in myGBM.get_centers()]
+
+    ax = skyplot(background_color="#47496C")
+
+    for k, v in myGBM.detectors.items():
+
+        v.plot_pointing(
+            ax=ax, fov=5, edgecolor="limegreen", lw=1, facecolor="limegreen", alpha=0.4
+        )
