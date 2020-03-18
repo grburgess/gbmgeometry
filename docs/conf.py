@@ -63,6 +63,33 @@ templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store','**.ipynb_checkpoints']
 
 
+
+
+# If true, `todo` and `todoList` produce output, else they produce nothing.
+todo_include_todos = False
+
+autosectionlabel_prefix_document = True
+
+# avoid time-out when running the doc
+nbsphinx_timeout = 30 * 60
+
+nbsphinx_execute_arguments = [
+    "--InlineBackend.figure_formats={'svg', 'pdf'}",
+    "--InlineBackend.rc={'figure.dpi': 96}",
+]
+
+# autodoc_member_order = 'bysource'
+
+# autoclass_content = 'both'
+
+
+# edit_on_github_project = 'JohannesBuchner/UltraNest'
+# edit_on_github_branch = 'master'
+# #edit_on_github_url
+# edit_on_github_src = 'docs/'  # optional. default: ''
+
+
+
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -83,7 +110,7 @@ html_theme_options = {
  #   'canonical_url': 'https://johannesbuchner.github.io/UltraNest/',
     'style_external_links': True,
     # 'vcs_pageview_mode': 'edit',
-    'style_nav_header_background': '#2980B9',
+    'style_nav_header_background': '#5C5C5D',
     #'only_logo': False,
 }
 
