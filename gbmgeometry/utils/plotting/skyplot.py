@@ -1,9 +1,9 @@
 from astropy.coordinates import SkyCoord
 import matplotlib.pyplot as plt
-from cosmogrb.utils.plotting.projections import *
+from gbmgeometry.utils.plotting.projections import *
 
 
-def skyplot(ax = None, projection="astro degrees mollweide",center=None, radius=10.):
+def skyplot(ax = None, projection="astro degrees mollweide",center=None, radius=10., background_color="#47496Cs"):
 
     if ax is None:
 
@@ -37,7 +37,9 @@ def skyplot(ax = None, projection="astro degrees mollweide",center=None, radius=
     else:
 
         fig = ax.get_figure()
-        
+
+
+    ax.set_facecolor(background_color)
     ax.grid()
 
     return ax
