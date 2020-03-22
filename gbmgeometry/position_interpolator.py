@@ -7,7 +7,7 @@ from gbmgeometry.utils.gbm_time import GBMTime
 
 
 class PositionInterpolator(object):
-    def __init__(self, poshist=None, T0=None, trigdat=None):
+    def __init__(self, quats, sc_pos, time, trigtime=None, factor=1):
         """FIXME! briefly describe function
 
         :param poshist: 
@@ -18,77 +18,101 @@ class PositionInterpolator(object):
 
         """
 
-        if poshist is not None:
-
-            with fits.open(poshist) as poshist:
-                # poshist = fits.open(poshist)
-                self._time = poshist["GLAST POS HIST"].data["SCLK_UTC"]
-                self._quats = np.array(
-                    [
-                        poshist["GLAST POS HIST"].data["QSJ_1"],
-                        poshist["GLAST POS HIST"].data["QSJ_2"],
-                        poshist["GLAST POS HIST"].data["QSJ_3"],
-                        poshist["GLAST POS HIST"].data["QSJ_4"],
-                    ]
-                ).T
-
-                self._sc_pos = np.array(
-                    [
-                        poshist["GLAST POS HIST"].data["POS_X"],
-                        poshist["GLAST POS HIST"].data["POS_Y"],
-                        poshist["GLAST POS HIST"].data["POS_Z"],
-                    ]
-                ).T
-
-                # if using posthist then units are in m
-
-                self._factor = (u.m).to(u.km)
-
-                if T0 is not None:
-                    self._time -= T0
-
-                    self._trigtime = T0
-
-                else:
-
-                    self._trigtime = None
-
-            # poshist.close()
-
-        elif trigdat is not None:
-
-            with fits.open(trigdat) as trigdat:
-                # trigdat = fits.open(trigdat)
-                trigtime = trigdat["EVNTRATE"].header["TRIGTIME"]
-                tstart = trigdat["EVNTRATE"].data["TIME"] - trigtime
-
-                self._trigtime = trigtime
-
-                self._quats = trigdat["EVNTRATE"].data["SCATTITD"]
-                self._sc_pos = trigdat["EVNTRATE"].data["EIC"]
-
-                sort_mask = np.argsort(tstart)
-                tstart = tstart[sort_mask]
-
-                self._quats = self._quats[sort_mask]
-                self._sc_pos = self._sc_pos[sort_mask]
-
-                self._time = tstart
-
-            # trigdat.close()
-
-            # the sc is in km so no need to convert
-
-            self._factor = 1
-
-        else:
-
-            print("No file passed. Exiting")
-            return
+        self._quats = quats
+        self._sc_pos = sc_pos
+        self._time = time
+        self._trigtime = trigtime
+        self._factor = factor
 
         # Interpolate the stuf
         self._interpolate_quaternion()
         self._interpolate_sc_pos()
+
+    @classmethod
+    def from_trigdat(cls, trigdat_file):
+        """
+
+        :param cls: 
+        :param trigdat_file: 
+        :returns: 
+        :rtype: 
+
+        """
+
+        with fits.open(trigdat_file) as trigdat:
+
+            trigtime = trigdat["EVNTRATE"].header["TRIGTIME"]
+            tstart = trigdat["EVNTRATE"].data["TIME"] - trigtime
+
+            quats = trigdat["EVNTRATE"].data["SCATTITD"]
+            sc_pos = trigdat["EVNTRATE"].data["EIC"]
+
+            sort_mask = np.argsort(tstart)
+            tstart = tstart[sort_mask]
+
+            quats = quats[sort_mask]
+            sc_pos = sc_pos[sort_mask]
+
+            time = tstart
+
+        # the sc is in km so no need to convert
+
+        factor = 1
+
+        return cls(
+            quats=quats, sc_pos=sc_pos, time=time, trigtime=trigtime, factor=factor
+        )
+
+    @classmethod
+    def from_poshist(cls, poshist_file, T0=None):
+        """
+        create an interpolator from a posthist fits file
+
+        :param cls: 
+        :param poshist_file: 
+        :param T0: 
+        :returns: 
+        :rtype: 
+
+        """
+
+        with fits.open(poshist_file) as poshist:
+
+            time = poshist["GLAST POS HIST"].data["SCLK_UTC"]
+
+            quats = np.array(
+                [
+                    poshist["GLAST POS HIST"].data["QSJ_1"],
+                    poshist["GLAST POS HIST"].data["QSJ_2"],
+                    poshist["GLAST POS HIST"].data["QSJ_3"],
+                    poshist["GLAST POS HIST"].data["QSJ_4"],
+                ]
+            ).T
+
+            sc_pos = np.array(
+                [
+                    poshist["GLAST POS HIST"].data["POS_X"],
+                    poshist["GLAST POS HIST"].data["POS_Y"],
+                    poshist["GLAST POS HIST"].data["POS_Z"],
+                ]
+            ).T
+
+            # if using posthist then units are in m
+
+            factor = (u.m).to(u.km)
+
+            if T0 is not None:
+                time -= T0
+
+                trigtime = T0
+
+            else:
+
+                trigtime = None
+
+        return cls(
+            quats=quats, sc_pos=sc_pos, time=time, trigtime=trigtime, factor=factor
+        )
 
     def utc(self, t):
 
@@ -135,14 +159,13 @@ class PositionInterpolator(object):
         """
 
         return self._quaternion_t(t)
+
     def quaternion_dict(self, t):
 
-        names= [f"quaternion_{i+1}" for i in range(4)]
-        
-        return dict(zip(names, self._quaternion_t(t) ))
-        
+        names = [f"quaternion_{i+1}" for i in range(4)]
 
-    
+        return dict(zip(names, self._quaternion_t(t)))
+
     def sc_pos(self, t):
         """
 
@@ -159,10 +182,9 @@ class PositionInterpolator(object):
 
     def sc_pos_dict(self, t):
 
-        names = [f"sc_pos_{s}" for s in ['X','Y','Z']]
-        return dict(zip(names, self._scxyz_t(t) * self._factor ))
+        names = [f"sc_pos_{s}" for s in ["X", "Y", "Z"]]
+        return dict(zip(names, self._scxyz_t(t) * self._factor))
 
-        
     def _interpolate_quaternion(self):
 
         self._quaternion_t = interpolate.interp1d(self._time, self._quats.T)
