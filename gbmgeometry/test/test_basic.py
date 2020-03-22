@@ -38,7 +38,7 @@ def test_interp():
 
     interp_pos_h5 = PositionInterpolator.from_poshist_hdf5(poshist_h5)
 
-    assert np.all(interp_pos_h5.quaternion(interp_pos.time_h5[0]) == interp_pos.quaternion(interp_pos.time[0]))
+    assert np.all(interp_pos_h5.quaternion(interp_pos_h5.time[0]) == interp_pos.quaternion(interp_pos.time[0]))
 
     assert np.all(interp_pos_h5.sc_pos(interp_pos_h5.time[0]) == interp_pos.sc_pos(interp_pos.time[0]))
 
