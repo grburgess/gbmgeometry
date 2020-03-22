@@ -1,4 +1,5 @@
 import astropy.io.fits as fits
+import h5py
 import astropy.units as u
 import numpy as np
 import scipy.interpolate as interpolate
@@ -27,6 +28,68 @@ class PositionInterpolator(object):
         # Interpolate the stuf
         self._interpolate_quaternion()
         self._interpolate_sc_pos()
+
+    @classmethod
+    def from_trigdat_hdf5(cls, trigdat_file):
+        """
+        create and interpolator from a trigdat
+        HDF5 file
+
+        :param cls: 
+        :param trigdat_file: 
+        :returns: 
+        :rtype: 
+
+        """
+
+        with h5py.File(trigdat_file, "r") as f:
+
+            quats = f["quats"][()]
+            sc_pos = f["sc_pos"][()]
+            time = f["time"][()]
+
+            trigtime = f["trigtime"]
+
+        factor = 1
+
+        return cls(
+            quats=quats, sc_pos=sc_pos, time=time, trigtime=trigtime, factor=factor
+        )
+
+    @classmethod
+    def from_poshist_hdf5(cls, poshist_file, T0=None):
+        """
+        create and interpolator from a poshist
+        HDF5 file
+
+        :param cls: 
+        :param poshist_file: 
+        :param T0:
+        :returns: 
+        :rtype: 
+
+        """
+
+        with h5py.File(poshist_file, "r") as f:
+
+            quats = f["quats"][()]
+            sc_pos = f["sc_pos"][()]
+            time = f["time"][()]
+
+        factor = (u.m).to(u.km)
+
+        if T0 is not None:
+            time -= T0
+
+            trigtime = T0
+
+        else:
+
+            trigtime = None
+
+        return cls(
+            quats=quats, sc_pos=sc_pos, time=time, trigtime=trigtime, factor=factor
+        )
 
     @classmethod
     def from_trigdat(cls, trigdat_file):
@@ -99,16 +162,16 @@ class PositionInterpolator(object):
 
             # if using posthist then units are in m
 
-            factor = (u.m).to(u.km)
+        factor = (u.m).to(u.km)
 
-            if T0 is not None:
-                time -= T0
+        if T0 is not None:
+            time -= T0
 
-                trigtime = T0
+            trigtime = T0
 
-            else:
+        else:
 
-                trigtime = None
+            trigtime = None
 
         return cls(
             quats=quats, sc_pos=sc_pos, time=time, trigtime=trigtime, factor=factor
