@@ -177,6 +177,11 @@ class PositionInterpolator(object):
             quats=quats, sc_pos=sc_pos, time=time, trigtime=trigtime, factor=factor
         )
 
+
+    @property
+    def time(self):
+        return self._time
+    
     def utc(self, t):
 
         if self._trigtime is not None:
