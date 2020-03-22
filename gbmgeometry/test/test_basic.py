@@ -4,7 +4,7 @@ import astropy.units as u
 from gbmgeometry import PositionInterpolator, NaIA, GBMFrame, GBM
 from gbmgeometry.utils.package_utils import get_path_of_data_file
 from gbmgeometry.utils.plotting.skyplot import skyplot
-
+import numpy as np
 
 
 
