@@ -5,6 +5,7 @@ from gbmgeometry.gbm_detector import NaI6, NaI7, NaI8, NaI9, NaIA, NaIB
 from gbmgeometry.gbm_frame import GBMFrame
 from gbmgeometry.position_interpolator import PositionInterpolator
 from gbmgeometry.spacecraft.fermi import Fermi
+from gbmgeometry.utils.file_converters import convert_poshist2hdf5, convert_trigdat2hdf5
 
 
 gbm_detector_list = {
@@ -44,6 +45,8 @@ __all__ = [
     "NaIB",
     "BGO0",
     "BGO1",
+    "convert_poshist2hdf5",
+    "convert_trigdat2hdf5"
     "PositionInterpolator",
     #    "get_legal_pairs",
     "Fermi",

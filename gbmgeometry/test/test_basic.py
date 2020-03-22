@@ -1,67 +1,87 @@
 from astropy.coordinates import SkyCoord
 import astropy.coordinates as coord
 import astropy.units as u
-from gbmgeometry import *
+from gbmgeometry import PositionInterpolator, NaIA, GBMFrame, GBM
 from gbmgeometry.utils.package_utils import get_path_of_data_file
 from gbmgeometry.utils.plotting.skyplot import skyplot
+
+
 
 
 def test_interp():
 
     trigdat = get_path_of_data_file("glg_trigdat_all_bn080916009_v02.fit")
 
-    interp = PositionInterpolator(trigdat=trigdat)
+    interp_trig = PositionInterpolator.from_trigdat(trigdat)
 
-    interp.quaternion(0)
+    interp_trig.quaternion(0)
 
-    interp.sc_pos(0)
+    interp_trig.sc_pos(0)
+
+    trigdat_h5 = get_path_of_data_file("trigdat.h5")
+
+    interp_trig_h5 = PositionInterpolator.from_trigdat_hdf5(trigdat_h5)
+
+    assert interp_trig_h5.quaternion(0) == interp_trig.quaternion(0)
+
+    assert interp_trig_h5.sc_pos(0) == interp_trig.sc_pos(0)
+
+    poshist = get_path_of_data_file("glg_poshist_all_151013_v00.fit")
+
+    interp_pos = PositionInterpolator.from_poshist(poshist)
+
+    interp_pos.quaternion(0)
+
+    interp_pos.sc_pos(0)
+
+    poshist_h5 = get_path_of_data_file("posthist.h5")
+
+    interp_pos_h5 = PositionInterpolator.from_poshist_hdf5(poshist_h5)
+
+    assert interp_pos_h5.quaternion(0) == interp_pos.quaternion(0)
+
+    assert interp_pos_h5.sc_pos(0) == interp_pos.sc_pos(0)
 
 
-def test_detector():
-
-    trigdat = get_path_of_data_file("glg_trigdat_all_bn080916009_v02.fit")
-
-    interp = PositionInterpolator(trigdat=trigdat)
-
-    na = NaIA(interp.quaternion(1))
+def test_detector(na, interpolator):
 
     na.plot_pointing(fov=5)
 
     na.get_center()
 
-    na.set_quaternion(interp.quaternion(100))
-
-    na = NaIA(interp.quaternion(1), sc_pos=interp.sc_pos(1))
+    na.set_quaternion(interpolator.quaternion(100))
 
     na.get_center()
 
-    na.set_quaternion(interp.quaternion(100))
+    na.set_quaternion(interpolator.quaternion(100))
 
 
-def test_coord_change():
+def test_coord_change(na, interpolator):
 
-    trigdat = get_path_of_data_file("glg_trigdat_all_bn080916009_v02.fit")
-
-    interp = PositionInterpolator(trigdat=trigdat)
-
-    na = NaIA(interp.quaternion(1))
 
     center_j2000 = na.get_center().icrs
 
-    q1, q2, q3, q4 = interp.quaternion(100.0)
+    q1, q2, q3, q4 = interpolar.quaternion(100.0)
 
     center_j2000.transform_to(
         GBMFrame(quaternion_1=q1, quaternion_2=q2, quaternion_3=q3, quaternion_4=q4)
     )
 
 
-def test_all_gbm():
+    center_j2000 = na.get_center().icrs
 
-    trigdat = get_path_of_data_file("glg_trigdat_all_bn080916009_v02.fit")
+    out = interpolar.quaternion_dict(100.0)
 
-    interp = PositionInterpolator(trigdat=trigdat)
+    center_j2000.transform_to(
+        GBMFrame(**out)
+    )
 
-    myGBM = GBM(interp.quaternion(0), sc_pos=interp.sc_pos(0) * u.km)
+
+    
+
+def test_all_gbm(interpolar):
+
+    myGBM = GBM(interpolar.quaternion(0), sc_pos=interpolar.sc_pos(0) * u.km)
 
     myGBM.get_centers()
 
