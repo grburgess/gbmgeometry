@@ -48,7 +48,7 @@ class PositionInterpolator(object):
             sc_pos = f["sc_pos"][()]
             time = f["time"][()]
 
-            trigtime = f["trigtime"]
+            trigtime = f.attrs["trigtime"]
 
         factor = 1
 
