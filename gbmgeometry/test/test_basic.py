@@ -22,9 +22,9 @@ def test_interp():
 
     interp_trig_h5 = PositionInterpolator.from_trigdat_hdf5(trigdat_h5)
 
-    assert interp_trig_h5.quaternion(0) == interp_trig.quaternion(0)
+    assert np.all(interp_trig_h5.quaternion(0) == interp_trig.quaternion(0))
 
-    assert interp_trig_h5.sc_pos(0) == interp_trig.sc_pos(0)
+    assert np.all(interp_trig_h5.sc_pos(0) == interp_trig.sc_pos(0))
 
     poshist = get_path_of_data_file("glg_poshist_all_151013_v00.fit")
 
@@ -38,9 +38,9 @@ def test_interp():
 
     interp_pos_h5 = PositionInterpolator.from_poshist_hdf5(poshist_h5)
 
-    assert interp_pos_h5.quaternion(0) == interp_pos.quaternion(0)
+    assert np.all(interp_pos_h5.quaternion(0) == interp_pos.quaternion(0))
 
-    assert interp_pos_h5.sc_pos(0) == interp_pos.sc_pos(0)
+    assert np.all(interp_pos_h5.sc_pos(0) == interp_pos.sc_pos(0))
 
 
 def test_detector(na, interpolator):
@@ -61,7 +61,7 @@ def test_coord_change(na, interpolator):
 
     center_j2000 = na.get_center().icrs
 
-    q1, q2, q3, q4 = interpolar.quaternion(100.0)
+    q1, q2, q3, q4 = interpolator.quaternion(100.0)
 
     center_j2000.transform_to(
         GBMFrame(quaternion_1=q1, quaternion_2=q2, quaternion_3=q3, quaternion_4=q4)
@@ -70,7 +70,7 @@ def test_coord_change(na, interpolator):
 
     center_j2000 = na.get_center().icrs
 
-    out = interpolar.quaternion_dict(100.0)
+    out = interpolator.quaternion_dict(100.0)
 
     center_j2000.transform_to(
         GBMFrame(**out)
@@ -79,9 +79,9 @@ def test_coord_change(na, interpolator):
 
     
 
-def test_all_gbm(interpolar):
+def test_all_gbm(interpolator):
 
-    myGBM = GBM(interpolar.quaternion(0), sc_pos=interpolar.sc_pos(0) * u.km)
+    myGBM = GBM(interpolator.quaternion(0), sc_pos=interpolator.sc_pos(0) * u.km)
 
     myGBM.get_centers()
 
