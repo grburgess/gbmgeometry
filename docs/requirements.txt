@@ -11,3 +11,4 @@ h5py
 pandas
 astropy
 numba
+jupyter_sphinx
