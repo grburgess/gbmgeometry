@@ -48,7 +48,7 @@ extensions = ['nbsphinx',
               'sphinx.ext.autodoc',
               'sphinx.ext.githubpages',
               'sphinx.ext.napoleon',
-               'jupyter_sphinx.embed_widgets',
+
 ]
 
 napoleon_google_docstring = True
