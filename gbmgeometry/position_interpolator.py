@@ -1,6 +1,9 @@
 import astropy.io.fits as fits
 import h5py
 import astropy.units as u
+from astropy.coordinates import get_sun, get_moon, get_body
+import astropy.time as astro_time
+
 import numpy as np
 import scipy.interpolate as interpolate
 
@@ -177,24 +180,21 @@ class PositionInterpolator(object):
             quats=quats, sc_pos=sc_pos, time=time, trigtime=trigtime, factor=factor
         )
 
-
     @property
     def time(self):
         return self._time
-    
+
     def utc(self, t):
 
-        if self._trigtime is not None:
-
-            met = self._trigtime + t
-
-        else:
-
-            met = t
+        met = self.met(t)
 
         time = GBMTime.from_MET(met)
         # print(time.time.fits)
         return time.time.fits
+
+    def astro_time(self, t):
+
+        return astro_time.Time(self.utc(t))
 
     def met(self, t):
 
@@ -208,6 +208,62 @@ class PositionInterpolator(object):
 
         return met
 
+    def sun_position(self, t):
+        """
+        Get the position of the sun at the give time
+        relative to the geocenter
+        
+
+        :param t: 
+        :returns: 
+        :rtype: 
+
+        """
+
+        return get_sun(self.astro_time(t))
+
+
+    def moon_position(self, t):
+        """
+        Get the position of the moon at the give time
+        relative to the geocenter
+        
+
+        :param t: 
+        :returns: 
+        :rtype: 
+
+        """
+
+        return get_moon(self.astro_time(t))
+
+    def body_position(self, t, body='uranus'):
+        """
+        Get the position of the body at the give time
+        relative to the geocenter
+        
+
+        :param t: 
+        :param body:
+        :returns: 
+        :rtype: 
+
+        """
+
+        return get_body(body, self.astro_time(t))
+
+    def minmax_time(self):
+        """
+        return a tuple of (tmin, tmax)
+        for the whole interpolator
+
+        :returns: 
+        :rtype: 
+
+        """
+        
+        return min(self._time), max(self._time)
+    
     def maxtime(self):
 
         return self._time
