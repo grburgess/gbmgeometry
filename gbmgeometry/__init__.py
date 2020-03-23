@@ -29,7 +29,7 @@ gbm_detector_list = {
 from gbmgeometry.utils.gbm_time import GBMTime
 
 __all__ = [
-    "plot_in_space"
+    "plot_in_space",
     "animate_in_space",
     "GBMFrame",
     "GBM",
