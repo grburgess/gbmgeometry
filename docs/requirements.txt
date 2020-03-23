@@ -11,4 +11,13 @@ h5py
 pandas
 astropy
 numba
-
+jupyter_sphinx>=0.1.4
+#git+https://github.com/maartenbreddels/jupyter-sphinx@ipywidgets7require_d
+ipywidgets>=7.4.0
+traittypes
+traitlets
+Pillow
+scipy
+recommonmark
+ipywebrtc
+requests
