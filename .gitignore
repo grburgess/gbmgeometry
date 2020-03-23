@@ -7,3 +7,4 @@ docs/_build/
 .idea
 /.DS_Store
 /docs/.DS_Store
+/.pytest_cache/
