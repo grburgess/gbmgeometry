@@ -1,6 +1,12 @@
 import numpy as np
 import ipyvolume as ipv
-from gbmgeometry.utils.plotting.heavenly_bodies import Sol, Moon, Earth, Sphere, StarField
+from gbmgeometry.utils.plotting.heavenly_bodies import (
+    Sol,
+    Moon,
+    Earth,
+    Sphere,
+    StarField,
+)
 from gbmgeometry.gbm import GBM
 
 
@@ -33,8 +39,24 @@ def animate_in_space(
     show_moon=False,
     background_color="#110B3D",
     detector_scaling_factor=20000.0,
-    show_stars=False
+    show_stars=False,
 ):
+    """
+    Animiate fermi in Space!
+
+    :param position_interpolator: 
+    :param n_step: 
+    :param show_detector_pointing: 
+    :param show_earth: 
+    :param show_sun: 
+    :param show_moon: 
+    :param background_color: 
+    :param detector_scaling_factor: 
+    :param show_stars: 
+    :returns: 
+    :rtype: 
+
+    """
 
     fig = ipv.figure()
 
@@ -131,7 +153,7 @@ def animate_in_space(
         if show_detector_pointing:
 
             gbm.set_quaternion(position_interpolator.quaternion(t))
-            
+
             for k, v in gbm.detectors.items():
 
                 x, y, z = v.center_icrs.cartesian.xyz.value * max(distances)
@@ -160,23 +182,18 @@ def animate_in_space(
     sys = np.array(sys)
     szs = np.array(szs)
 
-
     fermi = FermiPoint(sxs, sys, szs)
     artists.append(fermi.plot())
 
     if show_stars:
 
-        sf =StarField(n_stars=200, distance=max(distances)-2)
+        sf = StarField(n_stars=200, distance=max(distances) - 2)
         sf.plot()
 
-
-    
     ipv.xyzlim(max(distances))
 
     ipv.animation_control(artists)
 
-
-    
     ipv.show()
 
 
@@ -189,9 +206,10 @@ def plot_in_space(
     show_moon=False,
     background_color="#110B3D",
     detector_scaling_factor=20000.0,
-    show_stars=False
+    show_stars=False,
 ):
-    """FIXME! briefly describe function
+    """
+    Plot Fermi in Space!
 
     :param position_interpolator: 
     :param time: 
@@ -270,12 +288,11 @@ def plot_in_space(
 
             ipv.pylab.plot(x_line, y_line, z_line, color=color)
 
-
     if show_stars:
 
-        sf =StarField(n_stars=100, distance=max(distances)-2)
+        sf = StarField(n_stars=100, distance=max(distances) - 2)
         sf.plot()
-            
+
     ipv.xyzlim(max(distances))
 
     ipv.show()
