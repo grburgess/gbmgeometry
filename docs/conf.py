@@ -134,9 +134,9 @@ html_css_files = [
 ]
 
 
-html_js_files = [
-    'css/custom.js',
-]
+# html_js_files = [
+#     'css/custom.js',
+# ]
 
 
 
