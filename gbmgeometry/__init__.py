@@ -48,7 +48,7 @@ __all__ = [
     "BGO0",
     "BGO1",
     "convert_poshist2hdf5",
-    "convert_trigdat2hdf5"
+    "convert_trigdat2hdf5",
     "PositionInterpolator",
     #    "get_legal_pairs",
     "Fermi",
