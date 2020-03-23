@@ -12,6 +12,7 @@ Welcome to gbmgeometry's documentation!
    :maxdepth: 5
 
    notebooks/demo.ipynb
+   notebooks/posinterp.ipynb
 
    
 
