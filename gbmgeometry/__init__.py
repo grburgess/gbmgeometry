@@ -6,7 +6,7 @@ from gbmgeometry.gbm_frame import GBMFrame
 from gbmgeometry.position_interpolator import PositionInterpolator
 from gbmgeometry.spacecraft.fermi import Fermi
 from gbmgeometry.utils.file_converters import convert_poshist2hdf5, convert_trigdat2hdf5
-
+from gbmgeometry.utils.plotting.space_plot import plot_in_space, animate_in_space
 
 gbm_detector_list = {
     "n0": NaI0,
@@ -29,6 +29,8 @@ gbm_detector_list = {
 from gbmgeometry.utils.gbm_time import GBMTime
 
 __all__ = [
+    "plot_in_space"
+    "animate_in_space",
     "GBMFrame",
     "GBM",
     "NaI0",
