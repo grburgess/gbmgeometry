@@ -39,7 +39,7 @@ def test_interp():
     
     interp_pos.is_fermi_active(tmin)
 
-    assert interp_pos.is_fermi_active([tmin,tmax]) == True
+    assert interp_pos.is_fermi_active([tmin,tmax])
     
     interp_pos.quaternion(interp_pos.time[0])
 
