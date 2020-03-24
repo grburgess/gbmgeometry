@@ -36,6 +36,7 @@ def test_interp():
     interp_pos = PositionInterpolator.from_poshist(poshist)
 
     tmin, tmax = interp_pos.minmax_time()
+
     
     interp_pos.is_fermi_active(tmin)
 
