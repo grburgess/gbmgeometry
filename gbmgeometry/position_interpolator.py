@@ -11,7 +11,7 @@ from gbmgeometry.utils.gbm_time import GBMTime
 
 
 class PositionInterpolator(object):
-    def __init__(self, quats, sc_pos, time, trigtime=None, factor=1):
+    def __init__(self, quats, sc_pos, time, trigtime=None, factor=1, flags=None):
         """FIXME! briefly describe function
 
         :param poshist: 
@@ -27,11 +27,13 @@ class PositionInterpolator(object):
         self._time = time
         self._trigtime = trigtime
         self._factor = factor
-
+        self._flags = flags
+        
         # Interpolate the stuf
         self._interpolate_quaternion()
         self._interpolate_sc_pos()
-
+        self._interpolate_flags()
+        
     @classmethod
     def from_trigdat_hdf5(cls, trigdat_file):
         """
@@ -317,6 +319,67 @@ class PositionInterpolator(object):
 
         self._scxyz_t = interpolate.interp1d(self._time, self._sc_pos.T)
 
+    def _interpolate_flags(self):
+
+        if self._flags is not None:
+        
+            idx = self._flags == 1
+
+            slices_true = slice_disjoint(idx)
+
+            self._on_times = []
+
+            for s1, s2 in slices_true:
+
+                self._on_times.append([self._time[s1], self._time[s2] ])
+
+    def is_fermi_active(self, t):
+        """
+        test if fermi is active at the time
+
+        :param t: 
+        :returns: 
+        :rtype: 
+
+        """
+        
+        
+        if np.atleast_1d(t).shape[0] == 1:
+
+            if self._flags is None:
+
+                return True
+
+        
+            for tmin, tmax in self._on_times:
+
+                if (tmin<=t) and (t<=tmax):
+                    return True
+
+
+            return False
+
+        else:
+
+            if self._flags is None:
+
+                return np.ones_like(t, dtype=bool)
+            
+            out = np.zeros_like(t, dtype=bool)
+
+            for tt in t:
+                for i, (tmin, tmax) in enumerate(self._on_times):
+
+                    if (tmin<=t) and (t<=tmax):
+                        out[i] = True
+
+            return out
+            
+                    
+            
+
+            
+        
     def sc_matrix(self, t):
 
         q1, q2, q3, q4 = self.quaternion(t)
@@ -354,3 +417,28 @@ class PositionInterpolator(object):
     def normalize(x):
         norm = np.sqrt(np.sum(x ** 2, axis=0))
         return x / norm
+
+
+def slice_disjoint(arr):
+    """
+    Returns an array of disjoint indices from a bool array
+    :param arr: and array of bools
+    """
+
+    arr = (arr).nonzero()[0]
+    
+    slices = []
+    start_slice = arr[0]
+    counter = 0
+    for i in range(len(arr) - 1):
+        if arr[i + 1] > arr[i] + 1:
+            end_slice = arr[i]
+            slices.append([start_slice, end_slice])
+            start_slice = arr[i + 1]
+            counter += 1
+    if counter == 0:
+        return [[arr[0], arr[-1]]]
+    if end_slice != arr[-1]:
+        slices.append([start_slice, arr[-1]])
+    return slices
+
