@@ -19,7 +19,7 @@ def test_interp():
     interp_trig.sc_pos(0)
 
 
-    assert interp_trig.is_fermi_active() == True
+    assert interp_trig.is_fermi_active(1) == True
     
     trigdat_h5 = get_path_of_data_file("trigdat.h5")
 
@@ -29,7 +29,7 @@ def test_interp():
 
     assert np.all(interp_trig_h5.sc_pos(0) == interp_trig.sc_pos(0))
 
-    assert interp_trig_h5.is_fermi_active() == True
+    assert interp_trig_h5.is_fermi_active(1) == True
     
     poshist = get_path_of_data_file("glg_poshist_all_151013_v00.fit")
 
