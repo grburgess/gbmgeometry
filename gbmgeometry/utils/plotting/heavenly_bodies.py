@@ -90,7 +90,7 @@ class Earth(Sphere):
 
 
 class Sol(Sphere):
-    def __init__(self, x, y, z, ax=None, detail_level=100, color="#EF990F", **kwargs):
+    def __init__(self, x, y, z, ax=None, detail_level=50, color="#EF990F", **kwargs):
         """
         The Sun. This is variable with respect to the satellite and Earth, so 
         coordinates have to be provided with at a single time or as an array
@@ -116,7 +116,7 @@ class Sol(Sphere):
 
 
 class Moon(Sphere):
-    def __init__(self, x, y, z, ax=None, detail_level=100, color="#68696A", **kwargs):
+    def __init__(self, x, y, z, ax=None, detail_level=20, color="#68696A", **kwargs):
         """
         The Sun. This is variable with respect to the satellite and Earth, so 
         coordinates have to be provided with at a single time or as an array

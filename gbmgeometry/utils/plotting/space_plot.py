@@ -37,7 +37,7 @@ def animate_in_space(
     show_earth=True,
     show_sun=False,
     show_moon=False,
-    background_color="#110B3D",
+    background_color="#070323",
     detector_scaling_factor=20000.0,
     show_stars=False,
 ):
@@ -204,7 +204,7 @@ def plot_in_space(
     show_earth=True,
     show_sun=False,
     show_moon=False,
-    background_color="#110B3D",
+    background_color="#070323",
     detector_scaling_factor=20000.0,
     show_stars=False,
 ):
