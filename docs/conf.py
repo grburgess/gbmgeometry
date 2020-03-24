@@ -72,12 +72,12 @@ todo_include_todos = False
 autosectionlabel_prefix_document = True
 
 # avoid time-out when running the doc
-nbsphinx_timeout = 30 * 60
+# nbsphinx_timeout = 30 * 60
 
-nbsphinx_execute_arguments = [
-    "--InlineBackend.figure_formats={'svg', 'pdf'}",
-    "--InlineBackend.rc={'figure.dpi': 96}",
-]
+# nbsphinx_execute_arguments = [
+#     "--InlineBackend.figure_formats={'svg', 'pdf'}",
+#     "--InlineBackend.rc={'figure.dpi': 96}",
+# ]
 
 # autodoc_member_order = 'bysource'
 

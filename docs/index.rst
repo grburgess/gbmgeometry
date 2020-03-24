@@ -13,10 +13,6 @@ Welcome to gbmgeometry's documentation!
 
    notebooks/demo.ipynb
    notebooks/posinterp.ipynb
-   notebooks/posinterp.ipynb
-   notebooks/pos3.ipynb
-   notebooks/pos4.ipynb
-
    
 
    
