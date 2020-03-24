@@ -18,6 +18,8 @@ def convert_poshist2hdf5(src_file, dest_file):
 
         time = poshist["GLAST POS HIST"].data["SCLK_UTC"]
 
+        flags = poshist["GLAST POS HIST"].data["FLAGS"]
+        
         quats = np.array(
             [
                 poshist["GLAST POS HIST"].data["QSJ_1"],
@@ -40,7 +42,7 @@ def convert_poshist2hdf5(src_file, dest_file):
         f.create_dataset("time", data=time, compression="lzf")
         f.create_dataset("quats", data=quats, compression="lzf")
         f.create_dataset("sc_pos", data=sc_pos, compression="lzf")
-
+        f.create_dataset("flags", data=flags, compression="lzf")
 
 def convert_trigdat2hdf5(src_file, dest_file):
     """

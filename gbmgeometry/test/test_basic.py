@@ -18,6 +18,9 @@ def test_interp():
 
     interp_trig.sc_pos(0)
 
+
+    assert interp_trig.is_fermi_active() == True
+    
     trigdat_h5 = get_path_of_data_file("trigdat.h5")
 
     interp_trig_h5 = PositionInterpolator.from_trigdat_hdf5(trigdat_h5)
@@ -26,10 +29,18 @@ def test_interp():
 
     assert np.all(interp_trig_h5.sc_pos(0) == interp_trig.sc_pos(0))
 
+    assert interp_trig_h5.is_fermi_active() == True
+    
     poshist = get_path_of_data_file("glg_poshist_all_151013_v00.fit")
 
     interp_pos = PositionInterpolator.from_poshist(poshist)
 
+    tmin, tmax = interp_pos.minmax_time()
+    
+    interp_pos.is_fermi_active(tmin)
+
+    assert interp_trig.is_fermi_active([tmin,tmax]) == True
+    
     interp_pos.quaternion(interp_pos.time[0])
 
     interp_pos.sc_pos(interp_pos.time[0])

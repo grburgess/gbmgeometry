@@ -28,12 +28,12 @@ class PositionInterpolator(object):
         self._trigtime = trigtime
         self._factor = factor
         self._flags = flags
-        
+
         # Interpolate the stuf
         self._interpolate_quaternion()
         self._interpolate_sc_pos()
         self._interpolate_flags()
-        
+
     @classmethod
     def from_trigdat_hdf5(cls, trigdat_file):
         """
@@ -80,6 +80,7 @@ class PositionInterpolator(object):
             quats = f["quats"][()]
             sc_pos = f["sc_pos"][()]
             time = f["time"][()]
+            flags = f["flags"][()]
 
         factor = (u.m).to(u.km)
 
@@ -93,7 +94,7 @@ class PositionInterpolator(object):
             trigtime = None
 
         return cls(
-            quats=quats, sc_pos=sc_pos, time=time, trigtime=trigtime, factor=factor
+            quats=quats, sc_pos=sc_pos, time=time, trigtime=trigtime, factor=factor, flags=flags
         )
 
     @classmethod
@@ -148,6 +149,8 @@ class PositionInterpolator(object):
 
             time = poshist["GLAST POS HIST"].data["SCLK_UTC"]
 
+            flags = poshist["GLAST POS HIST"].data["FLAGS"]
+
             quats = np.array(
                 [
                     poshist["GLAST POS HIST"].data["QSJ_1"],
@@ -179,7 +182,12 @@ class PositionInterpolator(object):
             trigtime = None
 
         return cls(
-            quats=quats, sc_pos=sc_pos, time=time, trigtime=trigtime, factor=factor
+            quats=quats,
+            sc_pos=sc_pos,
+            time=time,
+            trigtime=trigtime,
+            factor=factor,
+            flags=flags,
         )
 
     @property
@@ -224,7 +232,6 @@ class PositionInterpolator(object):
 
         return get_sun(self.astro_time(t))
 
-
     def moon_position(self, t):
         """
         Get the position of the moon at the give time
@@ -239,7 +246,7 @@ class PositionInterpolator(object):
 
         return get_moon(self.astro_time(t))
 
-    def body_position(self, t, body='uranus'):
+    def body_position(self, t, body="uranus"):
         """
         Get the position of the body at the give time
         relative to the geocenter
@@ -263,9 +270,9 @@ class PositionInterpolator(object):
         :rtype: 
 
         """
-        
+
         return min(self._time), max(self._time)
-    
+
     def maxtime(self):
 
         return self._time
@@ -322,7 +329,7 @@ class PositionInterpolator(object):
     def _interpolate_flags(self):
 
         if self._flags is not None:
-        
+
             idx = self._flags == 1
 
             slices_true = slice_disjoint(idx)
@@ -331,7 +338,7 @@ class PositionInterpolator(object):
 
             for s1, s2 in slices_true:
 
-                self._on_times.append([self._time[s1], self._time[s2] ])
+                self._on_times.append([self._time[s1], self._time[s2]])
 
     def is_fermi_active(self, t):
         """
@@ -342,20 +349,17 @@ class PositionInterpolator(object):
         :rtype: 
 
         """
-        
-        
+
         if np.atleast_1d(t).shape[0] == 1:
 
             if self._flags is None:
 
                 return True
 
-        
             for tmin, tmax in self._on_times:
 
-                if (tmin<=t) and (t<=tmax):
+                if (tmin <= t) and (t <= tmax):
                     return True
-
 
             return False
 
@@ -364,22 +368,17 @@ class PositionInterpolator(object):
             if self._flags is None:
 
                 return np.ones_like(t, dtype=bool)
-            
+
             out = np.zeros_like(t, dtype=bool)
+            
+            for i, tt in enumerate(t):
+                for tmin, tmax in self._on_times:
 
-            for tt in t:
-                for i, (tmin, tmax) in enumerate(self._on_times):
-
-                    if (tmin<=t) and (t<=tmax):
+                    if (tmin <= tt) and (tt <= tmax):
                         out[i] = True
 
             return out
-            
-                    
-            
 
-            
-        
     def sc_matrix(self, t):
 
         q1, q2, q3, q4 = self.quaternion(t)
@@ -426,7 +425,7 @@ def slice_disjoint(arr):
     """
 
     arr = (arr).nonzero()[0]
-    
+
     slices = []
     start_slice = arr[0]
     counter = 0
@@ -441,4 +440,3 @@ def slice_disjoint(arr):
     if end_slice != arr[-1]:
         slices.append([start_slice, arr[-1]])
     return slices
-
