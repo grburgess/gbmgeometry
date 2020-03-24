@@ -1,5 +1,9 @@
 import ipyvolume as ipv
 import numpy as np
+import h5py
+
+from gbmgeometry.utils.package_utils import get_path_of_data_file
+
 
 # -*- coding: utf-8 -*-
 class Sphere(object):
@@ -87,6 +91,14 @@ class Earth(Sphere):
             color=color,
             **kwargs
         )
+
+        with h5py.File(get_path_of_data_file('countries.h5'), 'r') as f:
+
+            xs = f['x'][()]
+            ys = f['y'][()]
+            zs = f['z'][()]
+            
+            ipv.pylab.plot(xs,ys,zs, color='black')
 
 
 class Sol(Sphere):
