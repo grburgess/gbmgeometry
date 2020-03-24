@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from astropy.coordinates import SkyCoord
 from sympy import Point3D
+import ipyvolume as ipv
+
 
 from gbmgeometry.gbm import GBM
 from gbmgeometry.utils.array_to_cmap import array_to_cmap

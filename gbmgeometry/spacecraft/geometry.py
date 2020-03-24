@@ -509,3 +509,106 @@ class Volume(object):
             self._intersections[intersection]["intersection point"],
             self._intersections[intersection]["distance"],
         )
+
+
+# -*- coding: utf-8 -*-
+
+
+class Cube(object):
+    def __init__(self, x=0, y=0, z=0, height=1.0, width=1.0, depth=1.0, color="r"):
+
+        self._x = x
+        self._y = y
+        self._z = z
+
+        self._height = height
+        self._width = width
+        self._depth = depth
+
+        self._color = color
+
+    def _create_Ploy3DCollection(
+        self, *two_lines,
+    ):
+
+        x, y, z = zip(two_lines[0], two_lines[1], two_lines[2], two_lines[3])
+
+        X = np.array([__ for __ in iterable_to_chunks(x, 2)])
+        Y = np.array([__ for __ in iterable_to_chunks(y, 2)])
+        Z = np.array([__ for __ in iterable_to_chunks(z, 2)])
+
+        return ipv.plot_surface(X, Y, Z, color=self._color)
+
+    def plot(self):
+
+        self._front_bot_left = [x, y, z]
+        self._front_bot_right = [x + width, y, z]
+        self._front_top_left = [x, y + height, z]
+        self._front_top_right = [x + width, y + height, z]
+
+        self._rear_bot_left = [x, y, z + depth]
+        self._rear_bot_right = [x + width, y, z + depth]
+        self._rear_top_left = [x, y + height, z + depth]
+        self._rear_top_right = [x + width, y + height, z + depth]
+
+        ipv.figure()
+
+        self._top = self._create_Ploy3DCollection(
+            self._front_top_left,
+            self._front_top_right,
+            self._rear_top_left,
+            self._rear_top_right,
+        )
+
+        self._bot = self._create_Ploy3DCollection(
+            self._front_bot_left,
+            self._front_bot_right,
+            self._rear_bot_left,
+            self._rear_bot_right,
+        )
+
+        self._front = self._create_Ploy3DCollection(
+            self._front_bot_left,
+            self._front_bot_right,
+            self._front_top_left,
+            self._front_top_right,
+        )
+
+        self._rear = self._create_Ploy3DCollection(
+            self._rear_top_left,
+            self._rear_top_right,
+            self._rear_bot_left,
+            self._rear_bot_right,
+        )
+
+        self._left = self._create_Ploy3DCollection(
+            self._front_bot_left,
+            self._front_top_left,
+            self._rear_bot_left,
+            self._rear_top_left,
+        )
+
+        self._right = self._create_Ploy3DCollection(
+            self._front_bot_right,
+            self._front_top_right,
+            self._rear_bot_right,
+            self._rear_top_right,
+        )
+
+        ipv.show()
+
+from itertools import chain, repeat
+
+def iterable_to_chunks(iterable, size, fill=None):
+  '''Split a list to chunks
+    iterable : an iterable object, e.g. generator, list, array, etc.
+    size : chunk size, positive integer
+    fill : padding values.
+    Example :
+      tochunks('abcdefg', 3, 'x')
+    Output :
+      ('a','b','c'), ('d','e','f'), ('g','x','x')
+    reference :
+      http://stackoverflow.com/a/312644
+  '''
+  return zip(*[chain(iterable, repeat(fill, size-1))]*size)
