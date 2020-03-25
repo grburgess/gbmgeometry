@@ -40,6 +40,7 @@ def animate_in_space(
     background_color="#070323",
     detector_scaling_factor=20000.0,
     show_stars=False,
+    show_inactive=True,
 ):
     """
     Animiate fermi in Space!
@@ -124,6 +125,10 @@ def animate_in_space(
     sys = []
     szs = []
 
+    x_off = []
+    y_off = []
+    z_off = []
+
     if show_detector_pointing:
 
         distances.append(detector_scaling_factor)
@@ -149,6 +154,11 @@ def animate_in_space(
         sxs.append(sx)
         sys.append(sy)
         szs.append(sz)
+
+        if not position_interpolator.is_fermi_active(t):
+            x_off.append(sx)
+            y_off.append(sy)
+            z_off.append(sz)
 
         if show_detector_pointing:
 
@@ -181,6 +191,17 @@ def animate_in_space(
     sxs = np.array(sxs)
     sys = np.array(sys)
     szs = np.array(szs)
+
+    if show_inactive:
+        ipv.pylab.scatter(
+            np.array(x_off),
+            np.array(y_off),
+            np.array(z_off),
+            color="#DC1212",
+            alpha=0.5,
+            marke='circle_2d',
+            size=1
+        )
 
     fermi = FermiPoint(sxs, sys, szs)
     artists.append(fermi.plot())
