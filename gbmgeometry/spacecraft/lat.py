@@ -2,7 +2,7 @@ from gbmgeometry.spacecraft.geometry import Volume
 
 
 class LAT(Volume):
-    def __init__(self, transform_matrix=None):
+    def __init__(self, transform_matrix=None, sc_pos=None):
         # cm
 
         height = 106.0
@@ -23,13 +23,14 @@ class LAT(Volume):
             x_width=x_width,
             y_width=y_width,
             transform_matrix=transform_matrix,
+            sc_pos=sc_pos,
             color="#0000CE",
             active_surfaces=active_surfaces,
         )
 
 
 class LATRadiator(Volume):
-    def __init__(self, name, sign, active_surfaces, transform_matrix=None):
+    def __init__(self, name, sign, active_surfaces, transform_matrix=None, sc_pos=None):
         # cm
 
         height = 158.6
@@ -48,20 +49,21 @@ class LATRadiator(Volume):
             x_width=x_width,
             y_width=y_width,
             transform_matrix=transform_matrix,
+            sc_pos=sc_pos,
             color="darkgrey",
             active_surfaces=active_surfaces,
         )
 
 
 class LATRadiatorMinus(LATRadiator):
-    def __init__(self, transform_matrix=None):
+    def __init__(self, transform_matrix=None, sc_pos=None):
         active_surfaces = ["+x", "-x", "+y", "-z"]
 
-        super(LATRadiatorMinus, self).__init__("LAT Radiator-", -1, active_surfaces, transform_matrix=transform_matrix)
+        super(LATRadiatorMinus, self).__init__("LAT Radiator-", -1, active_surfaces, transform_matrix=transform_matrix, sc_pos=sc_pos)
 
 
 class LATRadiatorPlus(LATRadiator):
-    def __init__(self, transform_matrix=None):
+    def __init__(self, transform_matrix=None, sc_pos=None):
         active_surfaces = ["+x", "-x", "-y", "-z"]
 
-        super(LATRadiatorPlus, self).__init__("LAT Radiator+", 1, active_surfaces,transform_matrix=transform_matrix)
+        super(LATRadiatorPlus, self).__init__("LAT Radiator+", 1, active_surfaces,transform_matrix=transform_matrix, sc_pos=sc_pos)

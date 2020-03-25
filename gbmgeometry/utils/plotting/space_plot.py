@@ -8,7 +8,7 @@ from gbmgeometry.utils.plotting.heavenly_bodies import (
     StarField,
 )
 from gbmgeometry.gbm import GBM
-
+from gbmgeometry.spacecraft.fermi import Fermi
 
 def compute_distance(x, y, z, radius):
 
@@ -282,9 +282,14 @@ def plot_in_space(
 
     sx, sy, sz = position_interpolator.sc_pos(time)
 
+    print(f"true: {sx},{sy},{sz}")
+
     fermi = FermiPoint(sx, sy, sz)
     fermi.plot()
 
+    fermi_real = Fermi(position_interpolator.quaternion(time), sc_pos=position_interpolator.sc_pos(time), transform_to_space=True)
+    fermi_real.plot_fermi_ipy()
+    
     if show_detector_pointing:
 
         distances.append(detector_scaling_factor)
@@ -317,3 +322,5 @@ def plot_in_space(
     ipv.xyzlim(max(distances))
 
     ipv.show()
+
+    return fermi_real

@@ -33,19 +33,23 @@ class Fermi(object):
         if transform_to_space:
 
             transform_matrix = get_sc_matrix(*quaternion)
-
+            assert sc_pos is not None
+            
+            
         else:
 
             transform_matrix = None
 
+        self._transform_matrix = transform_matrix
+        self._sc_pos = sc_pos
         
-        self._lat = LAT(transform_matrix=transform_matrix)
+        self._lat = LAT(transform_matrix=transform_matrix, sc_pos=sc_pos)
 
-        self._lat_radiator_plus = LATRadiatorPlus(transform_matrix=transform_matrix)
-        self._lat_radiator_minus = LATRadiatorMinus(transform_matrix=transform_matrix)
+        self._lat_radiator_plus = LATRadiatorPlus(transform_matrix=transform_matrix, sc_pos=sc_pos)
+        self._lat_radiator_minus = LATRadiatorMinus(transform_matrix=transform_matrix, sc_pos=sc_pos)
 
-        self._solar_panel_plus = SolarPanelPlus(transform_matrix=transform_matrix)
-        self._solar_panel_minus = SolarPanelMinus(transform_matrix=transform_matrix)
+        self._solar_panel_plus = SolarPanelPlus(transform_matrix=transform_matrix, sc_pos=sc_pos)
+        self._solar_panel_minus = SolarPanelMinus(transform_matrix=transform_matrix, sc_pos=sc_pos)
 
         # build a GBM
 

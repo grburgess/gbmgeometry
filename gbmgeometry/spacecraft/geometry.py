@@ -21,7 +21,6 @@ def get_sc_matrix(q1, q2, q3, q4):
     :rtype: 
 
     """
-    
 
     sc_matrix = np.zeros((3, 3))
 
@@ -36,8 +35,6 @@ def get_sc_matrix(q1, q2, q3, q4):
     sc_matrix[2, 2] = -(q1 ** 2) - q2 ** 2 + q3 ** 2 + q4 ** 2
 
     return sc_matrix
-
-
 
 
 class Ray(object):
@@ -313,6 +310,7 @@ class Volume(object):
         x_width,
         y_width,
         transform_matrix=None,
+        sc_pos=None,
         color="grey",
         active_surfaces=None,
     ):
@@ -341,13 +339,18 @@ class Volume(object):
 
         self._name = name
 
+        # this is to transform into space coords
 
-        if transform_matrix is not None:
-            old_origin = np.array([x_origin, y_origin, z_origin])
-            new_origin = np.dot(transform_matrix, old_origin)
+        # if transform_matrix is not None:
 
-            x_origin, y_origin, z_origin = new_origin
-        
+        #     x_origin = x_origin + sc_pos[0]
+        #     y_origin = y_origin + sc_pos[1]
+        #     z_origin = z_origin + sc_pos[2]
+
+
+        self._sc_pos = sc_pos
+        self._transform_matrix = transform_matrix
+
         self._x_origin = x_origin - x_width / 2.0
         self._y_origin = z_origin - height / 2.0
         self._z_origin = y_origin - y_width / 2.0
@@ -363,9 +366,9 @@ class Volume(object):
             height=height,
         )
 
-        self._width = x_width
-        self._depth = y_width
-        self._height = height
+        self._x_width = x_width
+        self._y_width = y_width
+        self._z_width = height
         self._intersections = None
 
     def _build_cube(self, origin=None, width=1, height=1, depth=1):
@@ -491,14 +494,21 @@ class Volume(object):
 
     def plot_ipv(self):
 
+        x,y,z = self._center
+        
         cube = Cube(
             color=self._color,
-            x=self._x_origin,
-            y=self._y_origin,
-            z=self._z_origin,
-            width=self._width,
-            depth=self._depth,
-            height=self._height,
+            # x=self._x_origin,
+            # y=self._z_origin,
+            # z=self._y_origin,
+            x=x,
+            y=y,
+            z=z,
+            x_width=self._x_width,
+            z_width=self._z_width,
+            y_width=self._y_width,
+            transform_matrix=self._transform_matrix,
+            sc_pos = self._sc_pos
         )
         return cube.plot()
 
@@ -576,18 +586,47 @@ class Volume(object):
 
 
 class Cube(object):
-    def __init__(self, x=0, y=0, z=0, height=1.0, width=1.0, depth=1.0, color="r"):
+    def __init__(
+        self,
+        x=0,
+        y=0,
+        z=0,
+        x_width=1.0,
+        y_width=1.0,
+        z_width=1.0,
+        color="red",
+        transform_matrix=None,
+        sc_pos = None
+    ):
+        factor = 1.
+        
+        if transform_matrix is not None:
 
-        self._x = x
-        self._y = y
-        self._z = z
+            factor = 1
+            x*=factor
+            y*=factor
+            z*=factor
+            # also convert to 
+            
+            x += sc_pos[0]
+            y += sc_pos[1]
+            z += sc_pos[2] 
+        
+        self._x = x - 0.5 * x_width 
+        self._y = y - 0.5 * y_width 
+        self._z = z - 0.5 * z_width
+        self._sc_pos = sc_pos
 
-        self._height = height
-        self._width = width
-        self._depth = depth
+        print(f'cube {x} {y} {z}')
+        print(f'corner {self._x} {self._y} {self._z}')
+        
+        self._height = y_width 
+        self._width = x_width 
+        self._depth = z_width 
 
         self._color = color
         self._artists = []
+        self._transform_matrix = transform_matrix
 
     def _create_Ploy3DCollection(
         self, *two_lines,
@@ -607,66 +646,81 @@ class Cube(object):
 
     def plot(self):
 
-        self._front_bot_left = [self._x, self._y, self._z]
-        self._front_bot_right = [self._x + self._width, self._y, self._z]
-        self._front_top_left = [self._x, self._y + self._height, self._z]
-        self._front_top_right = [self._x + self._width, self._y + self._height, self._z]
+        front_bot_left = np.array([self._x, self._y, self._z])
+        front_bot_right = np.array([self._x + self._width, self._y, self._z])
+        front_top_left = np.array([self._x, self._y + self._height, self._z])
+        front_top_right = np.array(
+            [self._x + self._width, self._y + self._height, self._z]
+        )
 
-        self._rear_bot_left = [self._x, self._y, self._z + self._depth]
-        self._rear_bot_right = [self._x + self._width, self._y, self._z + self._depth]
-        self._rear_top_left = [self._x, self._y + self._height, self._z + self._depth]
-        self._rear_top_right = [
-            self._x + self._width,
-            self._y + self._height,
-            self._z + self._depth,
+        rear_bot_left = np.array([self._x, self._y, self._z + self._depth])
+        rear_bot_right = np.array(
+            [self._x + self._width, self._y, self._z + self._depth]
+        )
+        rear_top_left = np.array(
+            [self._x, self._y + self._height, self._z + self._depth]
+        )
+        rear_top_right = np.array(
+            [self._x + self._width, self._y + self._height, self._z + self._depth,]
+        )
+
+        points = [
+            front_top_right,
+            front_top_left,
+            front_bot_right,
+            front_bot_left,
+            rear_top_right,
+            rear_top_left,
+            rear_bot_right,
+            rear_bot_left,
         ]
 
+        # if self._transform_matrix is not None:
+        #     new_points = []
+        #     for point in points:
+                
 
+        #         new_point = np.dot(self._transform_matrix, point)
+
+        #         print(f"before {point} after {new_point}")
+                
+        #         new_points.append(new_point)
+
+        #     (
+        #         front_top_right,
+        #         front_top_left,
+        #         front_bot_right,
+        #         front_bot_left,
+        #         rear_top_right,
+        #         rear_top_left,
+        #         rear_bot_right,
+        #         rear_bot_left,
+        #     ) = new_points
 
         top = self._create_Ploy3DCollection(
-            self._front_top_left,
-            self._front_top_right,
-            self._rear_top_left,
-            self._rear_top_right,
+            front_top_left, front_top_right, rear_top_left, rear_top_right,
         )
 
         bot = self._create_Ploy3DCollection(
-            self._front_bot_left,
-            self._front_bot_right,
-            self._rear_bot_left,
-            self._rear_bot_right,
+            front_bot_left, front_bot_right, rear_bot_left, rear_bot_right,
         )
 
         front = self._create_Ploy3DCollection(
-            self._front_bot_left,
-            self._front_bot_right,
-            self._front_top_left,
-            self._front_top_right,
+            front_bot_left, front_bot_right, front_top_left, front_top_right,
         )
 
         rear = self._create_Ploy3DCollection(
-            self._rear_top_left,
-            self._rear_top_right,
-            self._rear_bot_left,
-            self._rear_bot_right,
+            rear_top_left, rear_top_right, rear_bot_left, rear_bot_right,
         )
 
         left = self._create_Ploy3DCollection(
-            self._front_bot_left,
-            self._front_top_left,
-            self._rear_bot_left,
-            self._rear_top_left,
+            front_bot_left, front_top_left, rear_bot_left, rear_top_left,
         )
 
         right = self._create_Ploy3DCollection(
-            self._front_bot_right,
-            self._front_top_right,
-            self._rear_bot_right,
-            self._rear_top_right,
+            front_bot_right, front_top_right, rear_bot_right, rear_top_right,
         )
         self._artists.extend([top, bot, front, rear, left, right])
-
-        
 
 
 from itertools import chain, repeat
