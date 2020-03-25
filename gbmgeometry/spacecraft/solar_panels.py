@@ -2,7 +2,7 @@ from gbmgeometry.spacecraft.geometry import Volume
 
 
 class SolarPanel(Volume):
-    def __init__(self, sign, name):
+    def __init__(self, sign, name, transform_matrix=None):
         lenght = 492.3
         width = 151.0
 
@@ -24,16 +24,17 @@ class SolarPanel(Volume):
             height=height,
             x_width=x_width,
             y_width=y_width,
+            transform_matrix=transform_matrix,
             color="#3498DB",
             active_surfaces=["+x", "-x"],
         )
 
 
 class SolarPanelPlus(SolarPanel):
-    def __init__(self):
-        super(SolarPanelPlus, self).__init__(1.0, "Solar Panel +")
+    def __init__(self, transform_matrix=None):
+        super(SolarPanelPlus, self).__init__(1.0, "Solar Panel +", transform_matrix=transform_matrix)
 
 
 class SolarPanelMinus(SolarPanel):
-    def __init__(self):
-        super(SolarPanelMinus, self).__init__(-1.0, "Solar Panel -")
+    def __init__(self, transform_matrix=None):
+        super(SolarPanelMinus, self).__init__(-1.0, "Solar Panel -", transform_matrix=transform_matrix)

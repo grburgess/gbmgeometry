@@ -6,6 +6,39 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from mpl_toolkits.mplot3d import Axes3D
 from sympy import Plane, Point3D, Line3D
 
+import ipyvolume as ipv
+
+
+def get_sc_matrix(q1, q2, q3, q4):
+    """
+    build a sc matrix from quats
+
+    :param q1: 
+    :param q2: 
+    :param q3: 
+    :param q4: 
+    :returns: 
+    :rtype: 
+
+    """
+    
+
+    sc_matrix = np.zeros((3, 3))
+
+    sc_matrix[0, 0] = q1 ** 2 - q2 ** 2 - q3 ** 2 + q4 ** 2
+    sc_matrix[0, 1] = 2.0 * (q1 * q2 + q4 * q3)
+    sc_matrix[0, 2] = 2.0 * (q1 * q3 - q4 * q2)
+    sc_matrix[1, 0] = 2.0 * (q1 * q2 - q4 * q3)
+    sc_matrix[1, 1] = -(q1 ** 2) + q2 ** 2 - q3 ** 2 + q4 ** 2
+    sc_matrix[1, 2] = 2.0 * (q2 * q3 + q4 * q1)
+    sc_matrix[2, 0] = 2.0 * (q1 * q3 + q4 * q2)
+    sc_matrix[2, 1] = 2.0 * (q2 * q3 - q4 * q1)
+    sc_matrix[2, 2] = -(q1 ** 2) - q2 ** 2 + q3 ** 2 + q4 ** 2
+
+    return sc_matrix
+
+
+
 
 class Ray(object):
     # scaling for distance of lines
@@ -279,6 +312,7 @@ class Volume(object):
         height,
         x_width,
         y_width,
+        transform_matrix=None,
         color="grey",
         active_surfaces=None,
     ):
@@ -307,6 +341,17 @@ class Volume(object):
 
         self._name = name
 
+
+        if transform_matrix is not None:
+            old_origin = np.array([x_origin, y_origin, z_origin])
+            new_origin = np.dot(transform_matrix, old_origin)
+
+            x_origin, y_origin, z_origin = new_origin
+        
+        self._x_origin = x_origin - x_width / 2.0
+        self._y_origin = z_origin - height / 2.0
+        self._z_origin = y_origin - y_width / 2.0
+
         self._build_cube(
             origin=(
                 x_origin - x_width / 2.0,
@@ -318,6 +363,9 @@ class Volume(object):
             height=height,
         )
 
+        self._width = x_width
+        self._depth = y_width
+        self._height = height
         self._intersections = None
 
     def _build_cube(self, origin=None, width=1, height=1, depth=1):
@@ -441,6 +489,19 @@ class Volume(object):
 
         return self._name
 
+    def plot_ipv(self):
+
+        cube = Cube(
+            color=self._color,
+            x=self._x_origin,
+            y=self._y_origin,
+            z=self._z_origin,
+            width=self._width,
+            depth=self._depth,
+            height=self._height,
+        )
+        return cube.plot()
+
     def plot(self, ax, alpha=0.1):
 
         collection = Poly3DCollection(self._quads, facecolors=self._color, alpha=0.25)
@@ -526,6 +587,7 @@ class Cube(object):
         self._depth = depth
 
         self._color = color
+        self._artists = []
 
     def _create_Ploy3DCollection(
         self, *two_lines,
@@ -539,68 +601,80 @@ class Cube(object):
 
         return ipv.plot_surface(X, Y, Z, color=self._color)
 
+    @property
+    def artists(self):
+        return self._artists
+
     def plot(self):
 
-        self._front_bot_left = [x, y, z]
-        self._front_bot_right = [x + width, y, z]
-        self._front_top_left = [x, y + height, z]
-        self._front_top_right = [x + width, y + height, z]
+        self._front_bot_left = [self._x, self._y, self._z]
+        self._front_bot_right = [self._x + self._width, self._y, self._z]
+        self._front_top_left = [self._x, self._y + self._height, self._z]
+        self._front_top_right = [self._x + self._width, self._y + self._height, self._z]
 
-        self._rear_bot_left = [x, y, z + depth]
-        self._rear_bot_right = [x + width, y, z + depth]
-        self._rear_top_left = [x, y + height, z + depth]
-        self._rear_top_right = [x + width, y + height, z + depth]
+        self._rear_bot_left = [self._x, self._y, self._z + self._depth]
+        self._rear_bot_right = [self._x + self._width, self._y, self._z + self._depth]
+        self._rear_top_left = [self._x, self._y + self._height, self._z + self._depth]
+        self._rear_top_right = [
+            self._x + self._width,
+            self._y + self._height,
+            self._z + self._depth,
+        ]
 
-        ipv.figure()
 
-        self._top = self._create_Ploy3DCollection(
+
+        top = self._create_Ploy3DCollection(
             self._front_top_left,
             self._front_top_right,
             self._rear_top_left,
             self._rear_top_right,
         )
 
-        self._bot = self._create_Ploy3DCollection(
+        bot = self._create_Ploy3DCollection(
             self._front_bot_left,
             self._front_bot_right,
             self._rear_bot_left,
             self._rear_bot_right,
         )
 
-        self._front = self._create_Ploy3DCollection(
+        front = self._create_Ploy3DCollection(
             self._front_bot_left,
             self._front_bot_right,
             self._front_top_left,
             self._front_top_right,
         )
 
-        self._rear = self._create_Ploy3DCollection(
+        rear = self._create_Ploy3DCollection(
             self._rear_top_left,
             self._rear_top_right,
             self._rear_bot_left,
             self._rear_bot_right,
         )
 
-        self._left = self._create_Ploy3DCollection(
+        left = self._create_Ploy3DCollection(
             self._front_bot_left,
             self._front_top_left,
             self._rear_bot_left,
             self._rear_top_left,
         )
 
-        self._right = self._create_Ploy3DCollection(
+        right = self._create_Ploy3DCollection(
             self._front_bot_right,
             self._front_top_right,
             self._rear_bot_right,
             self._rear_top_right,
         )
+        self._artists.extend([top, bot, front, rear, left, right])
 
-        ipv.show()
+        
+
 
 from itertools import chain, repeat
 
+
 def iterable_to_chunks(iterable, size, fill=None):
-  '''Split a list to chunks
+    """
+    Split a list to chunks
     iterable : an iterable object, e.g. generator, list, array, etc.
     size : chunk size, positive integer
     fill : padding values.
@@ -610,5 +684,5 @@ def iterable_to_chunks(iterable, size, fill=None):
       ('a','b','c'), ('d','e','f'), ('g','x','x')
     reference :
       http://stackoverflow.com/a/312644
-  '''
-  return zip(*[chain(iterable, repeat(fill, size-1))]*size)
+    """
+    return zip(*[chain(iterable, repeat(fill, size - 1))] * size)
