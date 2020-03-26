@@ -29,6 +29,10 @@ _det_colors = dict(
 )
 
 
+
+
+
+
 def compute_distance(x, y, z, radius):
 
     dist = np.sqrt(x * x + y * y + z * z)
@@ -187,9 +191,9 @@ def animate_in_space(
 
                 x, y, z = v.center_icrs.cartesian.xyz.value * max(distances)
 
-                dets_x[k].append([sx, x])
-                dets_y[k].append([sy, y])
-                dets_z[k].append([sz, z])
+                dets_x[k].append([sx, sx+x])
+                dets_y[k].append([sy, sy+y])
+                dets_z[k].append([sz, sz+z])
 
     if show_detector_pointing:
 
@@ -327,13 +331,12 @@ def plot_in_space(
         )
 
         for k, v in gbm.detectors.items():
-
             x, y, z = v.center_icrs.cartesian.xyz.value * max(distances)
 
-            x_line = np.array([sx, x])
-            y_line = np.array([sy, y])
-            z_line = np.array([sz, z])
-
+            x_line = np.array([sx, sx+x])
+            y_line = np.array([sy, sy+y])
+            z_line = np.array([sz, sz+z])
+            print(sx, sx+x)
             color = _det_colors[k]
 
             ipv.pylab.plot(x_line, y_line, z_line, color=color)

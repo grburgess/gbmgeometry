@@ -306,11 +306,11 @@ class Cube(object):
 
         if i is not None:
 
-            return np.dot(self._transform_matrix[i], point)
+            return np.dot(self._transform_matrix[i].T, point)
 
         else:
 
-            return np.dot(self._transform_matrix, point)
+            return np.dot(self._transform_matrix.T, point)
 
 
 def iterable_to_chunks(iterable, size, fill=None):
