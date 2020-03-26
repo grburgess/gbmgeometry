@@ -10,7 +10,7 @@ from gbmgeometry.gbm import GBM
 from gbmgeometry.spacecraft.fermi import Fermi
 from gbmgeometry.geometry import Sphere
 
-"""
+
 _det_colors = dict(
     n0="#CC3311",
     n1="#CC3311",
@@ -28,23 +28,8 @@ _det_colors = dict(
     b1="#00F2C6",
 )
 
-"""
-_det_colors = dict(
-    n0="black",
-    n1="black",
-    n2="black",
-    n3="black",  # teal
-    n4="black",
-    n5="black",
-    n6="black",
-    n7="black",
-    n8="black",
-    n9="black",
-    na="black",
-    nb="black",
-    b0="red",
-    b1="red",
-)
+
+
 
 
 
