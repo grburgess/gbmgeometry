@@ -1,8 +1,8 @@
-from gbmgeometry.spacecraft.geometry import Volume
+from gbmgeometry.geometry import Volume
 
 
 class SolarPanel(Volume):
-    def __init__(self, sign, name, transform_matrix=None, sc_pos=None):
+    def __init__(self, sign, name, transform_matrix=None, sc_pos=None, quaternion=None):
         lenght = 492.3
         width = 151.0
 
@@ -26,16 +26,29 @@ class SolarPanel(Volume):
             y_width=y_width,
             transform_matrix=transform_matrix,
             sc_pos=sc_pos,
+            quaternion=quaternion,
             color="#3498DB",
             active_surfaces=["+x", "-x"],
         )
 
 
 class SolarPanelPlus(SolarPanel):
-    def __init__(self, transform_matrix=None, sc_pos=None):
-        super(SolarPanelPlus, self).__init__(1.0, "Solar Panel +", transform_matrix=transform_matrix, sc_pos=sc_pos)
+    def __init__(self, transform_matrix=None, sc_pos=None, quaternion=None):
+        super(SolarPanelPlus, self).__init__(
+            1.0,
+            "Solar Panel +",
+            transform_matrix=transform_matrix,
+            sc_pos=sc_pos,
+            quaternion=quaternion,
+        )
 
 
 class SolarPanelMinus(SolarPanel):
-    def __init__(self, transform_matrix=None, sc_pos=None):
-        super(SolarPanelMinus, self).__init__(-1.0, "Solar Panel -", transform_matrix=transform_matrix, sc_pos=sc_pos)
+    def __init__(self, transform_matrix=None, sc_pos=None, quaternion=None):
+        super(SolarPanelMinus, self).__init__(
+            -1.0,
+            "Solar Panel -",
+            transform_matrix=transform_matrix,
+            sc_pos=sc_pos,
+            quaternion=quaternion,
+        )

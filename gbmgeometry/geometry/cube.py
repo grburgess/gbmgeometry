@@ -44,14 +44,37 @@ class Cube(object):
         self._artists = []
         self._transform_matrix = transform_matrix
 
-    def _create_Ploy3DCollection(
-            self, *two_lines, i = None, side=None
-    ):
+        self._is_vector = False
+        self._is_vector_origin = False
 
-        x, y, z = zip(two_lines[0], two_lines[1], two_lines[2], two_lines[3])
-        if i is None:
+        # check if we have vector of positions
 
-            
+        if (self._transform_matrix is not None) and len(
+            self._transform_matrix.shape
+        ) > 2:
+
+            # this is the case if the transform is changing with time
+            # or the sc_pos is changing with time
+
+            assert (
+                self._sc_pos.shape[0] == self._transform_matrix.shape[0]
+            ), "the sc_pos and trans matrix are not the same lenght"
+
+            self._is_vector = True
+            self._vector_length = self._transform_matrix.shape[0]
+
+        elif np.atleast_1d(self._x).shape[0] > 1:
+
+            # this is the case that the origin is changing with time.
+
+            self._is_vector = True
+            self._is_vector_origin = True
+            self._vector_length = self._x.shape[0]
+
+    def _create_Ploy3DCollection(self, line1, line2, line3, line4, i=None, side=None):
+
+        x, y, z = zip(line1, line2, line3, line4)
+        if not self._is_vector:
 
             # print(x)
 
@@ -63,21 +86,25 @@ class Cube(object):
 
         else:
 
-            self._X[side,i] = np.array([__ for __ in iterable_to_chunks(x, 2)])
-            self._Y[side,i] = np.array([__ for __ in iterable_to_chunks(y, 2)])
-            self._Z[side,i] = np.array([__ for __ in iterable_to_chunks(z, 2)])
+            self._X[side, i] = np.array([__ for __ in iterable_to_chunks(x, 2)])
+            self._Y[side, i] = np.array([__ for __ in iterable_to_chunks(y, 2)])
+            self._Z[side, i] = np.array([__ for __ in iterable_to_chunks(z, 2)])
 
-            if i >= len(self._x) -1:
+            # on the last iteration we make the plot and return it
 
-                return ipv.plot_surface(self._X[side], self._Y[side], self._Z[side], color=self._color)
-        
+            if i >= self._vector_length - 1:
+
+                return ipv.plot_surface(
+                    self._X[side], self._Y[side], self._Z[side], color=self._color
+                )
+
     @property
     def artists(self):
         return self._artists
 
     def plot(self):
 
-        if np.atleast_1d(self._x).shape[0] == 1:
+        if not self._is_vector:
 
             (
                 front_top_right,
@@ -114,15 +141,22 @@ class Cube(object):
                 front_bot_right, front_top_right, rear_bot_right, rear_top_right,
             )
 
-            
-
         else:
 
-            self._X = np.zeros((6, len(self._x), 2, 2))
-            self._Y = np.zeros((6, len(self._x), 2, 2))
-            self._Z = np.zeros((6, len(self._x), 2, 2))
+            self._X = np.zeros((6, self._vector_length, 2, 2))
+            self._Y = np.zeros((6, self._vector_length, 2, 2))
+            self._Z = np.zeros((6, self._vector_length, 2, 2))
 
-            for i, (x, y, z) in enumerate(zip(self._x, self._y, self._z)):
+            for i in range(self._vector_length):
+
+                if self._is_vector_origin:
+                    x = self._x[i]
+                    y = self._y[i]
+                    z = self._z[i]
+
+                else:
+
+                    x, y, z = self._x, self._y, self._z
 
                 (
                     front_top_right,
@@ -133,35 +167,65 @@ class Cube(object):
                     rear_top_left,
                     rear_bot_right,
                     rear_bot_left,
-                ) = self._assemble(x, y, z)
+                ) = self._assemble(x, y, z, i)
 
                 top = self._create_Ploy3DCollection(
-                     front_top_left, front_top_right, rear_top_left, rear_top_right,
-                    i=i, side=0)
+                    front_top_left,
+                    front_top_right,
+                    rear_top_left,
+                    rear_top_right,
+                    i=i,
+                    side=0,
+                )
 
                 bot = self._create_Ploy3DCollection(
-                    front_bot_left, front_bot_right, rear_bot_left, rear_bot_right,
-                    i=i, side=1)
+                    front_bot_left,
+                    front_bot_right,
+                    rear_bot_left,
+                    rear_bot_right,
+                    i=i,
+                    side=1,
+                )
 
                 front = self._create_Ploy3DCollection(
-                    front_bot_left, front_bot_right, front_top_left, front_top_right,
-                    i=i, side=2)
+                    front_bot_left,
+                    front_bot_right,
+                    front_top_left,
+                    front_top_right,
+                    i=i,
+                    side=2,
+                )
 
                 rear = self._create_Ploy3DCollection(
-                    rear_top_left, rear_top_right, rear_bot_left, rear_bot_right,
-                    i=i, side=3)
+                    rear_top_left,
+                    rear_top_right,
+                    rear_bot_left,
+                    rear_bot_right,
+                    i=i,
+                    side=3,
+                )
 
                 left = self._create_Ploy3DCollection(
-                    front_bot_left, front_top_left, rear_bot_left, rear_top_left,
-                    i=i, side=4)
+                    front_bot_left,
+                    front_top_left,
+                    rear_bot_left,
+                    rear_top_left,
+                    i=i,
+                    side=4,
+                )
 
                 right = self._create_Ploy3DCollection(
-                    front_bot_right, front_top_right, rear_bot_right, rear_top_right,
-                    i=i, side=5)
+                    front_bot_right,
+                    front_top_right,
+                    rear_bot_right,
+                    rear_top_right,
+                    i=i,
+                    side=5,
+                )
 
-        self._artists.extend([top, bot, front, rear, left, right])        
+        self._artists.extend([top, bot, front, rear, left, right])
 
-    def _assemble(self, x, y, z):
+    def _assemble(self, x, y, z, i=None):
 
         front_bot_left = np.array([x, y, z])
         front_bot_right = np.array([x + self._width, y, z])
@@ -185,27 +249,21 @@ class Cube(object):
         ]
 
         if self._transform_matrix is not None:
+
+            # we now rotate the point FIRST
+            # and then translate the point
+
             new_points = []
+
             for point in points:
 
-                new_point = np.dot(self._transform_matrix, point)
-                new_point = self._translate(new_point)
-                #                new_point = self._translate(self._quaternion.rotatePoint(point))
+                new_point = self._rotate(point, i)
+
+                new_point = self._translate(new_point, i)
 
                 # print(f"before {point} after {new_point}")
 
                 new_points.append(new_point)
-
-            # (
-            #     front_top_right,
-            #     front_top_left,
-            #     front_bot_right,
-            #     front_bot_left,
-            #     rear_top_right,
-            #     rear_top_left,
-            #     rear_bot_right,
-            #     rear_bot_left,
-            # ) = new_points
 
             return new_points
 
@@ -213,15 +271,25 @@ class Cube(object):
 
             return points
 
-    def _translate(self, point):
+    def _translate(self, point, i=None):
 
-        return np.array(
-            [
-                point[0] + self._sc_pos[0],
-                point[1] + self._sc_pos[1],
-                point[2] + self._sc_pos[2],
-            ]
-        )
+        if i is not None:
+
+            return point + self._sc_pos[i]
+
+        else:
+
+            return point + self._sc_pos
+
+    def _rotate(self, point, i=None):
+
+        if i is not None:
+
+            return np.dot(self._transform_matrix[i], point)
+
+        else:
+
+            return np.dot(self._transform_matrix, point)
 
 
 def iterable_to_chunks(iterable, size, fill=None):

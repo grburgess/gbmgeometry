@@ -219,7 +219,10 @@ class Volume(object):
             sc_pos=self._sc_pos,
             quarternion=self._quaternion
         )
-        return cube.plot()
+
+        cube.plot()
+        
+        return cube.artists
 
     def plot(self, ax, alpha=0.1):
 

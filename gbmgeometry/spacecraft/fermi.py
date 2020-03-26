@@ -10,7 +10,7 @@ import ipyvolume as ipv
 
 from gbmgeometry.gbm import GBM
 from gbmgeometry.utils.array_to_cmap import array_to_cmap
-from gbmgeometry.spacecraft.geometry import Ray, get_sc_matrix
+from gbmgeometry.geometry import Ray, get_sc_matrix
 from gbmgeometry.spacecraft.lat import LAT, LATRadiatorMinus, LATRadiatorPlus
 from gbmgeometry.spacecraft.solar_panels import SolarPanelMinus, SolarPanelPlus
 
@@ -32,27 +32,58 @@ class Fermi(object):
         # build fermi by creating all the components
         if transform_to_space:
 
-            transform_matrix = get_sc_matrix(*quaternion)
             assert sc_pos is not None
-            
-            
+
+            if len(quaternion.shape) == 1:
+
+                transform_matrix = get_sc_matrix(*quaternion)
+
+            else:
+
+                # this is going to be an array from different time bins
+
+                transform_matrix = np.array(
+                    [get_sc_matrix(*quat) for quat in quaternion]
+                )
+
         else:
 
+            sc_pos = None
             transform_matrix = None
 
         self._transform_matrix = transform_matrix
         self._sc_pos = sc_pos
-        
-        self._lat = LAT(transform_matrix=transform_matrix, sc_pos=sc_pos)
+        self._quaternion = quaternion
 
-        self._lat_radiator_plus = LATRadiatorPlus(transform_matrix=transform_matrix, sc_pos=sc_pos)
-        self._lat_radiator_minus = LATRadiatorMinus(transform_matrix=transform_matrix, sc_pos=sc_pos)
+        self._lat = LAT(
+            transform_matrix=transform_matrix, sc_pos=sc_pos, quaternion=quaternion
+        )
 
-        self._solar_panel_plus = SolarPanelPlus(transform_matrix=transform_matrix, sc_pos=sc_pos)
-        self._solar_panel_minus = SolarPanelMinus(transform_matrix=transform_matrix, sc_pos=sc_pos)
+        self._lat_radiator_plus = LATRadiatorPlus(
+            transform_matrix=transform_matrix, sc_pos=sc_pos, quaternion=quaternion
+        )
+        self._lat_radiator_minus = LATRadiatorMinus(
+            transform_matrix=transform_matrix, sc_pos=sc_pos, quaternion=quaternion
+        )
+
+        self._solar_panel_plus = SolarPanelPlus(
+            transform_matrix=transform_matrix, sc_pos=sc_pos, quaternion=quaternion
+        )
+        self._solar_panel_minus = SolarPanelMinus(
+            transform_matrix=transform_matrix, sc_pos=sc_pos, quaternion=quaternion
+        )
 
         # build a GBM
 
+        # note that we would not use the
+        # time dependent function here so
+        # it is expicitly disabled
+
+        if len(quaternion.shape) != 1:
+
+            quaternion = quaternion[1]
+            sc_pos = sc_pos[1]
+            
         self._gbm = GBM(quaternion, sc_pos)
 
         # grab the frame
@@ -331,8 +362,10 @@ class Fermi(object):
         #     for det in detectors:
         #         assert det in self._gbm.detectors.keys(), "invalid detector"
 
+        artists = []
+        
         for name, component in self._spacecraft_components.items():
-            component.plot_ipv()
+            artists.extend(component.plot_ipv())
 
         # for name, det in self._gbm.detectors.items():
 
@@ -433,6 +466,8 @@ class Fermi(object):
 
         # return fig
 
+        return artists
+        
     def read_healpix_map(self, healpix_map, cmap="viridis"):
 
         # collect the nside of the map
