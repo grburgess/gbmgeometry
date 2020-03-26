@@ -10,7 +10,7 @@ from gbmgeometry.gbm import GBM
 from gbmgeometry.spacecraft.fermi import Fermi
 from gbmgeometry.geometry import Sphere
 
-
+"""
 _det_colors = dict(
     n0="#CC3311",
     n1="#CC3311",
@@ -27,6 +27,25 @@ _det_colors = dict(
     b0="#F2E300",
     b1="#00F2C6",
 )
+
+"""
+_det_colors = dict(
+    n0="black",
+    n1="black",
+    n2="black",
+    n3="black",  # teal
+    n4="black",
+    n5="black",
+    n6="black",
+    n7="black",
+    n8="black",
+    n9="black",
+    na="black",
+    nb="black",
+    b0="red",
+    b1="red",
+)
+
 
 
 def compute_distance(x, y, z, radius):
@@ -187,9 +206,9 @@ def animate_in_space(
 
                 x, y, z = v.center_icrs.cartesian.xyz.value * max(distances)
 
-                dets_x[k].append([sx, x])
-                dets_y[k].append([sy, y])
-                dets_z[k].append([sz, z])
+                dets_x[k].append([sx, sx+x])
+                dets_y[k].append([sy, sy+y])
+                dets_z[k].append([sz, sz+z])
 
     if show_detector_pointing:
 
@@ -327,13 +346,12 @@ def plot_in_space(
         )
 
         for k, v in gbm.detectors.items():
-
             x, y, z = v.center_icrs.cartesian.xyz.value * max(distances)
 
-            x_line = np.array([sx, x])
-            y_line = np.array([sy, y])
-            z_line = np.array([sz, z])
-
+            x_line = np.array([sx, sx+x])
+            y_line = np.array([sy, sy+y])
+            z_line = np.array([sz, sz+z])
+            print(sx, sx+x)
             color = _det_colors[k]
 
             ipv.pylab.plot(x_line, y_line, z_line, color=color)
