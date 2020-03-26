@@ -7,9 +7,18 @@ from gbmgeometry.geometry import Sphere
 
 
 
+_earth_img = dict(day=get_path_of_data_file('earth_day.jpg'),
+              night=get_path_of_data_file('earth_night.jpg'),
+              midnight=get_path_of_data_file('earth_midnight.jpg')
+
+
+)
+
+
+
 
 class Earth(Sphere):
-    def __init__(self, ax=None, detail_level=100, color="#4E66DE", **kwargs):
+    def __init__(self, ax=None, detail_level=100, color="#4E66DE", earth_time='day', realistic=True, **kwargs):
         """
         The Planet Earth. Earth is at the origin
 
@@ -21,6 +30,16 @@ class Earth(Sphere):
 
         """
 
+        if realistic:
+
+            assert earth_time in _earth_img, 'oops, please choose, day, night, or midnight'
+
+            image = _earth_img[earth_time]
+            
+        else:
+
+            image = None
+            
         super(Earth, self).__init__(
             ax=ax,
             x=0,
@@ -29,16 +48,19 @@ class Earth(Sphere):
             detail_level=detail_level,
             radius=6371.0,
             color=color,
+            image=image,
             **kwargs
         )
 
-        with h5py.File(get_path_of_data_file('countries.h5'), 'r') as f:
+        if not realistic:
+        
+            with h5py.File(get_path_of_data_file('countries.h5'), 'r') as f:
 
-            xs = f['x'][()]
-            ys = f['y'][()]
-            zs = f['z'][()]
-            
-            ipv.pylab.plot(xs,ys,zs, color='black')
+                xs = f['x'][()]
+                ys = f['y'][()]
+                zs = f['z'][()]
+
+                ipv.pylab.plot(xs,ys,zs, color='black')
 
 
 class Sol(Sphere):
