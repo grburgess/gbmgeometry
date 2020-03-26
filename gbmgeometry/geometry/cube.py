@@ -17,12 +17,33 @@ class Cube(object):
         transform_matrix=None,
         sc_pos=None,
         quarternion=None,
+        scaling_factor = 1.
     ):
+        """
+        A 3D cube that can be animated
+
+        :param x: 
+        :param y: 
+        :param z: 
+        :param x_width: 
+        :param y_width: 
+        :param z_width: 
+        :param color: 
+        :param transform_matrix: 
+        :param sc_pos: 
+        :param quarternion: 
+        :param scaling_factor: 
+        :returns: 
+        :rtype: 
+
+        """
+
+        
         factor = 1.0
 
         if transform_matrix is not None:
 
-            factor = 1
+            factor = scaling_factor
             x *= factor
             y *= factor
             z *= factor
