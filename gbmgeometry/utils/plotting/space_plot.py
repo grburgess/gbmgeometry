@@ -331,7 +331,7 @@ def plot_in_space(
             x_line = np.array([sx, sx + x])
             y_line = np.array([sy, sy + y])
             z_line = np.array([sz, sz + z])
-            print(sx, sx + x)
+            
             color = _det_colors[k]
 
             ipv.pylab.plot(x_line, y_line, z_line, color=color)
