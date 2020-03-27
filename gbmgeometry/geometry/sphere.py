@@ -25,6 +25,22 @@ class Sphere(object):
         self._image = image
 
 
+        # assume the images are from my
+        # HDF5 library
+        
+        if image is not None:
+
+            # pre load all the image calcs
+            
+            with h5py.File(image, 'r') as f:
+
+                self._xx = f['x'][()]
+                self._yy = f['y'][()]
+                self._zz = f['z'][()]
+
+                self._color = f['color'][()]
+        
+
             
         
 
@@ -43,22 +59,38 @@ class Sphere(object):
 
         """
 
-        if self._image is None:
         
-            u = np.linspace(0, 2 * np.pi, self._detail_level)
-            v = np.linspace(0, np.pi, self._detail_level)
+        
+        u = np.linspace(0, 2 * np.pi, self._detail_level)
+        v = np.linspace(0, np.pi, self._detail_level)
 
-            if np.atleast_1d(self._x).shape[0] == 1:
+        if np.atleast_1d(self._x).shape[0] == 1:
 
+            if self._image is None:
+            
                 X = self._x + self._radius * np.outer(np.cos(u), np.sin(v))
 
                 Y = self._y + self._radius * np.outer(np.sin(u), np.sin(v))
 
                 Z = self._z + self._radius * np.outer(np.ones(np.size(u)), np.cos(v))
 
+                
+                
             else:
 
-                # for animations
+                # things were pre computed
+                
+                X = (self._x + self._radius * self._xx).T
+                Y = (self._y + self._radius * self._yy).T
+                Z = (self._z + self._radius * self._zz).T
+                
+                
+        else:
+
+            # for animations
+
+
+            if self._image is None:
 
                 X = np.array(
                     [x + self._radius * np.outer(np.cos(u), np.sin(v)) for x in self._x]
@@ -75,29 +107,20 @@ class Sphere(object):
                     ]
                 )
 
-                return ipv.plot_surface(X, Y, Z, color=self._color, **kwargs)
+            else:
 
-        else:
-            img = plt.imread(self._image)
-            # define a grid matching the map size, subsample along with pixels
-            theta = np.linspace(0, np.pi, img.shape[0])
-            phi = np.linspace(0, 2*np.pi, img.shape[1])
 
-            count = 5*180 # keep 180 points along theta and phi
-            theta_inds = np.linspace(0, img.shape[0] - 1, count).round().astype(int)
-            phi_inds = np.linspace(0, img.shape[1] - 1, count).round().astype(int)
-            theta = theta[theta_inds]
-            phi = phi[phi_inds]
-            img = img[np.ix_(theta_inds, phi_inds)]
+                # sphere
 
-            theta,phi = np.meshgrid(theta, phi)
-            R = self._radius
+                X = np.array([(x + self._radius * self._xx).T for x in self._x])
+                Y = np.array([(y + self._radius * self._yy).T for y in self._y])
+                Z = np.array([(z + self._radius * self._zz).T for z in self._z])
 
-            # sphere
-            x = R * np.sin(theta) * np.cos(phi)
-            y = R * np.sin(theta) * np.sin(phi)
-            z = R * np.cos(theta)
+                self._color = np.array([self._color for _ in range(len(self._x))])
+                
 
-      
-            return ipv.plot_surface(x.T, y.T, z.T, color=img/255)
+        return ipv.plot_surface(X, Y, Z, color=self._color, **kwargs)
+
+
+#            return ipv.plot_surface(x.T, y.T, z.T, color=img/255)
 

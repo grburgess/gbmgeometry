@@ -6,19 +6,25 @@ from gbmgeometry.utils.package_utils import get_path_of_data_file
 from gbmgeometry.geometry import Sphere
 
 
-
-_earth_img = dict(day=get_path_of_data_file('earth_day.jpg'),
-              night=get_path_of_data_file('earth_night.jpg'),
-              midnight=get_path_of_data_file('earth_midnight.jpg')
-
-
+_earth_img = dict(
+    day=get_path_of_data_file("earth_day.h5"),
+    night=get_path_of_data_file("earth_night.h5"),
+    midnight=get_path_of_data_file("earth_midnight.h5"),
+    thats_no_moon=get_path_of_data_file("thats_no_moon.h5"),
+    i_have_a_bad_feeling_about_this=get_path_of_data_file("thats_no_moon_big.h5"),
 )
 
 
-
-
 class Earth(Sphere):
-    def __init__(self, ax=None, detail_level=100, color="#4E66DE", earth_time='day', realistic=True, **kwargs):
+    def __init__(
+        self,
+        ax=None,
+        detail_level=100,
+        color="#4E66DE",
+        earth_time="day",
+        realistic=True,
+        **kwargs
+    ):
         """
         The Planet Earth. Earth is at the origin
 
@@ -32,14 +38,16 @@ class Earth(Sphere):
 
         if realistic:
 
-            assert earth_time in _earth_img, 'oops, please choose, day, night, or midnight'
+            assert (
+                earth_time in _earth_img
+            ), "oops, please choose, day, night, or midnight"
 
             image = _earth_img[earth_time]
-            
+
         else:
 
             image = None
-            
+
         super(Earth, self).__init__(
             ax=ax,
             x=0,
@@ -53,14 +61,14 @@ class Earth(Sphere):
         )
 
         if not realistic:
-        
-            with h5py.File(get_path_of_data_file('countries.h5'), 'r') as f:
 
-                xs = f['x'][()]
-                ys = f['y'][()]
-                zs = f['z'][()]
+            with h5py.File(get_path_of_data_file("countries.h5"), "r") as f:
 
-                ipv.pylab.plot(xs,ys,zs, color='black')
+                xs = f["x"][()]
+                ys = f["y"][()]
+                zs = f["z"][()]
+
+                ipv.pylab.plot(xs, ys, zs, color="black")
 
 
 class Sol(Sphere):
@@ -90,7 +98,17 @@ class Sol(Sphere):
 
 
 class Moon(Sphere):
-    def __init__(self, x, y, z, ax=None, detail_level=20, color="#68696A", **kwargs):
+    def __init__(
+        self,
+        x,
+        y,
+        z,
+        ax=None,
+        detail_level=50,
+        color="#68696A",
+        use_image=False,
+        **kwargs
+    ):
         """
         The Sun. This is variable with respect to the satellite and Earth, so 
         coordinates have to be provided with at a single time or as an array
@@ -103,6 +121,15 @@ class Moon(Sphere):
 
         """
 
+        # it is crazy slow to animate and image!
+
+        if use_image:
+
+            image = _earth_img["thats_no_moon"]
+
+        else:
+            image = None
+
         super(Moon, self).__init__(
             ax=ax,
             x=x,
@@ -111,6 +138,7 @@ class Moon(Sphere):
             detail_level=detail_level,
             radius=1731.1,
             color=color,
+            image=image,
             **kwargs
         )
 
@@ -127,18 +155,35 @@ def _sample_theta_phi(size, r):
 
     theta = np.arccos(1 - 2 * np.random.uniform(0.0, 1.0, size=size))
     phi = np.random.uniform(0, 2 * np.pi, size=size)
-
+    r = np.random.uniform(r *0.95 , r*1.1, size=size)
+    
     x, y, z = _xyz(r, theta, phi)
     return x, y, z
 
 
 class StarField(object):
     def __init__(self, n_stars=20, distance=1):
+        """
+        a star field
+
+        :param n_stars: 
+        :param distance: 
+        :returns: 
+        :rtype: 
+
+        """
+        
 
         self._x, self._y, self._z = _sample_theta_phi(n_stars, distance)
 
     def plot(self):
 
         return ipv.pylab.scatter(
-            self._x, self._y, self._z, color="white", marker="sphere", size=.05, alpha=.2
+            self._x,
+            self._y,
+            self._z,
+            color="white",
+            marker="sphere",
+            size=0.07,
+            alpha=0.2,
         )

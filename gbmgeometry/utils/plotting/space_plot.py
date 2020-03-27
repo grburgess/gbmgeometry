@@ -21,16 +21,12 @@ _det_colors = dict(
     n6="#EE7733",
     n7="#EE7733",
     n8="#EE7733",
-    n9="#EE3377",
-    na="#EE3377",
-    nb="#EE3377",
+    n9="#0077BB",
+    na="#0077BB",
+    nb="#0077BB",
     b0="#F2E300",
-    b1="#00F2C6",
+    b1="#F2E300",
 )
-
-
-
-
 
 
 def compute_distance(x, y, z, radius):
@@ -42,17 +38,6 @@ def compute_distance(x, y, z, radius):
     return dist
 
 
-class FermiPoint(Sphere):
-    def __init__(self, x, y, z, color="#10DC9B"):
-        """
-        A dummy point for fermi to keep sizes in check
-        """
-
-        super(FermiPoint, self).__init__(
-            ax=None, x=x, y=y, z=z, detail_level=20, radius=100.0, color=color,
-        )
-
-
 def animate_in_space(
     position_interpolator,
     n_step=200,
@@ -60,10 +45,12 @@ def animate_in_space(
     show_earth=True,
     show_sun=False,
     show_moon=False,
-    background_color="#070323",
+    background_color="#01000F",
     detector_scaling_factor=20000.0,
     show_stars=False,
     show_inactive=False,
+    earth_time="night",
+        interval=200,
 ):
     """
     Animiate fermi in Space!
@@ -99,7 +86,7 @@ def animate_in_space(
 
     if show_earth:
 
-        earth = Earth()
+        earth = Earth(earth_time=earth_time)
 
         earth.plot()
 
@@ -191,9 +178,9 @@ def animate_in_space(
 
                 x, y, z = v.center_icrs.cartesian.xyz.value * max(distances)
 
-                dets_x[k].append([sx, sx+x])
-                dets_y[k].append([sy, sy+y])
-                dets_z[k].append([sz, sz+z])
+                dets_x[k].append([sx, sx + x])
+                dets_y[k].append([sy, sy + y])
+                dets_z[k].append([sz, sz + z])
 
     if show_detector_pointing:
 
@@ -232,8 +219,6 @@ def animate_in_space(
     )
     artists.extend(fermi_real.plot_fermi_ipy())
 
-    
-
     if show_stars:
 
         sf = StarField(n_stars=200, distance=max(distances) - 2)
@@ -241,7 +226,7 @@ def animate_in_space(
 
     ipv.xyzlim(max(distances))
 
-    ipv.animation_control(artists)
+    ipv.animation_control(artists, interval=interval)
 
     ipv.show()
 
@@ -253,9 +238,11 @@ def plot_in_space(
     show_earth=True,
     show_sun=False,
     show_moon=False,
-    background_color="#070323",
+    background_color="#01000F",
     detector_scaling_factor=20000.0,
     show_stars=False,
+        show_orbit=True,
+    earth_time="night",
 ):
     """
     Plot Fermi in Space!
@@ -280,11 +267,24 @@ def plot_in_space(
     ipv.pylab.style.set_style_dark()
     ipv.pylab.style.background_color(background_color)
 
-    distances = [8000]
+    distances = [15000]
 
+
+    if show_orbit:
+
+        tmin, tmax = position_interpolator.minmax_time()
+        tt = np.linspace(tmin, tmax, 500)
+
+        sc_pos = position_interpolator.sc_pos(tt)
+
+        
+        
+        ipv.plot(sc_pos[:, 0],sc_pos[:, 1], sc_pos[:, 2], lw=.5)
+        
+    
     if show_earth:
 
-        earth = Earth()
+        earth = Earth(earth_time=earth_time)
 
         earth.plot()
 
@@ -302,18 +302,13 @@ def plot_in_space(
         moon_pos = position_interpolator.moon_position(time)
         x, y, z = moon_pos.cartesian.xyz.to("km").value
 
-        moon = Moon(x, y, z)
+        moon = Moon(x, y, z, show_image=True)
         distances.append(compute_distance(x, y, z, moon.radius))
         moon.plot()
 
     # now get fermi position
 
     sx, sy, sz = position_interpolator.sc_pos(time)
-
-    print(f"true: {sx},{sy},{sz}")
-
-    fermi = FermiPoint(sx, sy, sz)
-    fermi.plot()
 
     fermi_real = Fermi(
         position_interpolator.quaternion(time),
@@ -333,10 +328,10 @@ def plot_in_space(
         for k, v in gbm.detectors.items():
             x, y, z = v.center_icrs.cartesian.xyz.value * max(distances)
 
-            x_line = np.array([sx, sx+x])
-            y_line = np.array([sy, sy+y])
-            z_line = np.array([sz, sz+z])
-            print(sx, sx+x)
+            x_line = np.array([sx, sx + x])
+            y_line = np.array([sy, sy + y])
+            z_line = np.array([sz, sz + z])
+            print(sx, sx + x)
             color = _det_colors[k]
 
             ipv.pylab.plot(x_line, y_line, z_line, color=color)
