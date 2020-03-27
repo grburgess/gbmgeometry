@@ -6,6 +6,36 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from mpl_toolkits.mplot3d import Axes3D
 from sympy import Plane, Point3D, Line3D
 
+import ipyvolume as ipv
+
+
+def get_sc_matrix(q1, q2, q3, q4):
+    """
+    build a sc matrix from quats
+
+    :param q1: 
+    :param q2: 
+    :param q3: 
+    :param q4: 
+    :returns: 
+    :rtype: 
+
+    """
+
+    sc_matrix = np.zeros((3, 3))
+
+    sc_matrix[0, 0] = q1 ** 2 - q2 ** 2 - q3 ** 2 + q4 ** 2
+    sc_matrix[0, 1] = 2.0 * (q1 * q2 + q4 * q3)
+    sc_matrix[0, 2] = 2.0 * (q1 * q3 - q4 * q2)
+    sc_matrix[1, 0] = 2.0 * (q1 * q2 - q4 * q3)
+    sc_matrix[1, 1] = -(q1 ** 2) + q2 ** 2 - q3 ** 2 + q4 ** 2
+    sc_matrix[1, 2] = 2.0 * (q2 * q3 + q4 * q1)
+    sc_matrix[2, 0] = 2.0 * (q1 * q3 + q4 * q2)
+    sc_matrix[2, 1] = 2.0 * (q2 * q3 - q4 * q1)
+    sc_matrix[2, 2] = -(q1 ** 2) - q2 ** 2 + q3 ** 2 + q4 ** 2
+
+    return sc_matrix
+
 
 class Ray(object):
     # scaling for distance of lines
@@ -279,6 +309,8 @@ class Volume(object):
         height,
         x_width,
         y_width,
+        transform_matrix=None,
+        sc_pos=None,
         color="grey",
         active_surfaces=None,
     ):
@@ -307,6 +339,22 @@ class Volume(object):
 
         self._name = name
 
+        # this is to transform into space coords
+
+        # if transform_matrix is not None:
+
+        #     x_origin = x_origin + sc_pos[0]
+        #     y_origin = y_origin + sc_pos[1]
+        #     z_origin = z_origin + sc_pos[2]
+
+
+        self._sc_pos = sc_pos
+        self._transform_matrix = transform_matrix
+
+        self._x_origin = x_origin - x_width / 2.0
+        self._y_origin = z_origin - height / 2.0
+        self._z_origin = y_origin - y_width / 2.0
+
         self._build_cube(
             origin=(
                 x_origin - x_width / 2.0,
@@ -318,6 +366,9 @@ class Volume(object):
             height=height,
         )
 
+        self._x_width = x_width
+        self._y_width = y_width
+        self._z_width = height
         self._intersections = None
 
     def _build_cube(self, origin=None, width=1, height=1, depth=1):
@@ -441,6 +492,26 @@ class Volume(object):
 
         return self._name
 
+    def plot_ipv(self):
+
+        x,y,z = self._center
+        
+        cube = Cube(
+            color=self._color,
+            # x=self._x_origin,
+            # y=self._z_origin,
+            # z=self._y_origin,
+            x=x,
+            y=y,
+            z=z,
+            x_width=self._x_width,
+            z_width=self._z_width,
+            y_width=self._y_width,
+            transform_matrix=self._transform_matrix,
+            sc_pos = self._sc_pos
+        )
+        return cube.plot()
+
     def plot(self, ax, alpha=0.1):
 
         collection = Poly3DCollection(self._quads, facecolors=self._color, alpha=0.25)
@@ -509,3 +580,6 @@ class Volume(object):
             self._intersections[intersection]["intersection point"],
             self._intersections[intersection]["distance"],
         )
+
+
+# -*- coding: utf-8 -*-

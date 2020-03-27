@@ -10,3 +10,4 @@ docs/_build/
 /.pytest_cache/
 /docs/notebooks/my_posthist.h5
 /docs/notebooks/my_trigdat.h5
+/gbmgeometry/.DS_Store

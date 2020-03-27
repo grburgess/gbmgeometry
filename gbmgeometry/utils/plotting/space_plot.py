@@ -4,10 +4,29 @@ from gbmgeometry.utils.plotting.heavenly_bodies import (
     Sol,
     Moon,
     Earth,
-    Sphere,
     StarField,
 )
 from gbmgeometry.gbm import GBM
+from gbmgeometry.spacecraft.fermi import Fermi
+from gbmgeometry.geometry import Sphere
+
+
+_det_colors = dict(
+    n0="#CC3311",
+    n1="#CC3311",
+    n2="#CC3311",
+    n3="#009988",  # teal
+    n4="#009988",
+    n5="#009988",
+    n6="#EE7733",
+    n7="#EE7733",
+    n8="#EE7733",
+    n9="#0077BB",
+    na="#0077BB",
+    nb="#0077BB",
+    b0="#F2E300",
+    b1="#F2E300",
+)
 
 
 def compute_distance(x, y, z, radius):
@@ -19,17 +38,6 @@ def compute_distance(x, y, z, radius):
     return dist
 
 
-class FermiPoint(Sphere):
-    def __init__(self, x, y, z, color="#10DC9B"):
-        """
-        A dummy point for fermi to keep sizes in check
-        """
-
-        super(FermiPoint, self).__init__(
-            ax=None, x=x, y=y, z=z, detail_level=20, radius=100.0, color=color,
-        )
-
-
 def animate_in_space(
     position_interpolator,
     n_step=200,
@@ -37,9 +45,12 @@ def animate_in_space(
     show_earth=True,
     show_sun=False,
     show_moon=False,
-    background_color="#070323",
+    background_color="#01000F",
     detector_scaling_factor=20000.0,
     show_stars=False,
+    show_inactive=False,
+    earth_time="night",
+        interval=200,
 ):
     """
     Animiate fermi in Space!
@@ -71,11 +82,11 @@ def animate_in_space(
 
     artists = []
 
-    distances = [8000]
+    distances = [15000]
 
     if show_earth:
 
-        earth = Earth()
+        earth = Earth(earth_time=earth_time)
 
         earth.plot()
 
@@ -124,6 +135,10 @@ def animate_in_space(
     sys = []
     szs = []
 
+    x_off = []
+    y_off = []
+    z_off = []
+
     if show_detector_pointing:
 
         distances.append(detector_scaling_factor)
@@ -150,6 +165,11 @@ def animate_in_space(
         sys.append(sy)
         szs.append(sz)
 
+        if not position_interpolator.is_fermi_active(t):
+            x_off.append(sx)
+            y_off.append(sy)
+            z_off.append(sz)
+
         if show_detector_pointing:
 
             gbm.set_quaternion(position_interpolator.quaternion(t))
@@ -158,9 +178,9 @@ def animate_in_space(
 
                 x, y, z = v.center_icrs.cartesian.xyz.value * max(distances)
 
-                dets_x[k].append([sx, x])
-                dets_y[k].append([sy, y])
-                dets_z[k].append([sz, z])
+                dets_x[k].append([sx, sx + x])
+                dets_y[k].append([sy, sy + y])
+                dets_z[k].append([sz, sz + z])
 
     if show_detector_pointing:
 
@@ -170,11 +190,7 @@ def animate_in_space(
             dets_y[k] = np.array(dets_y[k])
             dets_z[k] = np.array(dets_z[k])
 
-            if k.startswith("b"):
-                color = "#EE3A00"
-
-            else:
-                color = "#EEEE01"
+            color = _det_colors[k]
 
             artists.append(ipv.pylab.plot(dets_x[k], dets_y[k], dets_z[k], color=color))
 
@@ -182,8 +198,26 @@ def animate_in_space(
     sys = np.array(sys)
     szs = np.array(szs)
 
-    fermi = FermiPoint(sxs, sys, szs)
-    artists.append(fermi.plot())
+    if show_inactive:
+        ipv.pylab.scatter(
+            np.array(x_off),
+            np.array(y_off),
+            np.array(z_off),
+            color="#DC1212",
+            alpha=0.5,
+            marke="circle_2d",
+            size=1,
+        )
+
+    # fermi = FermiPoint(sxs, sys, szs)
+    # artists.append(fermi.plot())
+
+    fermi_real = Fermi(
+        position_interpolator.quaternion(time),
+        sc_pos=position_interpolator.sc_pos(time),
+        transform_to_space=True,
+    )
+    artists.extend(fermi_real.plot_fermi_ipy())
 
     if show_stars:
 
@@ -192,7 +226,7 @@ def animate_in_space(
 
     ipv.xyzlim(max(distances))
 
-    ipv.animation_control(artists)
+    ipv.animation_control(artists, interval=interval)
 
     ipv.show()
 
@@ -204,9 +238,11 @@ def plot_in_space(
     show_earth=True,
     show_sun=False,
     show_moon=False,
-    background_color="#070323",
+    background_color="#01000F",
     detector_scaling_factor=20000.0,
     show_stars=False,
+        show_orbit=True,
+    earth_time="night",
 ):
     """
     Plot Fermi in Space!
@@ -231,11 +267,24 @@ def plot_in_space(
     ipv.pylab.style.set_style_dark()
     ipv.pylab.style.background_color(background_color)
 
-    distances = [8000]
+    distances = [15000]
 
+
+    if show_orbit:
+
+        tmin, tmax = position_interpolator.minmax_time()
+        tt = np.linspace(tmin, tmax, 500)
+
+        sc_pos = position_interpolator.sc_pos(tt)
+
+        
+        
+        ipv.plot(sc_pos[:, 0],sc_pos[:, 1], sc_pos[:, 2], lw=.5)
+        
+    
     if show_earth:
 
-        earth = Earth()
+        earth = Earth(earth_time=earth_time)
 
         earth.plot()
 
@@ -253,7 +302,7 @@ def plot_in_space(
         moon_pos = position_interpolator.moon_position(time)
         x, y, z = moon_pos.cartesian.xyz.to("km").value
 
-        moon = Moon(x, y, z)
+        moon = Moon(x, y, z, show_image=True)
         distances.append(compute_distance(x, y, z, moon.radius))
         moon.plot()
 
@@ -261,8 +310,12 @@ def plot_in_space(
 
     sx, sy, sz = position_interpolator.sc_pos(time)
 
-    fermi = FermiPoint(sx, sy, sz)
-    fermi.plot()
+    fermi_real = Fermi(
+        position_interpolator.quaternion(time),
+        sc_pos=position_interpolator.sc_pos(time),
+        transform_to_space=True,
+    )
+    fermi_real.plot_fermi_ipy()
 
     if show_detector_pointing:
 
@@ -273,18 +326,13 @@ def plot_in_space(
         )
 
         for k, v in gbm.detectors.items():
-
             x, y, z = v.center_icrs.cartesian.xyz.value * max(distances)
 
-            x_line = np.array([sx, x])
-            y_line = np.array([sy, y])
-            z_line = np.array([sz, z])
-
-            if k.startswith("b"):
-                color = "#EE3A00"
-
-            else:
-                color = "#EEEE01"
+            x_line = np.array([sx, sx + x])
+            y_line = np.array([sy, sy + y])
+            z_line = np.array([sz, sz + z])
+            
+            color = _det_colors[k]
 
             ipv.pylab.plot(x_line, y_line, z_line, color=color)
 
@@ -296,3 +344,5 @@ def plot_in_space(
     ipv.xyzlim(max(distances))
 
     ipv.show()
+
+    return fermi_real

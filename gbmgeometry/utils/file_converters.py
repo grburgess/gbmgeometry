@@ -1,5 +1,6 @@
 import h5py
 import numpy as np
+import matplotlib.pyplot as plt
 import astropy.io.fits as fits
 
 
@@ -19,7 +20,7 @@ def convert_poshist2hdf5(src_file, dest_file):
         time = poshist["GLAST POS HIST"].data["SCLK_UTC"]
 
         flags = poshist["GLAST POS HIST"].data["FLAGS"]
-        
+
         quats = np.array(
             [
                 poshist["GLAST POS HIST"].data["QSJ_1"],
@@ -43,6 +44,7 @@ def convert_poshist2hdf5(src_file, dest_file):
         f.create_dataset("quats", data=quats, compression="lzf")
         f.create_dataset("sc_pos", data=sc_pos, compression="lzf")
         f.create_dataset("flags", data=flags, compression="lzf")
+
 
 def convert_trigdat2hdf5(src_file, dest_file):
     """
@@ -79,3 +81,33 @@ def convert_trigdat2hdf5(src_file, dest_file):
         f.create_dataset("sc_pos", data=sc_pos, compression="lzf")
 
         f.attrs["trigtime"] = trigtime
+
+
+def make_image_hdf5(image, file_name, detail_level=5):
+    img = plt.imread(image)
+    # define a grid matching the map size, subsample along with pixels
+    theta = np.linspace(0, np.pi, img.shape[0])
+    phi = np.linspace(0, 2 * np.pi, img.shape[1])
+
+    count = int(detail_level * 180)
+    theta_inds = np.linspace(0, img.shape[0] - 1, count).round().astype(int)
+    phi_inds = np.linspace(0, img.shape[1] - 1, count).round().astype(int)
+    theta = theta[theta_inds]
+    phi = phi[phi_inds]
+    img = img[np.ix_(theta_inds, phi_inds)]
+
+    theta, phi = np.meshgrid(theta, phi)
+
+    # sphere
+    x = np.sin(theta) * np.cos(phi)
+    y = np.sin(theta) * np.sin(phi)
+    z = np.cos(theta)
+
+    color = img / 255
+
+    with h5py.File(file_name, "w") as f:
+
+        f.create_dataset("x", data=x, compression="lzf")
+        f.create_dataset("y", data=y, compression="lzf")
+        f.create_dataset("z", data=z, compression="lzf")
+        f.create_dataset("color", data=color, compression="lzf")

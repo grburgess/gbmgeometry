@@ -94,7 +94,12 @@ class PositionInterpolator(object):
             trigtime = None
 
         return cls(
-            quats=quats, sc_pos=sc_pos, time=time, trigtime=trigtime, factor=factor, flags=flags
+            quats=quats,
+            sc_pos=sc_pos,
+            time=time,
+            trigtime=trigtime,
+            factor=factor,
+            flags=flags,
         )
 
     @classmethod
@@ -279,19 +284,15 @@ class PositionInterpolator(object):
 
     def quaternion(self, t):
         """
-        Gets an interpolated quaternion as a function of time
+        return the quaternion
 
-        Parameters
-        ----------
-        t
-
-        Returns
-        -------
-        A Fermi GBM quaternion
+        :param t: 
+        :returns: 
+        :rtype: 
 
         """
 
-        return self._quaternion_t(t)
+        return self._quaternion_t(t).T
 
     def quaternion_dict(self, t):
 
@@ -301,17 +302,16 @@ class PositionInterpolator(object):
 
     def sc_pos(self, t):
         """
+        the space craft postions in X,Y,Z geocentric coordinates
+        
+        units are always assumed to be kilometers
 
-        Parameters
-        ----------
-        t
-
-        Returns
-        -------
-        Fermi GBM spacecraft position
+        :param t: 
+        :returns: 
+        :rtype: 
 
         """
-        return self._scxyz_t(t) * self._factor
+        return self._scxyz_t(t).T * self._factor
 
     def sc_pos_dict(self, t):
 
@@ -370,7 +370,7 @@ class PositionInterpolator(object):
                 return np.ones_like(t, dtype=bool)
 
             out = np.zeros_like(t, dtype=bool)
-            
+
             for i, tt in enumerate(t):
                 for tmin, tmax in self._on_times:
 
