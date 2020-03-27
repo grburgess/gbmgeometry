@@ -1,17 +1,17 @@
 import ipyvolume as ipv
 import numpy as np
 import h5py
-
+import PIL.Image as pil_image
 from gbmgeometry.utils.package_utils import get_path_of_data_file
 from gbmgeometry.geometry import Sphere
 
 
 _earth_img = dict(
-    day=get_path_of_data_file("earth_day.h5"),
-    night=get_path_of_data_file("earth_night.h5"),
-    midnight=get_path_of_data_file("earth_midnight.h5"),
-    thats_no_moon=get_path_of_data_file("thats_no_moon.h5"),
-    i_have_a_bad_feeling_about_this=get_path_of_data_file("thats_no_moon_big.h5"),
+    day=get_path_of_data_file("earth_day.jpg"),
+    night=get_path_of_data_file("earth_night.jpg"),
+    midnight=get_path_of_data_file("earth_midnight.jpg"),
+    thats_no_moon=get_path_of_data_file("thats_no_moon.jpg"),
+    i_have_a_bad_feeling_about_this=get_path_of_data_file("thats_no_moon_big.jpg"),
 )
 
 
@@ -19,8 +19,8 @@ class Earth(Sphere):
     def __init__(
         self,
         ax=None,
-        detail_level=100,
-        color="#4E66DE",
+        detail_level=50,
+        color="#040C6A",
         earth_time="day",
         realistic=True,
         **kwargs
@@ -42,7 +42,7 @@ class Earth(Sphere):
                 earth_time in _earth_img
             ), "oops, please choose, day, night, or midnight"
 
-            image = _earth_img[earth_time]
+            image = pil_image.open(_earth_img[earth_time])
 
         else:
 
@@ -104,9 +104,9 @@ class Moon(Sphere):
         y,
         z,
         ax=None,
-        detail_level=50,
+        detail_level=30,
         color="#68696A",
-        use_image=False,
+        realistic=False,
         **kwargs
     ):
         """
@@ -123,9 +123,9 @@ class Moon(Sphere):
 
         # it is crazy slow to animate and image!
 
-        if use_image:
+        if realistic:
 
-            image = _earth_img["thats_no_moon"]
+            image = pil_image.open(_earth_img["thats_no_moon"])
 
         else:
             image = None

@@ -33,21 +33,6 @@ class Sphere(object):
 
         self._image = image
 
-        # assume the images are from my
-        # HDF5 library
-
-        if image is not None:
-
-            # pre load all the image calcs
-
-            with h5py.File(image, "r") as f:
-
-                self._xx = f["x"][()]
-                self._yy = f["y"][()]
-                self._zz = f["z"][()]
-
-                self._color = f["color"][()]
-
     @property
     def radius(self):
         return self._radius
@@ -66,56 +51,38 @@ class Sphere(object):
         u = np.linspace(0, 2 * np.pi, self._detail_level)
         v = np.linspace(0, np.pi, self._detail_level)
 
+        x_unit = np.outer(np.cos(u), np.sin(v))
+        y_unit = np.outer(np.sin(u), np.sin(v))
+        z_unit = np.outer(np.ones(np.size(u)), np.cos(v))
+
         if np.atleast_1d(self._x).shape[0] == 1:
 
-            if self._image is None:
+            X = self._x + self._radius * x_unit
 
-                X = self._x + self._radius * np.outer(np.cos(u), np.sin(v))
+            Y = self._y + self._radius * y_unit
 
-                Y = self._y + self._radius * np.outer(np.sin(u), np.sin(v))
-
-                Z = self._z + self._radius * np.outer(np.ones(np.size(u)), np.cos(v))
-
-            else:
-
-                # things were pre computed
-
-                X = (self._x + self._radius * self._xx).T
-                Y = (self._y + self._radius * self._yy).T
-                Z = (self._z + self._radius * self._zz).T
+            Z = self._z + self._radius * z_unit
 
         else:
 
-            # for animations
+            X = np.array([x + self._radius * x_unit for x in self._x])
 
-            if self._image is None:
+            Y = np.array([y + self._radius * y_unit for y in self._y])
 
-                X = np.array(
-                    [x + self._radius * np.outer(np.cos(u), np.sin(v)) for x in self._x]
-                )
+            Z = np.array([z + self._radius * z_unit for z in self._z])
 
-                Y = np.array(
-                    [y + self._radius * np.outer(np.sin(u), np.sin(v)) for y in self._y]
-                )
+        if self._image is None:
 
-                Z = np.array(
-                    [
-                        z + self._radius * np.outer(np.ones(np.size(u)), np.cos(v))
-                        for z in self._z
-                    ]
-                )
+            return ipv.plot_surface(X, Y, Z, color=self._color, **kwargs)
 
-            else:
+        else:
 
-                # sphere
+            lon = np.arctan2(y_unit, x_unit)
+            lat = np.arcsin(z_unit)
 
-                X = np.array([(x + self._radius * self._xx).T for x in self._x])
-                Y = np.array([(y + self._radius * self._yy).T for y in self._y])
-                Z = np.array([(z + self._radius * self._zz).T for z in self._z])
+            u = 0.5 + lon / (2 * np.pi)
+            v = 0.5 + lat / (np.pi)
 
-                self._color = np.array([self._color for _ in range(len(self._x))])
-
-        return ipv.plot_surface(X, Y, Z, color=self._color, **kwargs)
-
-
-#            return ipv.plot_surface(x.T, y.T, z.T, color=img/255)
+            return ipv.plot_mesh(
+                X, Y, Z, u=u, v=v, texture=self._image, wireframe=False
+            )

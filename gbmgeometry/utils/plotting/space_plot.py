@@ -50,6 +50,7 @@ def animate_in_space(
     show_stars=False,
     show_inactive=False,
     earth_time="night",
+    realistic=True,
     interval=200,
 ):
     """
@@ -86,7 +87,7 @@ def animate_in_space(
 
     if show_earth:
 
-        earth = Earth(earth_time=earth_time)
+        earth = Earth(earth_time=earth_time, realistic=realistic)
 
         earth.plot()
 
@@ -242,6 +243,7 @@ def plot_in_space(
     detector_scaling_factor=20000.0,
     show_stars=False,
     show_orbit=True,
+    realistic=True,
     earth_time="night",
 ):
     """
@@ -280,7 +282,7 @@ def plot_in_space(
 
     if show_earth:
 
-        earth = Earth(earth_time=earth_time)
+        earth = Earth(earth_time=earth_time, realistic=realistic)
 
         earth.plot()
 
@@ -298,7 +300,7 @@ def plot_in_space(
         moon_pos = position_interpolator.moon_position(time)
         x, y, z = moon_pos.cartesian.xyz.to("km").value
 
-        moon = Moon(x, y, z, show_image=True)
+        moon = Moon(x, y, z, realistic=True)
         distances.append(compute_distance(x, y, z, moon.radius))
         moon.plot()
 
