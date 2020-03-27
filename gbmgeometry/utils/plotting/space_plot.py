@@ -82,7 +82,7 @@ def animate_in_space(
 
     artists = []
 
-    distances = [8000]
+    distances = [15000]
 
     if show_earth:
 
