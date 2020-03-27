@@ -7,7 +7,6 @@ from gbmgeometry.utils.plotting.skyplot import skyplot
 import numpy as np
 
 
-
 def test_interp():
 
     trigdat = get_path_of_data_file("glg_trigdat_all_bn080916009_v02.fit")
@@ -18,9 +17,8 @@ def test_interp():
 
     interp_trig.sc_pos(0)
 
-
     assert interp_trig.is_fermi_active(1) == True
-    
+
     trigdat_h5 = get_path_of_data_file("trigdat.h5")
 
     interp_trig_h5 = PositionInterpolator.from_trigdat_hdf5(trigdat_h5)
@@ -30,18 +28,17 @@ def test_interp():
     assert np.all(interp_trig_h5.sc_pos(0) == interp_trig.sc_pos(0))
 
     assert interp_trig_h5.is_fermi_active(1) == True
-    
+
     poshist = get_path_of_data_file("glg_poshist_all_151013_v00.fit")
 
     interp_pos = PositionInterpolator.from_poshist(poshist)
 
     tmin, tmax = interp_pos.minmax_time()
 
-    
     interp_pos.is_fermi_active(tmin)
 
-    interp_pos.is_fermi_active([tmin,tmax])
-    
+    interp_pos.is_fermi_active([tmin, tmax])
+
     interp_pos.quaternion(interp_pos.time[0])
 
     interp_pos.sc_pos(interp_pos.time[0])
@@ -50,9 +47,15 @@ def test_interp():
 
     interp_pos_h5 = PositionInterpolator.from_poshist_hdf5(poshist_h5)
 
-    assert np.all(interp_pos_h5.quaternion(interp_pos_h5.time[0]) == interp_pos.quaternion(interp_pos.time[0]))
+    assert np.all(
+        interp_pos_h5.quaternion(interp_pos_h5.time[0])
+        == interp_pos.quaternion(interp_pos.time[0])
+    )
 
-    assert np.all(interp_pos_h5.sc_pos(interp_pos_h5.time[0]) == interp_pos.sc_pos(interp_pos.time[0]))
+    assert np.all(
+        interp_pos_h5.sc_pos(interp_pos_h5.time[0])
+        == interp_pos.sc_pos(interp_pos.time[0])
+    )
 
 
 def test_detector(na, interpolator):
@@ -70,7 +73,6 @@ def test_detector(na, interpolator):
 
 def test_coord_change(na, interpolator):
 
-
     center_j2000 = na.get_center().icrs
 
     q1, q2, q3, q4 = interpolator.quaternion(100.0)
@@ -79,17 +81,12 @@ def test_coord_change(na, interpolator):
         GBMFrame(quaternion_1=q1, quaternion_2=q2, quaternion_3=q3, quaternion_4=q4)
     )
 
-
     center_j2000 = na.get_center().icrs
 
     out = interpolator.quaternion_dict(100.0)
 
-    center_j2000.transform_to(
-        GBMFrame(**out)
-    )
+    center_j2000.transform_to(GBMFrame(**out))
 
-
-    
 
 def test_all_gbm(interpolator):
 

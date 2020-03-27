@@ -155,8 +155,8 @@ def _sample_theta_phi(size, r):
 
     theta = np.arccos(1 - 2 * np.random.uniform(0.0, 1.0, size=size))
     phi = np.random.uniform(0, 2 * np.pi, size=size)
-    r = np.random.uniform(r *0.95 , r*1.1, size=size)
-    
+    r = np.random.uniform(r * 0.95, r * 1.1, size=size)
+
     x, y, z = _xyz(r, theta, phi)
     return x, y, z
 
@@ -172,7 +172,6 @@ class StarField(object):
         :rtype: 
 
         """
-        
 
         self._x, self._y, self._z = _sample_theta_phi(n_stars, distance)
 

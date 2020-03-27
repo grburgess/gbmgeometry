@@ -5,7 +5,6 @@ from astropy.coordinates import BaseCoordinateFrame, Attribute, RepresentationMa
 from astropy.coordinates import frame_transform_graph
 
 
-
 class GBMFrame(BaseCoordinateFrame):
     """
     

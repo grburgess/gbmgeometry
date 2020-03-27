@@ -347,7 +347,6 @@ class Volume(object):
         #     y_origin = y_origin + sc_pos[1]
         #     z_origin = z_origin + sc_pos[2]
 
-
         self._sc_pos = sc_pos
         self._transform_matrix = transform_matrix
 
@@ -494,8 +493,8 @@ class Volume(object):
 
     def plot_ipv(self):
 
-        x,y,z = self._center
-        
+        x, y, z = self._center
+
         cube = Cube(
             color=self._color,
             # x=self._x_origin,
@@ -508,7 +507,7 @@ class Volume(object):
             z_width=self._z_width,
             y_width=self._y_width,
             transform_matrix=self._transform_matrix,
-            sc_pos = self._sc_pos
+            sc_pos=self._sc_pos,
         )
         return cube.plot()
 

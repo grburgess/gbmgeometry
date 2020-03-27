@@ -83,7 +83,7 @@ class Fermi(object):
 
             quaternion = quaternion[1]
             sc_pos = sc_pos[1]
-            
+
         self._gbm = GBM(quaternion, sc_pos)
 
         # grab the frame
@@ -363,7 +363,7 @@ class Fermi(object):
         #         assert det in self._gbm.detectors.keys(), "invalid detector"
 
         artists = []
-        
+
         for name, component in self._spacecraft_components.items():
             artists.extend(component.plot_ipv())
 
@@ -467,7 +467,7 @@ class Fermi(object):
         # return fig
 
         return artists
-        
+
     def read_healpix_map(self, healpix_map, cmap="viridis"):
 
         # collect the nside of the map

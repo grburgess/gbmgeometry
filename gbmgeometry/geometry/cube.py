@@ -17,7 +17,7 @@ class Cube(object):
         transform_matrix=None,
         sc_pos=None,
         quarternion=None,
-        scaling_factor = 1.
+        scaling_factor=1.0,
     ):
         """
         A 3D cube that can be animated
@@ -38,7 +38,6 @@ class Cube(object):
 
         """
 
-        
         factor = 1.0
 
         if transform_matrix is not None:

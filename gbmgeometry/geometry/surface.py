@@ -1,6 +1,7 @@
 import numpy as np
 from sympy import Plane, Point3D, Line3D
 
+
 class Surface(object):
     def __init__(self, name, vertices):
 

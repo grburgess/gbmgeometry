@@ -58,7 +58,7 @@ class Volume(object):
         self._sc_pos = sc_pos
         self._transform_matrix = transform_matrix
         self._quaternion = quaternion
-        
+
         self._x_origin = x_origin - x_width / 2.0
         self._y_origin = z_origin - height / 2.0
         self._z_origin = y_origin - y_width / 2.0
@@ -217,11 +217,11 @@ class Volume(object):
             y_width=self._y_width,
             transform_matrix=self._transform_matrix,
             sc_pos=self._sc_pos,
-            quarternion=self._quaternion
+            quarternion=self._quaternion,
         )
 
         cube.plot()
-        
+
         return cube.artists
 
     def plot(self, ax, alpha=0.1):

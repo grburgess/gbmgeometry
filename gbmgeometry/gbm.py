@@ -54,14 +54,11 @@ class GBM(object):
 
             self._gbm_time = None
 
-        
-
         self._quaternion = quaternion
         self._sc_pos = sc_pos
 
-        
         if sc_pos is not None:
-                   
+
             self._earth_pos_norm = self.geo_to_gbm(
                 -self._sc_pos / np.linalg.norm(self._sc_pos)
             )
@@ -90,9 +87,7 @@ class GBM(object):
                     sc_pos_Z=sc_pos[2],
                 ),
             )
- 
 
-            
         if self._gbm_time is not None:
 
             self.n0 = NaI0(quaternion, sc_pos, self._gbm_time.time)
@@ -143,7 +138,7 @@ class GBM(object):
             b0=self.b0,
             b1=self.b1,
         )
- 
+
     def set_quaternion(self, quaternion):
         """FIXME! briefly describe function
 
@@ -431,20 +426,14 @@ class GBM(object):
 
             ax = skyplot(**skymap_kwargs)
 
-
-        _defaults = dict(edgecolor='#13ED9B', lw=1, facecolor='#13ED9B', alpha=0.3)
-        for k,v in _defaults.items():
+        _defaults = dict(edgecolor="#13ED9B", lw=1, facecolor="#13ED9B", alpha=0.3)
+        for k, v in _defaults.items():
             if k not in kwargs:
                 kwargs[k] = v
-        
-        
+
         for k, v in self._detectors.items():
 
-            v.plot_pointing(
-                ax=ax,
-                fov=fov,
-                **kwargs
-            )
+            v.plot_pointing(ax=ax, fov=fov, **kwargs)
 
         if show_earth:
 
@@ -459,12 +448,10 @@ class GBM(object):
                 edgecolor="none",
                 facecolor="#13ACED",
                 alpha=0.1,
-                zorder=-3000
-                
+                zorder=-3000,
             )
 
             ax.add_patch(circle)
-
 
         return ax.get_figure()
 
@@ -514,7 +501,6 @@ class GBM(object):
         pos_geo = [X0, X1, X2]
         return np.array(pos_geo)
 
-            
 
 # def get_legal_pairs():
 #     """

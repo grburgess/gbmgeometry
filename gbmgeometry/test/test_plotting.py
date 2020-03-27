@@ -15,10 +15,7 @@ def test_space_plot(interpolator):
     )
 
 
-
 def test_space_ani(interpolator):
-
-
 
     plot_in_space(
         interpolator,

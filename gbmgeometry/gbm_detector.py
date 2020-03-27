@@ -470,9 +470,13 @@ class GBMDetector(object):
 
         else:
 
-            ax.scatter(self._center_icrs.ra.deg, self.center_icrs.dec.deg,transform=ax.get_transform("icrs"), **kwargs)
+            ax.scatter(
+                self._center_icrs.ra.deg,
+                self.center_icrs.dec.deg,
+                transform=ax.get_transform("icrs"),
+                **kwargs
+            )
 
-            
         return ax
 
 

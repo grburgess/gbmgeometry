@@ -80,7 +80,7 @@ class LATRadiatorMinus(LATRadiator):
 
 
 class LATRadiatorPlus(LATRadiator):
-    def __init__(self, transform_matrix=None, sc_pos=None, quaternion = None):
+    def __init__(self, transform_matrix=None, sc_pos=None, quaternion=None):
         active_surfaces = ["+x", "-x", "-y", "-z"]
 
         super(LATRadiatorPlus, self).__init__(

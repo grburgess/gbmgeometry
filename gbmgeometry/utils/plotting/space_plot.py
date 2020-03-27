@@ -50,7 +50,7 @@ def animate_in_space(
     show_stars=False,
     show_inactive=False,
     earth_time="night",
-        interval=200,
+    interval=200,
 ):
     """
     Animiate fermi in Space!
@@ -241,7 +241,7 @@ def plot_in_space(
     background_color="#01000F",
     detector_scaling_factor=20000.0,
     show_stars=False,
-        show_orbit=True,
+    show_orbit=True,
     earth_time="night",
 ):
     """
@@ -269,7 +269,6 @@ def plot_in_space(
 
     distances = [15000]
 
-
     if show_orbit:
 
         tmin, tmax = position_interpolator.minmax_time()
@@ -277,11 +276,8 @@ def plot_in_space(
 
         sc_pos = position_interpolator.sc_pos(tt)
 
-        
-        
-        ipv.plot(sc_pos[:, 0],sc_pos[:, 1], sc_pos[:, 2], lw=.5)
-        
-    
+        ipv.plot(sc_pos[:, 0], sc_pos[:, 1], sc_pos[:, 2], lw=0.5)
+
     if show_earth:
 
         earth = Earth(earth_time=earth_time)
@@ -331,7 +327,7 @@ def plot_in_space(
             x_line = np.array([sx, sx + x])
             y_line = np.array([sy, sy + y])
             z_line = np.array([sz, sz + z])
-            
+
             color = _det_colors[k]
 
             ipv.pylab.plot(x_line, y_line, z_line, color=color)

@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def get_sc_matrix(q1, q2, q3, q4):
     """
     build a sc matrix from quats
@@ -26,4 +27,3 @@ def get_sc_matrix(q1, q2, q3, q4):
     sc_matrix[2, 2] = -(q1 ** 2) - q2 ** 2 + q3 ** 2 + q4 ** 2
 
     return sc_matrix
-
