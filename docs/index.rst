@@ -13,7 +13,7 @@ Welcome to gbmgeometry's documentation!
 
    notebooks/demo.ipynb
    notebooks/posinterp.ipynb
-   
+   notebooks/pointsource.ipynb
 
    
 Indices and tables
