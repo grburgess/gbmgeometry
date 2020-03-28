@@ -31,19 +31,34 @@ def test_space_ani(interpolator):
 
 
 def test_point_space_plotting():
-    
-    pi = PositionInterpolator.from_trigdat(get_path_of_data_file('balrog_trig.fits'))
 
-    skypoints = balrog_to_skypoints(get_path_of_data_file('balrog.fits'), new_nside=2**3, cmap='viridis', as_point=True)
+    pi = PositionInterpolator.from_trigdat(get_path_of_data_file("balrog_trig.fits"))
+
+    skypoints = balrog_to_skypoints(
+        get_path_of_data_file("balrog.fits"),
+        new_nside=2 ** 5,
+        cmap="viridis",
+        as_point=True,
+    )
+
 
 def test_ray_space_plotting():
 
-    
-    pi = PositionInterpolator.from_trigdat(get_path_of_data_file('balrog_trig.fits'))
+    pi = PositionInterpolator.from_trigdat(get_path_of_data_file("balrog_trig.fits"))
 
-    skypoints = balrog_to_skypoints(get_path_of_data_file('balrog.fits'), new_nside=2**3, cmap='viridis', as_point=False)
+    skypoints = balrog_to_skypoints(
+        get_path_of_data_file("balrog.fits"),
+        new_nside=2 ** 5,
+        cmap="viridis",
+        as_point=False,
+    )
 
-    plot_in_space(pi, 0, sky_points=skypoints,
-              show_detector_pointing=True, 
-              show_moon=True,earth_time='day', 
-              show_stars=True);
+    plot_in_space(
+        pi,
+        0,
+        sky_points=skypoints,
+        show_detector_pointing=True,
+        show_moon=True,
+        earth_time="day",
+        show_stars=True,
+    )
