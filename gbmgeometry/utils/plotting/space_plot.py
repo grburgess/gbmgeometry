@@ -339,11 +339,12 @@ def plot_in_space(
 
             ipv.pylab.plot(x_line, y_line, z_line, color=color)
 
-    for sp in sky_points:
+    if sky_points is not None:
+        for sp in sky_points:
 
-        sp.plot(sx, sy, sz, max(distances))
+            sp.plot(sx, sy, sz, max(distances))
 
-        # distances.append(sp.distance)
+            # distances.append(sp.distance)
 
     if show_stars:
 
