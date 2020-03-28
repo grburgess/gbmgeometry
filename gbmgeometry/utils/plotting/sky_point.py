@@ -3,7 +3,7 @@ from astropy.coordinates import SkyCoord
 import numpy as np
 import healpy as hp
 from gbmgeometry.utils.array_to_cmap import array_to_cmap
-import numba as nb
+
 
 
 class SkyPoint(object):
