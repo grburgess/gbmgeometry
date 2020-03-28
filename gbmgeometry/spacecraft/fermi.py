@@ -10,6 +10,7 @@ import ipyvolume as ipv
 
 from gbmgeometry.gbm import GBM
 from gbmgeometry.utils.array_to_cmap import array_to_cmap
+
 from gbmgeometry.geometry import Ray, get_sc_matrix
 from gbmgeometry.spacecraft.lat import LAT, LATRadiatorMinus, LATRadiatorPlus
 from gbmgeometry.spacecraft.solar_panels import SolarPanelMinus, SolarPanelPlus

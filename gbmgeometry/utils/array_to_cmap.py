@@ -23,6 +23,6 @@ def array_to_cmap(values, cmap, use_log=False):
 
     cmap = plt.cm.ScalarMappable(norm=norm, cmap=cmap)
 
-    rgb_colors = map(cmap.to_rgba, values)
+    rgb_colors = [cmap.to_rgba(v) for v in values]
 
     return cmap, rgb_colors

@@ -245,6 +245,8 @@ def plot_in_space(
     show_orbit=True,
     realistic=True,
     earth_time="night",
+    sky_points=None,
+        min_distance=8000
 ):
     """
     Plot Fermi in Space!
@@ -262,14 +264,17 @@ def plot_in_space(
 
     """
 
-    fig = ipv.figure()
+    fig = ipv.figure(width=800, height=600)
 
     ipv.pylab.style.box_off()
     ipv.pylab.style.axes_off()
     ipv.pylab.style.set_style_dark()
     ipv.pylab.style.background_color(background_color)
 
-    distances = [15000]
+    distances = [min_distance]
+
+    if sky_points is not None:
+        sky_points = np.atleast_1d(sky_points)
 
     if show_orbit:
 
@@ -334,6 +339,13 @@ def plot_in_space(
 
             ipv.pylab.plot(x_line, y_line, z_line, color=color)
 
+    if sky_points is not None:
+        for sp in sky_points:
+
+            sp.plot(sx, sy, sz, max(distances))
+
+            # distances.append(sp.distance)
+
     if show_stars:
 
         sf = StarField(n_stars=100, distance=max(distances) - 2)
@@ -343,4 +355,4 @@ def plot_in_space(
 
     ipv.show()
 
-    return fermi_real
+    return fig
