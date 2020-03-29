@@ -87,7 +87,7 @@ def animate_in_space(
 
     if show_earth:
 
-        earth = Earth(earth_time=earth_time, realistic=realistic)
+        earth = Earth(earth_time=earth_time, realistic=realistic, astro_time=position_interpolator.astro_time(time))
 
         earth.plot()
 
@@ -287,7 +287,7 @@ def plot_in_space(
 
     if show_earth:
 
-        earth = Earth(earth_time=earth_time, realistic=realistic)
+        earth = Earth(earth_time=earth_time, realistic=realistic,astro_time=position_interpolator.astro_time(time)) 
 
         earth.plot()
 

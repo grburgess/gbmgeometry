@@ -4,7 +4,7 @@ import h5py
 import PIL.Image as pil_image
 from gbmgeometry.utils.package_utils import get_path_of_data_file
 from gbmgeometry.geometry import Sphere
-
+from gbmgeometry.geometry.cirs_to_gcrs import cirs_to_gcrs
 
 _earth_img = dict(
     day=get_path_of_data_file("earth_day.jpg"),
@@ -23,7 +23,8 @@ class Earth(Sphere):
         color="#040C6A",
         earth_time="day",
         realistic=True,
-        **kwargs
+        astro_time=None,
+        **kwargs,
     ):
         """
         The Planet Earth. Earth is at the origin
@@ -36,13 +37,20 @@ class Earth(Sphere):
 
         """
 
+        transform_matrix = None
+
         if realistic:
+
+            assert astro_time is not None
 
             assert (
                 earth_time in _earth_img
             ), "oops, please choose, day, night, or midnight"
 
             image = pil_image.open(_earth_img[earth_time])
+
+            # compute the transformtion matrix
+            transform_matrix = cirs_to_gcrs(astro_time)
 
         else:
 
@@ -57,7 +65,8 @@ class Earth(Sphere):
             radius=6371.0,
             color=color,
             image=image,
-            **kwargs
+            transform_matrix=transform_matrix,
+            **kwargs,
         )
 
         if not realistic:
@@ -93,7 +102,7 @@ class Sol(Sphere):
             detail_level=detail_level,
             radius=696340.0,
             color=color,
-            **kwargs
+            **kwargs,
         )
 
 
@@ -107,7 +116,7 @@ class Moon(Sphere):
         detail_level=30,
         color="#68696A",
         realistic=False,
-        **kwargs
+        **kwargs,
     ):
         """
         The Sun. This is variable with respect to the satellite and Earth, so 
@@ -139,7 +148,7 @@ class Moon(Sphere):
             radius=1731.1,
             color=color,
             image=image,
-            **kwargs
+            **kwargs,
         )
 
 

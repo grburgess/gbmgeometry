@@ -1,7 +1,7 @@
 import ipyvolume as ipv
 import numpy as np
 import matplotlib.pyplot as plt
-
+import numba as nb
 import h5py
 
 from gbmgeometry.utils.package_utils import get_path_of_data_file
@@ -19,7 +19,8 @@ class Sphere(object):
         detail_level=100,
         color="#FFFFFF",
         image=None,
-        **kwargs
+        transform_matrix=None,
+        **kwargs,
     ):
 
         self._x = x
@@ -28,10 +29,15 @@ class Sphere(object):
 
         self._radius = radius
 
-        self._detail_level = detail_level
+        self._detail_level = int(detail_level)
         self._color = color
 
         self._image = image
+        self._transform_matrix = transform_matrix
+
+        self._time_dep_transform = False
+        if len(transform_matrix.shape) == 3:
+            self._time_dep_transform = True
 
     @property
     def radius(self):
@@ -55,6 +61,21 @@ class Sphere(object):
         y_unit = np.outer(np.sin(u), np.sin(v))
         z_unit = np.outer(np.ones(np.size(u)), np.cos(v))
 
+        if self._transform_matrix is not None:
+
+            if self._time_dep_transform:
+
+                pass
+
+            else:
+                xyz = np.array([x_unit, y_unit, z_unit]).T
+                xyz = compute_single_rotation(xyz, self._transform_matrix, self._detail_level
+                )
+
+                x_unit_rot = xyz[0]
+                y_unit_rot = xyz[1]
+                z_unit_rot = xyz[2]
+
         if np.atleast_1d(self._x).shape[0] == 1:
 
             X = self._x + self._radius * x_unit
@@ -77,12 +98,33 @@ class Sphere(object):
 
         else:
 
-            lon = np.arctan2(y_unit, x_unit)
-            lat = np.arcsin(z_unit)
+            if self._transform_matrix is None:
+            
+                lon = np.arctan2(y_unit, x_unit)
+                lat = np.arcsin(z_unit)
 
+            else:
+
+                lon = np.arctan2(y_unit_rot, x_unit_rot)
+                lat = np.arcsin(z_unit_rot)
+
+                
             u = 0.5 + lon / (2 * np.pi)
             v = 0.5 + lat / (np.pi)
 
             return ipv.plot_mesh(
                 X, Y, Z, u=u, v=v, texture=self._image, wireframe=False
             )
+
+
+@nb.njit(fastmath=True)
+def compute_single_rotation(xyz, transform_matrix, detail_level):
+
+    
+    new_xyz = np.zeros((detail_level, detail_level, 3))
+
+    for i in range(detail_level):
+        for j in range(detail_level):
+            new_xyz[i, j] = np.dot(transform_matrix, xyz[i, j, :])
+
+    return new_xyz.T
