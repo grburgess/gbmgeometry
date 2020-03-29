@@ -70,7 +70,7 @@ def animate_in_space(
 
     """
 
-    fig = ipv.figure(idth=800, height=600)
+    fig = ipv.figure()
 
     ipv.pylab.style.box_off()
     ipv.pylab.style.axes_off()
