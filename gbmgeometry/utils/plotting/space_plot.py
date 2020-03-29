@@ -70,7 +70,7 @@ def animate_in_space(
 
     """
 
-    fig = ipv.figure()
+    fig = ipv.figure(idth=800, height=600)
 
     ipv.pylab.style.box_off()
     ipv.pylab.style.axes_off()
@@ -87,9 +87,16 @@ def animate_in_space(
 
     if show_earth:
 
-        earth = Earth(earth_time=earth_time, realistic=realistic, astro_time=position_interpolator.astro_time(time))
+        astro_times = [position_interpolator.astro_time(t) for t in time]
 
-        earth.plot()
+        earth = Earth(
+            earth_time=earth_time, realistic=realistic, astro_time=astro_times,
+        )
+
+        tmp = earth.plot()
+
+        if realistic:
+            artists.append(tmp)
 
     if show_sun:
 
@@ -246,7 +253,7 @@ def plot_in_space(
     realistic=True,
     earth_time="night",
     sky_points=None,
-        min_distance=8000
+    min_distance=8000,
 ):
     """
     Plot Fermi in Space!
@@ -287,7 +294,11 @@ def plot_in_space(
 
     if show_earth:
 
-        earth = Earth(earth_time=earth_time, realistic=realistic,astro_time=position_interpolator.astro_time(time)) 
+        earth = Earth(
+            earth_time=earth_time,
+            realistic=realistic,
+            astro_time=position_interpolator.astro_time(time),
+        )
 
         earth.plot()
 

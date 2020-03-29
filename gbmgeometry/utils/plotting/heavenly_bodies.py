@@ -50,7 +50,17 @@ class Earth(Sphere):
             image = pil_image.open(_earth_img[earth_time])
 
             # compute the transformtion matrix
-            transform_matrix = cirs_to_gcrs(astro_time)
+
+            if np.atleast_1d(astro_time).shape[0] > 1:
+
+                transform_matrix = np.zeros((len(astro_time), 3, 3))
+
+                for i in range(len(astro_time)):
+                    transform_matrix[i] = cirs_to_gcrs(astro_time[i])
+
+            else:
+
+                transform_matrix = cirs_to_gcrs(astro_time)
 
         else:
 

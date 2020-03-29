@@ -5,7 +5,6 @@ import healpy as hp
 from gbmgeometry.utils.array_to_cmap import array_to_cmap
 
 
-
 class SkyPoint(object):
     def __init__(
         self, ra, dec, color="#33CF64", alpha=1.0, distance=1e10, as_point=False
@@ -45,7 +44,8 @@ class SkyPoint(object):
                 np.array([sy + self._y * distance]),
                 np.array([sz + self._z * distance]),
                 color=self._color,
-                marker="circle_2d",size=.5
+                marker="circle_2d",
+                size=0.5,
             )
 
         else:
@@ -58,7 +58,9 @@ class SkyPoint(object):
             )
 
 
-def balrog_to_skypoints(healpix_map_file, cmap="viridis", new_nside=None, as_point=False):
+def balrog_to_skypoints(
+    healpix_map_file, cmap="viridis", new_nside=None, as_point=False
+):
 
     # collect the nside of the map
 
