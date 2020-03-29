@@ -35,10 +35,14 @@ class Sphere(object):
         self._image = image
         self._transform_matrix = transform_matrix
 
+        
         self._time_dep_transform = False
-        if len(transform_matrix.shape) == 3:
-            self._time_dep_transform = True
 
+        
+        if (transform_matrix is not None) and (len(transform_matrix.shape) == 3):
+            self._time_dep_transform = True
+            self._n_steps = transform_matrix.shape[0]
+            
     @property
     def radius(self):
         return self._radius
@@ -63,12 +67,15 @@ class Sphere(object):
 
         if self._transform_matrix is not None:
 
+            xyz = np.array([x_unit, y_unit, z_unit]).T
+            
             if self._time_dep_transform:
 
                 pass
+                
 
             else:
-                xyz = np.array([x_unit, y_unit, z_unit]).T
+                
                 xyz = compute_single_rotation(xyz, self._transform_matrix, self._detail_level
                 )
 
