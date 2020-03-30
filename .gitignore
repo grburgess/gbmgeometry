@@ -11,3 +11,5 @@ docs/_build/
 /docs/notebooks/my_posthist.h5
 /docs/notebooks/my_trigdat.h5
 /gbmgeometry/.DS_Store
+/gbmgeometry/data/.DS_Store
+/logo.key
