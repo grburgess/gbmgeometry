@@ -8,7 +8,12 @@
 # gbmgeometry
 ![alt text](https://raw.githubusercontent.com/grburgess/gbmgeometry/master/logo.png)
 
-Routines to handle GBM geometry and plotting 
+Routines to handle GBM geometry and plotting. 
+* provides the ability to plot Fermi's orbit
+* enables the reading and interpretation of GBM spacecraft files 
+* computes GRB emission blockage by components of the spacecraft
+
+Special thanks to [Bjoern Biltzinger](https://github.com/BjoernBiltzinger) and [Francesco Berlato](https://github.com/fberlato) for helping me with crazy geometry in multiple coordinate systems.
 
 ## Install
 
