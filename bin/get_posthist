@@ -6,4 +6,4 @@ from gbmgeometry.io.data_download import download_posthist
 
 year, month, day = sys.argv[1:]
 
-download_trigdat(year, month, day)
+download_posthist(year, month, day)
