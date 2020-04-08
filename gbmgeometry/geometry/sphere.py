@@ -56,13 +56,26 @@ class Sphere(object):
 
         """
 
-        u = np.linspace(0, 2 * np.pi, self._detail_level)
-        v = np.linspace(0, np.pi, self._detail_level)
+        # u = np.linspace(0, 2 * np.pi, self._detail_level)
+        # v = np.linspace(0, np.pi, self._detail_level)
 
-        x_unit = np.outer(np.cos(u), np.sin(v))
-        y_unit = np.outer(np.sin(u), np.sin(v))
-        z_unit = np.outer(np.ones(np.size(u)), np.cos(v))
+        # x_unit = np.outer(np.cos(u), np.sin(v))
+        # y_unit = np.outer(np.sin(u), np.sin(v))
+        # z_unit = np.outer(np.ones(np.size(u)), np.cos(v))
 
+        u = np.linspace(0, 1, self._detail_level)
+        v = np.linspace(0, 1, self._detail_level)
+        u, v = np.meshgrid(u, v)
+        phi = u * 2 * np.pi
+        theta = v * np.pi
+
+
+        x_unit = np.cos(phi) * np.sin(theta)
+        y_unit = np.sin(theta) * np.sin(phi)
+        z_unit = np.cos(theta)
+
+        
+        
         if self._transform_matrix is not None:
 
             xyz = np.array([x_unit, y_unit, z_unit]).T

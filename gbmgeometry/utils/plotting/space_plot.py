@@ -9,7 +9,10 @@ from gbmgeometry.utils.plotting.heavenly_bodies import (
 from gbmgeometry.gbm import GBM
 from gbmgeometry.spacecraft.fermi import Fermi
 from gbmgeometry.geometry import Sphere
+from gbmgeometry.geometry.cone import Cone
 
+
+_open_angle = 10.0
 
 _det_colors = dict(
     n0="#CC3311",
@@ -155,15 +158,21 @@ def animate_in_space(
             position_interpolator.quaternion(tmin), position_interpolator.sc_pos(tmin),
         )
 
-        dets_x = {}
-        dets_y = {}
-        dets_z = {}
+        dets_xo = {}
+        dets_yo = {}
+        dets_zo = {}
+        dets_xp = {}
+        dets_yp = {}
+        dets_zp = {}
 
         for k, _ in gbm.detectors.items():
 
-            dets_x[k] = []
-            dets_y[k] = []
-            dets_z[k] = []
+            dets_xo[k] = []
+            dets_yo[k] = []
+            dets_zo[k] = []
+            dets_xp[k] = []
+            dets_yp[k] = []
+            dets_zp[k] = []
 
     for t in time:
 
@@ -186,27 +195,44 @@ def animate_in_space(
 
                 x, y, z = v.center_icrs.cartesian.xyz.value * max(distances)
 
-                dets_x[k].append([sx, sx + x])
-                dets_y[k].append([sy, sy + y])
-                dets_z[k].append([sz, sz + z])
+                dets_xo[k].append(sx)
+                dets_yo[k].append(sy)
+                dets_zo[k].append(sz)
+                dets_xp[k].append(sx + x)
+                dets_yp[k].append(sy + y)
+                dets_zp[k].append(sz + z)
 
     if show_detector_pointing:
 
         for k, v in gbm.detectors.items():
 
-            dets_x[k] = np.array(dets_x[k])
-            dets_y[k] = np.array(dets_y[k])
-            dets_z[k] = np.array(dets_z[k])
+            dets_xo[k] = np.array(dets_xo[k])
+            dets_yo[k] = np.array(dets_yo[k])
+            dets_zo[k] = np.array(dets_zo[k])
+            dets_xp[k] = np.array(dets_xp[k])
+            dets_yp[k] = np.array(dets_yp[k])
+            dets_zp[k] = np.array(dets_zp[k])
 
             color = _det_colors[k]
 
-            artists.append(ipv.pylab.plot(dets_x[k], dets_y[k], dets_z[k], color=color))
+            cone = Cone(
+                dets_xo[k],
+                dets_yo[k],
+                dets_zo[k],
+                dets_xp[k],
+                dets_yp[k],
+                dets_zp[k],
+                _open_angle,
+            )
+            artists.append(cone.plot(color=color))
+
+    #            artists.append(ipv.pylab.plot(dets_x[k], dets_y[k], dets_z[k], color=color))
 
     sxs = np.array(sxs)
     sys = np.array(sys)
     szs = np.array(szs)
-
     if show_inactive:
+
         ipv.pylab.scatter(
             np.array(x_off),
             np.array(y_off),
@@ -237,6 +263,8 @@ def animate_in_space(
     ipv.animation_control(artists, interval=interval)
 
     ipv.show()
+
+    return fig
 
 
 def plot_in_space(
@@ -342,13 +370,16 @@ def plot_in_space(
         for k, v in gbm.detectors.items():
             x, y, z = v.center_icrs.cartesian.xyz.value * max(distances)
 
-            x_line = np.array([sx, sx + x])
-            y_line = np.array([sy, sy + y])
-            z_line = np.array([sz, sz + z])
+            # x_line = np.array([sx, sx + x])
+            # y_line = np.array([sy, sy + y])
+            # z_line = np.array([sz, sz + z])
 
             color = _det_colors[k]
 
-            ipv.pylab.plot(x_line, y_line, z_line, color=color)
+            cone = Cone(sx, sy, sz, sx + x, sy + y, sz + z, _open_angle)
+            cone.plot(color=color)
+
+            # ipv.pylab.plot(x_line, y_line, z_line, color=color)
 
     if sky_points is not None:
         for sp in sky_points:
@@ -361,6 +392,13 @@ def plot_in_space(
 
         sf = StarField(n_stars=100, distance=max(distances) - 2)
         sf.plot()
+
+    # move the camera here
+
+    fig.camera.position = tuple(
+        position_interpolator.sc_pos(time)
+        / np.linalg.norm(position_interpolator.sc_pos(time))
+    )
 
     ipv.xyzlim(max(distances))
 
