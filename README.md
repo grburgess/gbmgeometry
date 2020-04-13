@@ -6,6 +6,7 @@
 
 
 # gbmgeometry
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3749504.svg)](https://doi.org/10.5281/zenodo.3749504)
 ![alt text](https://raw.githubusercontent.com/grburgess/gbmgeometry/master/logo.png)
 
 Routines to handle GBM geometry and plotting. 
