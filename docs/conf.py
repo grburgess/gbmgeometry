@@ -103,13 +103,12 @@ html_theme = 'sphinx_rtd_theme'
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'gbmgeometrydoc'
 
-html_logo ='media/logo.png'
+
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
 
 html_theme_options = {
- #   'canonical_url': 'https://johannesbuchner.github.io/UltraNest/',
     'style_external_links': True,
     # 'vcs_pageview_mode': 'edit',
     'style_nav_header_background': '#5C5C5D',
