@@ -15,6 +15,14 @@ Welcome to gbmgeometry's documentation!
    notebooks/posinterp.ipynb
    notebooks/pointsource.ipynb
 
+
+API
+===
+
+.. toctree::
+   :maxdepth: 1
+
+
    
 Indices and tables
 ==================

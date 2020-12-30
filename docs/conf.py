@@ -26,13 +26,33 @@ author = 'J. Michael Burgess'
 import sys
 import os
 
-
+from pathlib import Path
 
 import sphinx_rtd_theme
 
 sys.path.insert(0, os.path.abspath('../'))
 
+DOCS = Path(__file__).parent
 
+# -- Generate API documentation ------------------------------------------------
+def run_apidoc(app):
+    """Generage API documentation"""
+    import better_apidoc
+
+    better_apidoc.APP = app
+    better_apidoc.main(
+        [
+            "better-apidoc",
+            # "-t",
+            # str(docs / "_templates"),
+            "--force",
+            "--no-toc",
+            "--separate",
+            "-o",
+            str(DOCS / "API"),
+            str(DOCS / ".." / "gbmgeometry" ),
+        ]
+    )
 
 
 # -- General configuration ---------------------------------------------------
@@ -48,12 +68,17 @@ extensions = ['nbsphinx',
               'sphinx.ext.autodoc',
               'sphinx.ext.githubpages',
               'sphinx.ext.napoleon',
-              'rtds_action'
+              #'rtds_action'
 
 ]
 
 napoleon_google_docstring = True
 napoleon_use_param = False
+
+
+# The name of your GitHub repository
+rtds_action_github_repo = "grburgess/gbmgeometry"
+
 
 # The path where the artifact should be extracted
 # Note: this is relative to the conf.py file!
@@ -91,9 +116,9 @@ nbsphinx_timeout = 30 * 60
 #     "--InlineBackend.rc={'figure.dpi': 96}",
 # ]
 
-# autodoc_member_order = 'bysource'
+autodoc_member_order = 'bysource'
 
-# autoclass_content = 'both'
+autoclass_content = 'both'
 
 
 # edit_on_github_project = 'JohannesBuchner/UltraNest'
@@ -202,3 +227,8 @@ texinfo_documents = [
      author, 'gbmgeometry', 'One line description of project.',
      'Miscellaneous'),
 ]
+
+# -----------------------------------------------------------------------------
+def setup(app):
+    app.connect("builder-inited", run_apidoc)
+#    app.connect("builder-inited", generate_patched_readme)

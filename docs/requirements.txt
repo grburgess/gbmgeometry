@@ -16,3 +16,4 @@ recommonmark
 ipywebrtc
 requests
 rtds_action
+better_apidoc
