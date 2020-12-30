@@ -23,6 +23,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
+        pip install -U pip
         pip install --upgrade flake8 numpy coverage pytest pytest-cov cython codecov
         python setup.py install
     - name: Lint with flake8
@@ -71,7 +72,12 @@ jobs:
     name: Publish package
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     steps:
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
     - uses: pypa/gh-action-pypi-publish@master
       with:
         user: __token__
         password: ${{ secrets.PYPI_UPLOAD_TOKEN }}
+        skip_existing: true

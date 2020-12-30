@@ -15,6 +15,7 @@ jobs:
 
       - name: Install the package
         run: |
+          pip install -U pip
           python setup.py install
           
       - name: Execute the notebooks
