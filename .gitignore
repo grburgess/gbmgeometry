@@ -13,3 +13,4 @@ docs/_build/
 /gbmgeometry/.DS_Store
 /gbmgeometry/data/.DS_Store
 /logo.key
+/docs/notebooks/*.ipynb
