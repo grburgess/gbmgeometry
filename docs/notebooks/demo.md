@@ -33,7 +33,7 @@ import astropy.coordinates as coord
 import astropy.units as u
 from gbmgeometry import *
 from gbmgeometry.utils.package_utils import get_path_of_data_file
-plt.style.use('mike')
+
 
 ```
 
