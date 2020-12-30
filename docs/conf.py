@@ -68,7 +68,7 @@ extensions = ['nbsphinx',
               'sphinx.ext.autodoc',
               'sphinx.ext.githubpages',
               'sphinx.ext.napoleon',
-              #'rtds_action'
+              'rtds_action'
 
 ]
 
