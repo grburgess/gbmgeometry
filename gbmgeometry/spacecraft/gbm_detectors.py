@@ -105,8 +105,8 @@ def add_rotated_cylinder(
             xr + x_center, yr + y_center, zr + z_center, color=color, alpha=alpha
         )
 
-    surf._facecolors2d = surf._facecolors3d
-    surf._edgecolors2d = surf._edgecolors3d
+    # surf._facecolors2d = surf._facecolors3d
+    # surf._edgecolors2d = surf._edgecolors3d
 
     # Ceiling and floor
     if floor:
