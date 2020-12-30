@@ -131,8 +131,8 @@ def add_rotated_cylinder(
         surf = ax.plot_surface(
             xr + x_center, yr + y_center, hr + z_center, color=color, alpha=alpha
         )
-        surf._facecolors2d = surf._facecolors3d
-        surf._edgecolors2d = surf._edgecolors3d
+        # surf._facecolors2d = surf._facecolors3d
+        # surf._edgecolors2d = surf._edgecolors3d
 
     # Celling and floor
     if ceiling:
@@ -157,5 +157,5 @@ def add_rotated_cylinder(
         surf = ax.plot_surface(
             xr + x_center, yr + y_center, hr + z_center, color=color, alpha=alpha
         )
-        surf._facecolors2d = surf._facecolors3d
-        surf._edgecolors2d = surf._edgecolors3d
+        # surf._facecolors2d = surf._facecolors3d
+        # surf._edgecolors2d = surf._edgecolors3d
