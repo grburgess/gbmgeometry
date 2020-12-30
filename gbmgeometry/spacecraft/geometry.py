@@ -8,6 +8,8 @@ from sympy import Plane, Point3D, Line3D
 
 import ipyvolume as ipv
 
+from gbmgeometry.geometry.cube import Cube
+
 
 def get_sc_matrix(q1, q2, q3, q4):
     """
