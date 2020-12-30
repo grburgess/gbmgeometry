@@ -17,6 +17,7 @@ jobs:
         shell: bash -l {0}
         run: |
 
+          pip install jupytext
           jupytext --to ipynb --execute docs/notebooks/*.md
 
       - uses: actions/upload-artifact@v2
