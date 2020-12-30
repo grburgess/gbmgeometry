@@ -12,7 +12,11 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.7
-               
+
+      - name: Install the package
+        run: |
+          python setup.py install
+          
       - name: Execute the notebooks
         shell: bash -l {0}
         run: |
