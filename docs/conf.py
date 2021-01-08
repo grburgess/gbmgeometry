@@ -121,12 +121,6 @@ autodoc_member_order = 'bysource'
 autoclass_content = 'both'
 
 
-# edit_on_github_project = 'JohannesBuchner/UltraNest'
-# edit_on_github_branch = 'master'
-# #edit_on_github_url
-# edit_on_github_src = 'docs/'  # optional. default: ''
-
-
 
 # -- Options for HTML output -------------------------------------------------
 
