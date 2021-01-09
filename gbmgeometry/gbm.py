@@ -293,7 +293,7 @@ class GBM(object):
 
         out = {}
         for k, v in self._detectors.items():
-            out[k] = v.get_center().separation(source)
+            out[k] = v.get_center().separation(source).deg
 
         return pd.Series(out)
 
