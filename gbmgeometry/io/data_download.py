@@ -192,7 +192,7 @@ def get_official_location(burst_number, version=None):
 
         versions = range(4)
 
-    found = False
+ 
 
     for version in versions[::-1]:
 

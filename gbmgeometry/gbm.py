@@ -2,23 +2,18 @@ from collections import OrderedDict
 
 import astropy.coordinates as coord
 import astropy.units as u
-import matplotlib.pyplot as plt
-
 # import mpl_toolkits.basemap as bm
 import numpy as np
+import pandas as pd
 import spherical_geometry.polygon as sp
-from astropy.table import Table
-import astropy.time as time
 
-from .gbm_detector import BGO0, BGO1
-from .gbm_detector import NaI0, NaI1, NaI2, NaI3, NaI4, NaI5
-from .gbm_detector import NaI6, NaI7, NaI8, NaI9, NaIA, NaIB
-from .gbm_frame import GBMFrame
-
-
+from gbmgeometry.position_interpolator import PositionInterpolator
 from gbmgeometry.utils.gbm_time import GBMTime
-from gbmgeometry.utils.plotting import skyplot, SphericalCircle
+from gbmgeometry.utils.plotting import SphericalCircle, skyplot
 
+from .gbm_detector import (BGO0, BGO1, NaI0, NaI1, NaI2, NaI3, NaI4, NaI5,
+                           NaI6, NaI7, NaI8, NaI9, NaIA, NaIB)
+from .gbm_frame import GBMFrame
 
 # import seaborn as sns
 
@@ -28,7 +23,7 @@ _det_color_cycle = np.linspace(0, 1, 12)
 class GBM(object):
     def __init__(self, quaternion, sc_pos=None, gbm_time=None):
         """
-        
+
 
         :param quaternion: 
         :param sc_pos: 
@@ -139,6 +134,21 @@ class GBM(object):
             b1=self.b1,
         )
 
+    @classmethod
+    def from_position_interpolator(cls,
+                                   pos_interp: PositionInterpolator,
+                                   time: float = 0):
+        """
+        Create a GBM directly from an interpolator
+        """
+
+        met = pos_interp.met(time)
+        
+        return cls(pos_interp.quaternion(time),
+                   pos_interp.sc_pos(time),
+                   gbm_time = met
+                   )
+
     def set_quaternion(self, quaternion):
         """FIXME! briefly describe function
 
@@ -233,7 +243,6 @@ class GBM(object):
         return [polys, good_detectors]
 
     def get_sun_angle(self, keys=None):
-
         """
 
         Returns
@@ -255,7 +264,6 @@ class GBM(object):
         return angles
 
     def get_centers(self, keys=None):
-
         """
 
         Returns
@@ -280,25 +288,14 @@ class GBM(object):
         """
         Get the andular separation of the detectors from a point
         Parameters
-        ----------
-        source
-
-        Returns
-        -------
 
         """
 
-        tab = Table(names=["Detector", "Separation"], dtype=["|S2", np.float64])
+        out = {}
+        for k, v in self._detectors.items():
+            out[k] = v.get_center().separation(source)
 
-        for key in self._detectors.keys():
-            sep = self._detectors[key].get_center().separation(source)
-            tab.add_row([key, sep])
-
-        tab["Separation"].unit = u.degree
-
-        tab.sort("Separation")
-
-        return tab
+        return pd.Series(out)
 
     def get_earth_points(self, fermi_frame=False):
         """
@@ -331,7 +328,8 @@ class GBM(object):
         fermi_radius = np.sqrt((self._sc_pos ** 2).sum())
 
         horizon_angle = 90 - np.rad2deg(
-            np.arccos((earth_radius / fermi_radius).to(u.dimensionless_unscaled)).value
+            np.arccos(
+                (earth_radius / fermi_radius).to(u.dimensionless_unscaled)).value
         )
 
         horizon_angle = (180 - horizon_angle) * u.degree
@@ -369,7 +367,8 @@ class GBM(object):
                 unit="deg",
             )
         else:
-            all_sky = coord.SkyCoord(ra=ra_grid, dec=dec_grid, frame="icrs", unit="deg")
+            all_sky = coord.SkyCoord(
+                ra=ra_grid, dec=dec_grid, frame="icrs", unit="deg")
 
         condition = all_sky.separation(xyz_position) > horizon_angle
 
@@ -426,7 +425,8 @@ class GBM(object):
 
             ax = skyplot(**skymap_kwargs)
 
-        _defaults = dict(edgecolor="#13ED9B", lw=1, facecolor="#13ED9B", alpha=0.3)
+        _defaults = dict(edgecolor="#13ED9B", lw=1,
+                         facecolor="#13ED9B", alpha=0.3)
         for k, v in _defaults.items():
             if k not in kwargs:
                 kwargs[k] = v

@@ -1,30 +1,42 @@
-import astropy.io.fits as fits
-import h5py
-import astropy.units as u
-from astropy.coordinates import get_sun, get_moon, get_body
-import astropy.time as astro_time
+import typing as tp
 
+import astropy.io.fits as fits
+import astropy.time as astro_time
+import astropy.units as u
+import h5py
 import numpy as np
 import scipy.interpolate as interpolate
+from astropy.coordinates import get_body, get_moon, get_sun
 
 from gbmgeometry.utils.gbm_time import GBMTime
 
 
 class PositionInterpolator(object):
-    def __init__(self, quats, sc_pos, time, trigtime=None, factor=1, flags=None):
-        """FIXME! briefly describe function
+    def __init__(self,
+                 quats: tp.Iterable[float],
+                 sc_pos: tp.Iterable[float],
+                 time: float,
+                 trigtime=None,
+                 factor=1,
+                 flags=None):
+        """
+        An object for interpolating the orbit of 
+        GBM
 
-        :param poshist: 
-        :param T0: 
-        :param trigdat: 
+        :param quaternions
+        :param sc_pos: 
+        :param time:
+        :param trigtime:
+        :param factor:
+        :param flags:
         :returns: 
         :rtype: 
 
         """
 
-        self._quats = quats
-        self._sc_pos = sc_pos
-        self._time = time
+        self._quats: tp.Iterable[float] = quats
+        self._sc_pos: tp.Iterable[float] = sc_pos
+        self._time: float = time
         self._trigtime = trigtime
         self._factor = factor
         self._flags = flags
@@ -35,7 +47,7 @@ class PositionInterpolator(object):
         self._interpolate_flags()
 
     @classmethod
-    def from_trigdat_hdf5(cls, trigdat_file):
+    def from_trigdat_hdf5(cls, trigdat_file: str):
         """
         create and interpolator from a trigdat
         HDF5 file
@@ -227,7 +239,7 @@ class PositionInterpolator(object):
         """
         Get the position of the sun at the give time
         relative to the geocenter
-        
+
 
         :param t: 
         :returns: 
@@ -241,7 +253,7 @@ class PositionInterpolator(object):
         """
         Get the position of the moon at the give time
         relative to the geocenter
-        
+
 
         :param t: 
         :returns: 
@@ -255,7 +267,7 @@ class PositionInterpolator(object):
         """
         Get the position of the body at the give time
         relative to the geocenter
-        
+
 
         :param t: 
         :param body:
@@ -303,7 +315,7 @@ class PositionInterpolator(object):
     def sc_pos(self, t):
         """
         the space craft postions in X,Y,Z geocentric coordinates
-        
+
         units are always assumed to be kilometers
 
         :param t: 
@@ -328,7 +340,8 @@ class PositionInterpolator(object):
 
             fermi_radius = np.sqrt((sc_pos ** 2).sum())
 
-            horizon_angle = 90 - np.rad2deg(np.arccos(earth_radius / fermi_radius))
+            horizon_angle = 90 - \
+                np.rad2deg(np.arccos(earth_radius / fermi_radius))
 
             min_vis = np.deg2rad(horizon_angle)
 
@@ -346,7 +359,8 @@ class PositionInterpolator(object):
 
                 fermi_radius = np.sqrt((scp ** 2).sum())
 
-                horizon_angle = 90 - np.rad2deg(np.arccos(earth_radius / fermi_radius))
+                horizon_angle = 90 - \
+                    np.rad2deg(np.arccos(earth_radius / fermi_radius))
 
                 min_vis = np.deg2rad(horizon_angle)
 
@@ -442,7 +456,7 @@ class PositionInterpolator(object):
 
     def altitude(self, t):
         """
-        
+
         :param t: 
         :return: 
         """
