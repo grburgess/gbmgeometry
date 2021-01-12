@@ -204,7 +204,7 @@ def get_official_location(burst_number, version=None):
                 full_year,
                 proper_bn,
                 "current",
-                f"glg_tcat_all_{proper_bn}_v0{int(version)}.fit",
+                f"glg_tcat_all_{proper_bn}_v{str(version).zfill(2)}.fit",
             ]
         )
 
