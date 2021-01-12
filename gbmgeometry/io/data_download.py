@@ -190,7 +190,7 @@ def get_official_location(burst_number, version=None):
 
     else:
 
-        versions = range(4)
+        versions = range(20)
 
  
 
