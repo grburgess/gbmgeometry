@@ -10,7 +10,7 @@ jupyter:
   kernelspec:
     display_name: Python3
     language: python
-    name: Python3
+    name: python3
 ---
 
 <!-- #region -->
