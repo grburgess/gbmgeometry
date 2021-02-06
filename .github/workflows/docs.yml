@@ -2,38 +2,38 @@ name: Docs
 on: [push, release]
 
 jobs:
-  notebooks:
-    name: "Build the notebooks for the docs"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
+    notebooks:
+        name: "Build the notebooks for the docs"
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
+            - name: Set up Python
+              uses: actions/setup-python@v2
+              with:
+                  python-version: 3.7
 
-      - name: Install the package
-        run: |
-          pip install -U pip
-          pip install numpy
-          python setup.py install
-          
-      - name: Execute the notebooks
-        shell: bash -l {0}
-        run: |
+            - name: Install the package
+              run: |
+                  pip install -U pip
+                  pip install numpy
+                  python setup.py install
 
-          pip install -U jupyter jupytext
-          jupytext --to ipynb --execute docs/notebooks/*.md
+            - name: Execute the notebooks
+              shell: bash -l {0}
+              run: |
 
-      - uses: actions/upload-artifact@v2
-        with:
-          name: notebooks-for-${{ github.sha }}
-          path: docs/notebooks
+                  pip install -U jupyter jupytext
+                  jupytext --to ipynb --execute docs/notebooks/*.md
 
-      - name: Trigger RTDs build
-        uses: dfm/rtds-action@v1
-        with:
-          webhook_url: ${{ secrets.RTDS_WEBHOOK_URL }}
-          webhook_token: ${{ secrets.RTDS_WEBHOOK_TOKEN }}
-          commit_ref: ${{ github.ref }}
+            - uses: actions/upload-artifact@v2
+              with:
+                  name: notebooks-for-${{ github.sha }}
+                  path: docs/notebooks
+
+            - name: Trigger RTDs build
+              uses: dfm/rtds-action@v1
+              with:
+                  webhook_url: ${{ secrets.RTDS_WEBHOOK_URL }}
+                  webhook_token: ${{ secrets.RTDS_WEBHOOK_TOKEN }}
+                  commit_ref: ${{ github.ref }}
