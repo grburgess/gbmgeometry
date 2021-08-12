@@ -118,6 +118,8 @@ pi.is_fermi_active(tmin)
 
 ```python
 import matplotlib.pyplot as plt
+%matplotlib inline
+
 fig, ax = plt.subplots()
 
 time = np.linspace(tmin, tmax, 5000)
