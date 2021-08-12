@@ -2,6 +2,7 @@ from collections import OrderedDict
 
 import astropy.coordinates as coord
 import astropy.units as u
+
 # import mpl_toolkits.basemap as bm
 import numpy as np
 import pandas as pd
@@ -11,8 +12,22 @@ from gbmgeometry.position_interpolator import PositionInterpolator
 from gbmgeometry.utils.gbm_time import GBMTime
 from gbmgeometry.utils.plotting import SphericalCircle, skyplot
 
-from .gbm_detector import (BGO0, BGO1, NaI0, NaI1, NaI2, NaI3, NaI4, NaI5,
-                           NaI6, NaI7, NaI8, NaI9, NaIA, NaIB)
+from .gbm_detector import (
+    BGO0,
+    BGO1,
+    NaI0,
+    NaI1,
+    NaI2,
+    NaI3,
+    NaI4,
+    NaI5,
+    NaI6,
+    NaI7,
+    NaI8,
+    NaI9,
+    NaIA,
+    NaIB,
+)
 from .gbm_frame import GBMFrame
 
 # import seaborn as sns
@@ -135,19 +150,16 @@ class GBM(object):
         )
 
     @classmethod
-    def from_position_interpolator(cls,
-                                   pos_interp: PositionInterpolator,
-                                   time: float = 0):
+    def from_position_interpolator(
+        cls, pos_interp: PositionInterpolator, time: float = 0
+    ):
         """
         Create a GBM directly from an interpolator
         """
 
         met = pos_interp.met(time)
-        
-        return cls(pos_interp.quaternion(time),
-                   pos_interp.sc_pos(time),
-                   gbm_time = met
-                   )
+
+        return cls(pos_interp.quaternion(time), pos_interp.sc_pos(time), gbm_time=met)
 
     def set_quaternion(self, quaternion):
         """FIXME! briefly describe function
@@ -328,8 +340,7 @@ class GBM(object):
         fermi_radius = np.sqrt((self._sc_pos ** 2).sum())
 
         horizon_angle = 90 - np.rad2deg(
-            np.arccos(
-                (earth_radius / fermi_radius).to(u.dimensionless_unscaled)).value
+            np.arccos((earth_radius / fermi_radius).to(u.dimensionless_unscaled)).value
         )
 
         horizon_angle = (180 - horizon_angle) * u.degree
@@ -367,8 +378,7 @@ class GBM(object):
                 unit="deg",
             )
         else:
-            all_sky = coord.SkyCoord(
-                ra=ra_grid, dec=dec_grid, frame="icrs", unit="deg")
+            all_sky = coord.SkyCoord(ra=ra_grid, dec=dec_grid, frame="icrs", unit="deg")
 
         condition = all_sky.separation(xyz_position) > horizon_angle
 
@@ -425,8 +435,7 @@ class GBM(object):
 
             ax = skyplot(**skymap_kwargs)
 
-        _defaults = dict(edgecolor="#13ED9B", lw=1,
-                         facecolor="#13ED9B", alpha=0.3)
+        _defaults = dict(edgecolor="#13ED9B", lw=1, facecolor="#13ED9B", alpha=0.3)
         for k, v in _defaults.items():
             if k not in kwargs:
                 kwargs[k] = v

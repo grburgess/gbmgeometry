@@ -1,21 +1,18 @@
 import collections
 
 import healpy as hp
+import ipyvolume as ipv
 import matplotlib.pyplot as plt
 import numpy as np
 from astropy.coordinates import SkyCoord
 from sympy import Point3D
-import ipyvolume as ipv
-
 
 from gbmgeometry.gbm import GBM
-from gbmgeometry.utils.array_to_cmap import array_to_cmap
-
 from gbmgeometry.geometry import Ray, get_sc_matrix
+from gbmgeometry.spacecraft.gbm_detectors import add_rotated_cylinder
 from gbmgeometry.spacecraft.lat import LAT, LATRadiatorMinus, LATRadiatorPlus
 from gbmgeometry.spacecraft.solar_panels import SolarPanelMinus, SolarPanelPlus
-
-from gbmgeometry.spacecraft.gbm_detectors import add_rotated_cylinder
+from gbmgeometry.utils.array_to_cmap import array_to_cmap
 
 
 class Fermi(object):
