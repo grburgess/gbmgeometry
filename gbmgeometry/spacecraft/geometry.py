@@ -1,12 +1,11 @@
 import collections
 
+import ipyvolume as ipv
 import numpy as np
 from matplotlib import colors
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from mpl_toolkits.mplot3d import Axes3D
-from sympy import Plane, Point3D, Line3D
-
-import ipyvolume as ipv
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+from sympy import Line3D, Plane, Point3D
 
 from gbmgeometry.geometry.cube import Cube
 
@@ -214,14 +213,13 @@ class Surface(object):
                 return (
                     True,
                     np.array(
-                        map(
-                            float,
+                        [float(x) for x in
                             [
                                 intersecting_point.x,
                                 intersecting_point.y,
                                 intersecting_point.z,
-                            ],
-                        )
+                            ]
+                        ]
                     ),
                 )
 
@@ -233,14 +231,13 @@ class Surface(object):
                 return (
                     True,
                     np.array(
-                        map(
-                            float,
+                        [float(x) for x in
                             [
                                 intersecting_point.x,
                                 intersecting_point.y,
                                 intersecting_point.z,
-                            ],
-                        )
+                            ]
+                        ]
                     ),
                 )
 
@@ -252,14 +249,13 @@ class Surface(object):
                 return (
                     True,
                     np.array(
-                        map(
-                            float,
+                          [float(x) for x in
                             [
                                 intersecting_point.x,
                                 intersecting_point.y,
                                 intersecting_point.z,
-                            ],
-                        )
+                            ]
+                           ]
                     ),
                 )
 
@@ -532,7 +528,7 @@ class Volume(object):
 
         intersections = collections.OrderedDict()
 
-        for k, v in self._planes.iteritems():
+        for k, v in self._planes.items():
 
             if k in self._active_surfaces:
 
@@ -567,7 +563,7 @@ class Volume(object):
 
         intersection = None
 
-        for k, v in self._intersections.iteritems():
+        for k, v in self._intersections.items():
 
             if v["distance"] > max_distance:
                 intersection = k

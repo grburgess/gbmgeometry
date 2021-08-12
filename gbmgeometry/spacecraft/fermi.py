@@ -131,7 +131,7 @@ class Fermi(object):
 
         """
 
-        :param ray_coordinate: 
+        :param ray_coordinate: an astropy skycoord
         :param probability: 
         :param color: 
         """
@@ -141,7 +141,16 @@ class Fermi(object):
             self._rays[name].append(ray)
 
     def compute_intersections(self, *detectors):
+        """
+        compute the intersections for the given
+        detector string names (e.g. "n1", "n2")
 
+        if none are given, then intersections are
+        computed for all
+        
+        :returns: 
+
+        """
         self._intersection_points = collections.OrderedDict()
 
         all_intersections = collections.OrderedDict()
@@ -151,6 +160,10 @@ class Fermi(object):
         if len(detectors) == 0:
             dets = self._rays.keys()
 
+        else:
+
+            dets = detectors
+            
         for det_name, det in self._rays.items():
 
             self._intersection_points[det_name] = []
@@ -287,7 +300,7 @@ class Fermi(object):
                         label=det.name,
                         alpha=0.9,
                     )
-                    ax.legend()
+                    #ax.legend()
 
         if with_rays:
 

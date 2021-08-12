@@ -102,14 +102,13 @@ class Surface(object):
                 return (
                     True,
                     np.array(
-                        map(
-                            float,
+                        [float(x) for x in
                             [
                                 intersecting_point.x,
                                 intersecting_point.y,
                                 intersecting_point.z,
-                            ],
-                        )
+                            ]
+                        ]
                     ),
                 )
 
@@ -121,14 +120,13 @@ class Surface(object):
                 return (
                     True,
                     np.array(
-                        map(
-                            float,
+                        [float(x) for x in
                             [
                                 intersecting_point.x,
                                 intersecting_point.y,
                                 intersecting_point.z,
-                            ],
-                        )
+                            ]
+                        ]
                     ),
                 )
 
@@ -140,14 +138,13 @@ class Surface(object):
                 return (
                     True,
                     np.array(
-                        map(
-                            float,
+                        [float(x) for x in
                             [
                                 intersecting_point.x,
                                 intersecting_point.y,
                                 intersecting_point.z,
-                            ],
-                        )
+                            ]
+                        ]
                     ),
                 )
 

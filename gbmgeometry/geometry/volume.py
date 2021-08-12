@@ -243,7 +243,7 @@ class Volume(object):
 
         intersections = collections.OrderedDict()
 
-        for k, v in self._planes.iteritems():
+        for k, v in self._planes.items():
 
             if k in self._active_surfaces:
 
@@ -278,7 +278,7 @@ class Volume(object):
 
         intersection = None
 
-        for k, v in self._intersections.iteritems():
+        for k, v in self._intersections.items():
 
             if v["distance"] > max_distance:
                 intersection = k

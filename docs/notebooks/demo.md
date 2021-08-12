@@ -8,7 +8,7 @@ jupyter:
       format_version: '1.2'
       jupytext_version: 1.8.0
   kernelspec:
-    display_name: Python3
+    display_name: Python 3
     language: python
     name: python3
 ---
@@ -157,19 +157,49 @@ grb = SkyCoord(ra=130.,dec=-45 ,frame='icrs', unit='deg')
 
 seps = myGBM.get_separation(grb)
 
-seps.sort("Separation")
+
 
 seps
 ```
 
-# Fermi plotting
+# Fermi plotting and computing blockage
+
+## Simple plotting
+It is possible to plot a 3D model of Fermi that is to scale:
 
 ```python
 from gbmgeometry.spacecraft.fermi import *
 
 
-f = Fermi(quaternion=[0,0,0,0], sc_pos=np.array([1,1,1]))
+f = Fermi(quaternion=interp.quaternion(0) , sc_pos=interp.sc_pos(0))
 f.plot_fermi(color_dets_different=True, plot_det_label=False);
+```
+
+## computing intersections
+
+It is sometimes required to see if photons from a GRB are blocked by spacecraft parts for a given detector. We can test this with the Fermi object:
+
+
+```python
+f.add_ray(ray_coordinate=grb)
+```
+
+we can specify to compute for a subset of detectors
+
+```python
+f.compute_intersections("n1","n2")
+```
+
+or compute for all detectors
+
+```python
+f.compute_intersections()
+```
+
+Finally, we can plot this
+
+```python
+f.plot_fermi(color_dets_different=True, plot_det_label=False, with_intersections=True, with_rays=True);
 ```
 
 ```python
