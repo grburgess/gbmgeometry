@@ -118,6 +118,7 @@ pi.is_fermi_active(tmin)
 
 ```python
 import matplotlib.pyplot as plt
+import numpy as np
 %matplotlib inline
 
 fig, ax = plt.subplots()
