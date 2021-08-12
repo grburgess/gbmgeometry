@@ -14,3 +14,5 @@ docs/_build/
 /gbmgeometry/data/.DS_Store
 /logo.key
 /docs/notebooks/*.ipynb
+/.dir-locals.el
+/trigdat_bn080916009_v02.h5
