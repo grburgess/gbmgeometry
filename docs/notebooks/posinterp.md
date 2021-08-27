@@ -58,56 +58,7 @@ pi = PositionInterpolator.from_poshist_hdf5(posthist_file)
 ```
 
 ## Plotting
-We will do the fun stuff first. As the **PositionInterpolator** contains a lot of information about where Fermi is, we can use it to plot where the spacecraft is relative to Earth.
-
-
-
-
-### Static
-
-```python
-from gbmgeometry import plot_in_space
-
-pi = PositionInterpolator.from_poshist_hdf5(posthist_file)
-
-# get the min and max time store in the file
-tmin, tmax = pi.minmax_time()
-
-plot_in_space(pi, tmin+1500);
-```
-
-Cool. But where are the detectors pointing?
-
-```python
-plot_in_space(pi, tmin+2000, show_detector_pointing=True, show_orbit=False, earth_time='day');
-```
-
-Where is the moon? 
-
-**That's no moon.**
-
-```python
-plot_in_space(pi, tmin, show_detector_pointing=True,
-              show_moon=True, 
-              earth_time='midnight',
-              show_orbit=False);
-```
-
-Yes, yes, you can also show the Sun... but it is not very useful at the moment.
-
-
-### Animation
-
-Let's go crazy and watch Fermi orbit
-
-```python
-from gbmgeometry import animate_in_space
-animate_in_space(pi,
-                 n_step=200,
-                 interval=1100,
-                 show_stars=True, show_detector_pointing=True, realistic=True, earth_time='day');
-```
-
+We can do some really fun 3D plotting and animation. This is best enjoyed live by [clicking this link](https://mybinder.org/v2/gh/grburgess/gbmgeometry/b206f8a2eaa6ff32259cde006ce863362f073c91).
 ## Basic functions
 
 We can check to see if Fermi is active at any time. For example, it is shut off during SAA passage.
