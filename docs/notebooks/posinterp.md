@@ -64,6 +64,9 @@ We can do some really fun 3D plotting and animation. This is best enjoyed live b
 We can check to see if Fermi is active at any time. For example, it is shut off during SAA passage.
 
 ```python
+
+tmin, tmax = pi.minmax_time()
+
 pi.is_fermi_active(tmin)
 ```
 
