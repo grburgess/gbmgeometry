@@ -131,6 +131,7 @@ def download_posthist(year, month, day, destination="."):
         ]
     )
 
+    
     out_file = os.path.join(destination, f"poshist_{year}{month}{day}.h5")
 
     try:
@@ -141,8 +142,30 @@ def download_posthist(year, month, day, destination="."):
 
     except (HTTPError):
 
-        print("Sorry there were no posthist data for this the day")
 
+        try:
+
+            url = "/".join(
+                [
+                    _daily_base_url,
+                    full_year,
+                    month,
+                    day,
+                    "current",
+                    f"glg_poshist_all_{year}{month}{day}_v01.fit",
+                ]
+            )
+            
+            convert_poshist2hdf5(url, out_file)
+
+            found = True
+
+        except(HTTPError):
+
+            print("Sorry there were no posthist data for this the day")
+
+            return
+            
     print(f"The data have been downloaded to {out_file}")
 
     return out_file
