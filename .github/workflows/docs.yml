@@ -2,38 +2,126 @@ name: Docs
 on: [push, release]
 
 jobs:
-    notebooks:
-        name: "Build the notebooks for the docs"
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v2
+  notebooks:
+    name: "Build the notebooks for the docs"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+            
+      - name: Install the package
+        run: |
+          pip install -U pip
+          pip install numba numpy
+          python setup.py install
+          
+      - name: Execute the notebooks
+        shell: bash -l {0}
+        run: |
+          
+          pip install -U jupyter jupytext
+          jupytext --to ipynb --execute docs/notebooks/*.md
 
-            - name: Set up Python
-              uses: actions/setup-python@v2
-              with:
-                  python-version: 3.7
+      - uses: actions/upload-artifact@v2
+        with:
+          name: notebooks-for-${{ github.sha }}
+          path: docs/notebooks
 
-            - name: Install the package
-              run: |
-                  pip install -U pip
-                  pip install numba numpy
-                  python setup.py install
 
-            - name: Execute the notebooks
-              shell: bash -l {0}
-              run: |
+  api_doc:
+    name: "Create the API stubs"
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
+        fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
 
-                  pip install -U jupyter jupytext
-                  jupytext --to ipynb --execute docs/notebooks/*.md
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9        
 
-            - uses: actions/upload-artifact@v2
-              with:
-                  name: notebooks-for-${{ github.sha }}
-                  path: docs/notebooks
+    - name: Build the API doc
+      run: |
 
-            - name: Trigger RTDs build
-              uses: dfm/rtds-action@v1
-              with:
-                  webhook_url: ${{ secrets.RTDS_WEBHOOK_URL }}
-                  webhook_token: ${{ secrets.RTDS_WEBHOOK_TOKEN }}
-                  commit_ref: ${{ github.ref }}
+        pip3 install numpy scipy numba astropy
+        
+        python setup.py develop
+        
+        brew install sphinx-doc pandoc
+        
+        pip3 install wheel
+        pip3 install mock recommonmark
+        pip3 install sphinx_rtd_theme
+        pip3 install -U sphinx nbsphinx sphinx-gallery
+          
+          
+        sphinx-apidoc -f -o docs/api/ gbmgeometry
+
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: api-stubs-for-${{ github.sha }}
+        path: docs/api
+
+  build_docs:
+    name: "Build the Documentation"
+    runs-on: macos-latest
+    needs: [notebooks, api_doc]
+    steps:
+
+
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
+          fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install gbmgeometry
+        run: |
+
+          pip3 install numpy scipy numba astropy
+          
+          brew install sphinx-doc pandoc
+
+          pip3 install wheel
+          pip3 install mock recommonmark
+          pip3 install sphinx_rtd_theme
+          pip3 install -U sphinx nbsphinx sphinx-gallery
+
+    
+          
+          python3 setup.py develop
+
+      - uses: actions/download-artifact@master
+        with:
+          name: notebooks-for-${{ github.sha }}
+          path: docs/notebooks
+
+
+      - uses: actions/download-artifact@master
+        with:
+          name: api-stubs-for-${{ github.sha }}
+          path: docs/notebooks/api
+
+      
+      - name: Build and Commit
+        uses: sphinx-notes/pages@master
+        with:
+          documentation_path: docs
+        
+      - name: Push changes
+        if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
