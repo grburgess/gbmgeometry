@@ -1,0 +1,56 @@
+gbmgeometry package
+===================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   gbmgeometry.geometry
+   gbmgeometry.io
+   gbmgeometry.spacecraft
+   gbmgeometry.utils
+
+Submodules
+----------
+
+gbmgeometry.gbm module
+----------------------
+
+.. automodule:: gbmgeometry.gbm
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+gbmgeometry.gbm\_detector module
+--------------------------------
+
+.. automodule:: gbmgeometry.gbm_detector
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+gbmgeometry.gbm\_frame module
+-----------------------------
+
+.. automodule:: gbmgeometry.gbm_frame
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+gbmgeometry.position\_interpolator module
+-----------------------------------------
+
+.. automodule:: gbmgeometry.position_interpolator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: gbmgeometry
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gbmgeometry.spacecraft.fermi &mdash; gbmgeometry  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.0-rc.0/dist/embed-amd.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <link rel="stylesheet" href="../../../_static/pygments/default.css" type="text/css" id="pygments-style">
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css">
+   
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> gbmgeometry
+            <img src="../../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/demo.html">GBM Geometry Demo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/demo.html#Fermi-plotting-and-computing-blockage">Fermi plotting and computing blockage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/posinterp.html">The PositionInterpolator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/pointsource.html">Plotting Points on the Sky</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/modules.html">twopc</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gbmgeometry</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+  <!--
+  <div class="admonition note">
+    <p><a href="https://github.com/lukelbd">ProPlot author here</a>: Due to my day job as a graduate student, certain <a href="https://github.com/lukelbd/proplot/pulls?q=is%3Aopen+is%3Apr">feature additions</a> may be delayed to the summer of 2020. In the meantime, if you are interested in contributing to ProPlot, please see the <a href="https://proplot.readthedocs.io/en/latest/contributions.html">contribution guide</a>. Any amount of help is welcome!
+    </p>
+  </div>
+  -->
+  <li id="lightdark-li">
+    <label for="lightdark-checkbox" id="lightdark-label">
+      <input type="checkbox" id="lightdark-checkbox"/>
+      <div class="btn-neutral"></div>
+    </label>
+  </li>
+  
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>gbmgeometry.spacecraft.fermi</li>
+
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  <script type="text/javascript" src=../../../_static/custom.js></script>
+  
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gbmgeometry.spacecraft.fermi</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">collections</span>
+
+<span class="kn">import</span> <span class="nn">healpy</span> <span class="k">as</span> <span class="nn">hp</span>
+<span class="kn">import</span> <span class="nn">ipyvolume</span> <span class="k">as</span> <span class="nn">ipv</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">astropy.coordinates</span> <span class="kn">import</span> <span class="n">SkyCoord</span>
+<span class="kn">from</span> <span class="nn">sympy</span> <span class="kn">import</span> <span class="n">Point3D</span>
+
+<span class="kn">from</span> <span class="nn">gbmgeometry.gbm</span> <span class="kn">import</span> <span class="n">GBM</span>
+<span class="kn">from</span> <span class="nn">gbmgeometry.geometry</span> <span class="kn">import</span> <span class="n">Ray</span><span class="p">,</span> <span class="n">get_sc_matrix</span>
+<span class="kn">from</span> <span class="nn">gbmgeometry.spacecraft.gbm_detectors</span> <span class="kn">import</span> <span class="n">add_rotated_cylinder</span>
+<span class="kn">from</span> <span class="nn">gbmgeometry.spacecraft.lat</span> <span class="kn">import</span> <span class="n">LAT</span><span class="p">,</span> <span class="n">LATRadiatorMinus</span><span class="p">,</span> <span class="n">LATRadiatorPlus</span>
+<span class="kn">from</span> <span class="nn">gbmgeometry.spacecraft.solar_panels</span> <span class="kn">import</span> <span class="n">SolarPanelMinus</span><span class="p">,</span> <span class="n">SolarPanelPlus</span>
+<span class="kn">from</span> <span class="nn">gbmgeometry.utils.array_to_cmap</span> <span class="kn">import</span> <span class="n">array_to_cmap</span>
+
+
+<div class="viewcode-block" id="Fermi"><a class="viewcode-back" href="../../../notebooks/api/gbmgeometry.spacecraft.html#gbmgeometry.Fermi">[docs]</a><span class="k">class</span> <span class="nc">Fermi</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Fermi.__init__"><a class="viewcode-back" href="../../../notebooks/api/gbmgeometry.spacecraft.html#gbmgeometry.Fermi.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">transform_to_space</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        </span>
+<span class="sd">        A model of Fermi that can be plotted in 3D and read healpix maps.</span>
+<span class="sd">        </span>
+
+<span class="sd">        :param quaternion: the quaternion array </span>
+<span class="sd">        :param sc_pos: the spacecraft position</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># build fermi by creating all the components</span>
+        <span class="k">if</span> <span class="n">transform_to_space</span><span class="p">:</span>
+
+            <span class="k">assert</span> <span class="n">sc_pos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">quaternion</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+
+                <span class="n">transform_matrix</span> <span class="o">=</span> <span class="n">get_sc_matrix</span><span class="p">(</span><span class="o">*</span><span class="n">quaternion</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="c1"># this is going to be an array from different time bins</span>
+
+                <span class="n">transform_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">get_sc_matrix</span><span class="p">(</span><span class="o">*</span><span class="n">quat</span><span class="p">)</span> <span class="k">for</span> <span class="n">quat</span> <span class="ow">in</span> <span class="n">quaternion</span><span class="p">]</span>
+                <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">sc_pos</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">transform_matrix</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transform_matrix</span> <span class="o">=</span> <span class="n">transform_matrix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sc_pos</span> <span class="o">=</span> <span class="n">sc_pos</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_quaternion</span> <span class="o">=</span> <span class="n">quaternion</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lat</span> <span class="o">=</span> <span class="n">LAT</span><span class="p">(</span>
+            <span class="n">transform_matrix</span><span class="o">=</span><span class="n">transform_matrix</span><span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="n">sc_pos</span><span class="p">,</span> <span class="n">quaternion</span><span class="o">=</span><span class="n">quaternion</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lat_radiator_plus</span> <span class="o">=</span> <span class="n">LATRadiatorPlus</span><span class="p">(</span>
+            <span class="n">transform_matrix</span><span class="o">=</span><span class="n">transform_matrix</span><span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="n">sc_pos</span><span class="p">,</span> <span class="n">quaternion</span><span class="o">=</span><span class="n">quaternion</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lat_radiator_minus</span> <span class="o">=</span> <span class="n">LATRadiatorMinus</span><span class="p">(</span>
+            <span class="n">transform_matrix</span><span class="o">=</span><span class="n">transform_matrix</span><span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="n">sc_pos</span><span class="p">,</span> <span class="n">quaternion</span><span class="o">=</span><span class="n">quaternion</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_solar_panel_plus</span> <span class="o">=</span> <span class="n">SolarPanelPlus</span><span class="p">(</span>
+            <span class="n">transform_matrix</span><span class="o">=</span><span class="n">transform_matrix</span><span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="n">sc_pos</span><span class="p">,</span> <span class="n">quaternion</span><span class="o">=</span><span class="n">quaternion</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_solar_panel_minus</span> <span class="o">=</span> <span class="n">SolarPanelMinus</span><span class="p">(</span>
+            <span class="n">transform_matrix</span><span class="o">=</span><span class="n">transform_matrix</span><span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="n">sc_pos</span><span class="p">,</span> <span class="n">quaternion</span><span class="o">=</span><span class="n">quaternion</span>
+        <span class="p">)</span>
+
+        <span class="c1"># build a GBM</span>
+
+        <span class="c1"># note that we would not use the</span>
+        <span class="c1"># time dependent function here so</span>
+        <span class="c1"># it is expicitly disabled</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">quaternion</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+
+            <span class="n">quaternion</span> <span class="o">=</span> <span class="n">quaternion</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">sc_pos</span> <span class="o">=</span> <span class="n">sc_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_gbm</span> <span class="o">=</span> <span class="n">GBM</span><span class="p">(</span><span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="p">)</span>
+
+        <span class="c1"># grab the frame</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gbm</span><span class="o">.</span><span class="n">n0</span><span class="o">.</span><span class="n">center</span><span class="o">.</span><span class="n">frame</span>
+
+        <span class="c1"># attach the components to fermi</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spacecraft_components</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spacecraft_components</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_lat</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lat</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spacecraft_components</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lat_radiator_minus</span><span class="o">.</span><span class="n">name</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lat_radiator_minus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spacecraft_components</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lat_radiator_plus</span><span class="o">.</span><span class="n">name</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lat_radiator_plus</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spacecraft_components</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_solar_panel_plus</span><span class="o">.</span><span class="n">name</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solar_panel_plus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spacecraft_components</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_solar_panel_minus</span><span class="o">.</span><span class="n">name</span>
+        <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solar_panel_minus</span>
+
+        <span class="c1"># add lists for each detector to rays</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rays</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gbm</span><span class="o">.</span><span class="n">detectors</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rays</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_intersection_points</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">spacecraft_components</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spacecraft_components</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rays</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rays</span>
+
+<div class="viewcode-block" id="Fermi.add_ray"><a class="viewcode-back" href="../../../notebooks/api/gbmgeometry.spacecraft.html#gbmgeometry.Fermi.add_ray">[docs]</a>    <span class="k">def</span> <span class="nf">add_ray</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ray_coordinate</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#29FC5C&quot;</span><span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param ray_coordinate: an astropy skycoord</span>
+<span class="sd">        :param probability: </span>
+<span class="sd">        :param color: </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">det</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gbm</span><span class="o">.</span><span class="n">detectors</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">ray</span> <span class="o">=</span> <span class="n">Ray</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">ray_coordinate</span><span class="p">,</span> <span class="n">probability</span><span class="o">=</span><span class="n">probability</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_rays</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ray</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Fermi.compute_intersections"><a class="viewcode-back" href="../../../notebooks/api/gbmgeometry.spacecraft.html#gbmgeometry.Fermi.compute_intersections">[docs]</a>    <span class="k">def</span> <span class="nf">compute_intersections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">detectors</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        compute the intersections for the given</span>
+<span class="sd">        detector string names (e.g. &quot;n1&quot;, &quot;n2&quot;)</span>
+
+<span class="sd">        if none are given, then intersections are</span>
+<span class="sd">        computed for all</span>
+<span class="sd">        </span>
+<span class="sd">        :returns: </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_intersection_points</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+
+        <span class="n">all_intersections</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+
+        <span class="c1"># go thru all detectors</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">detectors</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">dets</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rays</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">dets</span> <span class="o">=</span> <span class="n">detectors</span>
+            
+        <span class="k">for</span> <span class="n">det_name</span><span class="p">,</span> <span class="n">det</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rays</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_intersection_points</span><span class="p">[</span><span class="n">det_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="n">ray_dict</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">det_name</span> <span class="ow">in</span> <span class="n">dets</span><span class="p">:</span>
+
+                <span class="c1"># now go through all rays</span>
+
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ray</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">det</span><span class="p">):</span>
+
+                    <span class="c1"># now all components</span>
+
+                    <span class="n">collision_info</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">()</span>
+
+                    <span class="n">collision_info</span><span class="p">[</span><span class="s2">&quot;surface&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">collision_info</span><span class="p">[</span><span class="s2">&quot;point&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">collision_info</span><span class="p">[</span><span class="s2">&quot;distance&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+                    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spacecraft_components</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+                        <span class="c1"># intersect the volume with the rays</span>
+
+                        <span class="n">component</span><span class="o">.</span><span class="n">intersect_ray</span><span class="p">(</span><span class="n">ray</span><span class="p">)</span>
+
+                        <span class="n">plane</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">distance</span> <span class="o">=</span> <span class="n">component</span><span class="o">.</span><span class="n">intersection</span>
+
+                        <span class="n">current_ray_origin</span> <span class="o">=</span> <span class="n">Point3D</span><span class="p">(</span><span class="n">ray</span><span class="o">.</span><span class="n">ray_origin</span><span class="p">)</span>
+
+                        <span class="k">if</span> <span class="n">plane</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">current_ray_origin</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span>
+                            <span class="n">Point3D</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+                        <span class="p">)</span> <span class="o">&lt;=</span> <span class="n">current_ray_origin</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">Point3D</span><span class="p">(</span><span class="n">ray</span><span class="o">.</span><span class="n">detector_origin</span><span class="p">)):</span>
+                            <span class="n">collision_info</span><span class="p">[</span><span class="s2">&quot;surface&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">plane</span><span class="p">))</span>
+                            <span class="n">collision_info</span><span class="p">[</span><span class="s2">&quot;point&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+                            <span class="n">collision_info</span><span class="p">[</span><span class="s2">&quot;distance&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span>
+
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_intersection_points</span><span class="p">[</span><span class="n">det_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+
+                    <span class="n">ray_dict</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">collision_info</span>
+
+                <span class="n">all_intersections</span><span class="p">[</span><span class="n">det_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">ray_dict</span>
+
+        <span class="k">return</span> <span class="n">all_intersections</span></div>
+
+<div class="viewcode-block" id="Fermi.plot_fermi"><a class="viewcode-back" href="../../../notebooks/api/gbmgeometry.spacecraft.html#gbmgeometry.Fermi.plot_fermi">[docs]</a>    <span class="k">def</span> <span class="nf">plot_fermi</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">detectors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">with_rays</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">with_intersections</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">plot_det_label</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">color_dets_different</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param ax: </span>
+<span class="sd">        :param detectors: </span>
+<span class="sd">        :param with_rays: </span>
+<span class="sd">        :param with_intersections: </span>
+<span class="sd">        :return: </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s2">&quot;3d&quot;</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">fig</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_figure</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">detectors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="n">detectors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gbm</span><span class="o">.</span><span class="n">detectors</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">for</span> <span class="n">det</span> <span class="ow">in</span> <span class="n">detectors</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">det</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gbm</span><span class="o">.</span><span class="n">detectors</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="s2">&quot;invalid detector&quot;</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spacecraft_components</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">component</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">det</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gbm</span><span class="o">.</span><span class="n">detectors</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">detectors</span><span class="p">:</span>
+
+                <span class="n">add_rotated_cylinder</span><span class="p">(</span>
+                    <span class="n">ax</span><span class="p">,</span>
+                    <span class="n">theta</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">det</span><span class="o">.</span><span class="n">zen</span><span class="p">),</span>
+                    <span class="n">phi</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">det</span><span class="o">.</span><span class="n">az</span><span class="p">),</span>
+                    <span class="n">x_center</span><span class="o">=</span><span class="n">det</span><span class="o">.</span><span class="n">mount_point</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                    <span class="n">y_center</span><span class="o">=</span><span class="n">det</span><span class="o">.</span><span class="n">mount_point</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="n">z_center</span><span class="o">=</span><span class="n">det</span><span class="o">.</span><span class="n">mount_point</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                <span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">plot_det_label</span><span class="p">:</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">text3D</span><span class="p">(</span>
+                        <span class="n">det</span><span class="o">.</span><span class="n">mount_point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">10</span><span class="p">,</span>
+                        <span class="n">det</span><span class="o">.</span><span class="n">mount_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">20</span><span class="p">,</span>
+                        <span class="n">det</span><span class="o">.</span><span class="n">mount_point</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="mi">20</span><span class="p">,</span>
+                        <span class="n">det</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+                        <span class="n">fontweight</span><span class="o">=</span><span class="s2">&quot;bold&quot;</span><span class="p">,</span>
+                        <span class="n">size</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">if</span> <span class="n">color_dets_different</span><span class="p">:</span>
+
+                    <span class="n">colors</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s2">&quot;n0&quot;</span><span class="p">:</span> <span class="s2">&quot;#FF4848&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;n1&quot;</span><span class="p">:</span> <span class="s2">&quot;#D4AE00&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;n2&quot;</span><span class="p">:</span> <span class="s2">&quot;#DD69FE&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;n3&quot;</span><span class="p">:</span> <span class="s2">&quot;#FF8A1F&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;n4&quot;</span><span class="p">:</span> <span class="s2">&quot;#9669FE&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;n5&quot;</span><span class="p">:</span> <span class="s2">&quot;#B05F3C&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;n6&quot;</span><span class="p">:</span> <span class="s2">&quot;#9219F1&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;n7&quot;</span><span class="p">:</span> <span class="s2">&quot;#F70000&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;n8&quot;</span><span class="p">:</span> <span class="s2">&quot;#3923D6&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;n9&quot;</span><span class="p">:</span> <span class="s2">&quot;#A91374&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;na&quot;</span><span class="p">:</span> <span class="s2">&quot;#62A9FF&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;nb&quot;</span><span class="p">:</span> <span class="s2">&quot;#4A9586&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;b0&quot;</span><span class="p">:</span> <span class="s2">&quot;#02EF72&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;b1&quot;</span><span class="p">:</span> <span class="s2">&quot;#59955C&quot;</span><span class="p">,</span>
+                    <span class="p">}</span>
+
+                    <span class="n">add_rotated_cylinder</span><span class="p">(</span>
+                        <span class="n">ax</span><span class="p">,</span>
+                        <span class="n">theta</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">det</span><span class="o">.</span><span class="n">zen</span><span class="p">),</span>
+                        <span class="n">phi</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">det</span><span class="o">.</span><span class="n">az</span><span class="p">),</span>
+                        <span class="n">x_center</span><span class="o">=</span><span class="n">det</span><span class="o">.</span><span class="n">mount_point</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                        <span class="n">y_center</span><span class="o">=</span><span class="n">det</span><span class="o">.</span><span class="n">mount_point</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="n">z_center</span><span class="o">=</span><span class="n">det</span><span class="o">.</span><span class="n">mount_point</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                        <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">det</span><span class="o">.</span><span class="n">name</span><span class="p">],</span>
+                        <span class="n">label</span><span class="o">=</span><span class="n">det</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                        <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+                    <span class="p">)</span>
+                    <span class="c1">#ax.legend()</span>
+
+        <span class="k">if</span> <span class="n">with_rays</span><span class="p">:</span>
+
+            <span class="c1"># for all the detectors plot the rays</span>
+
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">det</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rays</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+                <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">detectors</span><span class="p">:</span>
+
+                    <span class="k">for</span> <span class="n">ray</span> <span class="ow">in</span> <span class="n">det</span><span class="p">:</span>
+                        <span class="n">ray</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">with_intersections</span><span class="p">:</span>
+
+            <span class="c1"># if there are intersections</span>
+            <span class="c1"># then plot the intersection points</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_intersection_points</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+                <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">points</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_intersection_points</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">detectors</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span><span class="p">:</span>
+                            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">point</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;SCX&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;SCY&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s2">&quot;SCZ&quot;</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="mf">158.6</span> <span class="o">+</span> <span class="mi">106</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="mf">158.6</span> <span class="o">+</span> <span class="mi">106</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="mf">158.6</span> <span class="o">+</span> <span class="mi">106</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="mf">158.6</span> <span class="o">+</span> <span class="mi">106</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_zlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">158.6</span> <span class="o">+</span> <span class="mi">106</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">pane</span><span class="o">.</span><span class="n">set_edgecolor</span><span class="p">(</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">pane</span><span class="o">.</span><span class="n">set_edgecolor</span><span class="p">(</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">view_init</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+
+        <span class="c1"># ax.xaxis.pane.fill = False</span>
+        <span class="c1"># ax.yaxis.pane.fill = False</span>
+        <span class="c1"># ax.zaxis.pane.fill = False</span>
+
+        <span class="k">return</span> <span class="n">fig</span></div>
+
+<div class="viewcode-block" id="Fermi.plot_fermi_ipy"><a class="viewcode-back" href="../../../notebooks/api/gbmgeometry.spacecraft.html#gbmgeometry.Fermi.plot_fermi_ipy">[docs]</a>    <span class="k">def</span> <span class="nf">plot_fermi_ipy</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="c1"># detectors=None,</span>
+        <span class="c1"># with_rays=False,</span>
+        <span class="c1"># with_intersections=False,</span>
+        <span class="c1"># plot_det_label=False,</span>
+        <span class="c1"># color_dets_different=False,</span>
+    <span class="p">):</span>
+
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param ax: </span>
+<span class="sd">        :param detectors: </span>
+<span class="sd">        :param with_rays: </span>
+<span class="sd">        :param with_intersections: </span>
+<span class="sd">        :return: </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># if detectors is None:</span>
+
+        <span class="c1">#     detectors = self._gbm.detectors.keys()</span>
+
+        <span class="c1"># else:</span>
+
+        <span class="c1">#     for det in detectors:</span>
+        <span class="c1">#         assert det in self._gbm.detectors.keys(), &quot;invalid detector&quot;</span>
+
+        <span class="n">artists</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spacecraft_components</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">artists</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">plot_ipv</span><span class="p">())</span>
+
+        <span class="c1"># for name, det in self._gbm.detectors.items():</span>
+
+        <span class="c1">#     if name in detectors:</span>
+
+        <span class="c1">#         add_rotated_cylinder(</span>
+        <span class="c1">#             ax,</span>
+        <span class="c1">#             theta=np.pi / 2 - np.deg2rad(det.zen),</span>
+        <span class="c1">#             phi=np.deg2rad(det.az),</span>
+        <span class="c1">#             x_center=det.mount_point[0],</span>
+        <span class="c1">#             y_center=det.mount_point[1],</span>
+        <span class="c1">#             z_center=det.mount_point[2],</span>
+        <span class="c1">#         )</span>
+
+        <span class="c1">#         if plot_det_label:</span>
+        <span class="c1">#             ax.text3D(</span>
+        <span class="c1">#                 det.mount_point[0] - 10,</span>
+        <span class="c1">#                 det.mount_point[1] - 20,</span>
+        <span class="c1">#                 det.mount_point[2] + 20,</span>
+        <span class="c1">#                 det.name,</span>
+        <span class="c1">#                 color=&quot;black&quot;,</span>
+        <span class="c1">#                 fontweight=&quot;bold&quot;,</span>
+        <span class="c1">#                 size=30,</span>
+        <span class="c1">#             )</span>
+        <span class="c1">#         if color_dets_different:</span>
+
+        <span class="c1">#             colors = {</span>
+        <span class="c1">#                 &quot;n0&quot;: &quot;#FF4848&quot;,</span>
+        <span class="c1">#                 &quot;n1&quot;: &quot;#D4AE00&quot;,</span>
+        <span class="c1">#                 &quot;n2&quot;: &quot;#DD69FE&quot;,</span>
+        <span class="c1">#                 &quot;n3&quot;: &quot;#FF8A1F&quot;,</span>
+        <span class="c1">#                 &quot;n4&quot;: &quot;#9669FE&quot;,</span>
+        <span class="c1">#                 &quot;n5&quot;: &quot;#B05F3C&quot;,</span>
+        <span class="c1">#                 &quot;n6&quot;: &quot;#9219F1&quot;,</span>
+        <span class="c1">#                 &quot;n7&quot;: &quot;#F70000&quot;,</span>
+        <span class="c1">#                 &quot;n8&quot;: &quot;#3923D6&quot;,</span>
+        <span class="c1">#                 &quot;n9&quot;: &quot;#A91374&quot;,</span>
+        <span class="c1">#                 &quot;na&quot;: &quot;#62A9FF&quot;,</span>
+        <span class="c1">#                 &quot;nb&quot;: &quot;#4A9586&quot;,</span>
+        <span class="c1">#                 &quot;b0&quot;: &quot;#02EF72&quot;,</span>
+        <span class="c1">#                 &quot;b1&quot;: &quot;#59955C&quot;,</span>
+        <span class="c1">#             }</span>
+
+        <span class="c1">#             add_rotated_cylinder(</span>
+        <span class="c1">#                 ax,</span>
+        <span class="c1">#                 theta=np.pi / 2 - np.deg2rad(det.zen),</span>
+        <span class="c1">#                 phi=np.deg2rad(det.az),</span>
+        <span class="c1">#                 x_center=det.mount_point[0],</span>
+        <span class="c1">#                 y_center=det.mount_point[1],</span>
+        <span class="c1">#                 z_center=det.mount_point[2],</span>
+        <span class="c1">#                 color=colors[det.name],</span>
+        <span class="c1">#                 label=det.name,</span>
+        <span class="c1">#                 alpha=0.9,</span>
+        <span class="c1">#             )</span>
+        <span class="c1">#             ax.legend()</span>
+
+        <span class="c1"># if with_rays:</span>
+
+        <span class="c1">#     # for all the detectors plot the rays</span>
+
+        <span class="c1">#     for name, det in self._rays.items():</span>
+
+        <span class="c1">#         if name in detectors:</span>
+
+        <span class="c1">#             for ray in det:</span>
+        <span class="c1">#                 ray.plot(ax)</span>
+
+        <span class="c1"># if with_intersections:</span>
+
+        <span class="c1">#     # if there are intersections</span>
+        <span class="c1">#     # then plot the intersection points</span>
+
+        <span class="c1">#     if self._intersection_points is not None:</span>
+
+        <span class="c1">#         for name, points in self._intersection_points.items():</span>
+        <span class="c1">#             if name in detectors:</span>
+        <span class="c1">#                 for point in points:</span>
+        <span class="c1">#                     ax.scatter(*point, c=&quot;r&quot;)</span>
+
+        <span class="c1"># ax.set_xlabel(&quot;SCX&quot;)</span>
+        <span class="c1"># ax.set_ylabel(&quot;SCY&quot;)</span>
+        <span class="c1"># ax.set_zlabel(&quot;SCZ&quot;)</span>
+
+        <span class="c1"># ax.set_xlim(-(158.6 + 106) / 2, (158.6 + 106) / 2)</span>
+        <span class="c1"># ax.set_ylim(-(158.6 + 106) / 2, (158.6 + 106) / 2)</span>
+        <span class="c1"># ax.set_zlim(0, 158.6 + 106)</span>
+
+        <span class="c1"># ax.grid(False)</span>
+        <span class="c1"># ax.xaxis.pane.set_edgecolor(&quot;black&quot;)</span>
+        <span class="c1"># ax.yaxis.pane.set_edgecolor(&quot;black&quot;)</span>
+
+        <span class="c1"># ax.view_init(10, 15)</span>
+        <span class="c1"># ax.axis(&quot;off&quot;)</span>
+
+        <span class="c1"># # ax.xaxis.pane.fill = False</span>
+        <span class="c1"># # ax.yaxis.pane.fill = False</span>
+        <span class="c1"># # ax.zaxis.pane.fill = False</span>
+
+        <span class="c1"># return fig</span>
+
+        <span class="k">return</span> <span class="n">artists</span></div>
+
+<div class="viewcode-block" id="Fermi.read_healpix_map"><a class="viewcode-back" href="../../../notebooks/api/gbmgeometry.spacecraft.html#gbmgeometry.Fermi.read_healpix_map">[docs]</a>    <span class="k">def</span> <span class="nf">read_healpix_map</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">healpix_map</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;viridis&quot;</span><span class="p">):</span>
+
+        <span class="c1"># collect the nside of the map</span>
+
+        <span class="n">nside</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">get_nside</span><span class="p">(</span><span class="n">healpix_map</span><span class="p">)</span>
+
+        <span class="c1"># get the colors of the rays based of their values</span>
+
+        <span class="n">_</span><span class="p">,</span> <span class="n">colors</span> <span class="o">=</span> <span class="n">array_to_cmap</span><span class="p">(</span><span class="n">healpix_map</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">use_log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># now go thru all the points on the sphere</span>
+
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">healpix_map</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">val</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+
+                <span class="c1"># if the probability is greater than 0</span>
+                <span class="c1"># then we need to get the sky position</span>
+
+                <span class="n">ra</span><span class="p">,</span> <span class="n">dec</span> <span class="o">=</span> <span class="n">Fermi</span><span class="o">.</span><span class="n">_pix_to_sky</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">nside</span><span class="p">)</span>
+
+                <span class="c1"># mark the color</span>
+
+                <span class="n">color</span> <span class="o">=</span> <span class="n">colors</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+                <span class="c1"># now make a point source</span>
+
+                <span class="n">ps</span> <span class="o">=</span> <span class="n">SkyCoord</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;deg&quot;</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="s2">&quot;icrs&quot;</span><span class="p">)</span>
+
+                <span class="c1"># transform into the fermi frame</span>
+
+                <span class="n">ps_fermi</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">transform_to</span><span class="p">(</span><span class="n">frame</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_frame</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_ray</span><span class="p">(</span><span class="n">ps_fermi</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Fermi._pix_to_sky"><a class="viewcode-back" href="../../../notebooks/api/gbmgeometry.spacecraft.html#gbmgeometry.Fermi._pix_to_sky">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_pix_to_sky</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">nside</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert the pixels corresponding to the input indexes to sky coordinates (RA, Dec)&quot;&quot;&quot;</span>
+
+        <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span> <span class="o">=</span> <span class="n">hp</span><span class="o">.</span><span class="n">pix2ang</span><span class="p">(</span><span class="n">nside</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
+
+        <span class="n">ra</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+        <span class="n">dec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">-</span> <span class="n">theta</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ra</span><span class="p">,</span> <span class="n">dec</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, J. Michael Burgess.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

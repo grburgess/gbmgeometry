@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gbmgeometry.spacecraft package &mdash; gbmgeometry  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.0-rc.0/dist/embed-amd.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <link rel="stylesheet" href="../../_static/pygments/default.css" type="text/css" id="pygments-style">
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css">
+   
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> gbmgeometry
+            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../demo.html">GBM Geometry Demo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../demo.html#Fermi-plotting-and-computing-blockage">Fermi plotting and computing blockage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../posinterp.html">The PositionInterpolator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pointsource.html">Plotting Points on the Sky</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">twopc</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gbmgeometry</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+  <!--
+  <div class="admonition note">
+    <p><a href="https://github.com/lukelbd">ProPlot author here</a>: Due to my day job as a graduate student, certain <a href="https://github.com/lukelbd/proplot/pulls?q=is%3Aopen+is%3Apr">feature additions</a> may be delayed to the summer of 2020. In the meantime, if you are interested in contributing to ProPlot, please see the <a href="https://proplot.readthedocs.io/en/latest/contributions.html">contribution guide</a>. Any amount of help is welcome!
+    </p>
+  </div>
+  -->
+  <li id="lightdark-li">
+    <label for="lightdark-checkbox" id="lightdark-label">
+      <input type="checkbox" id="lightdark-checkbox"/>
+      <div class="btn-neutral"></div>
+    </label>
+  </li>
+  
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>gbmgeometry.spacecraft package</li>
+
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  <script type="text/javascript" src=../../_static/custom.js></script>
+  
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="gbmgeometry-spacecraft-package">
+<h1>gbmgeometry.spacecraft package<a class="headerlink" href="#gbmgeometry-spacecraft-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-gbmgeometry.spacecraft.fermi">
+<span id="gbmgeometry-spacecraft-fermi-module"></span><h2>gbmgeometry.spacecraft.fermi module<a class="headerlink" href="#module-gbmgeometry.spacecraft.fermi" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.fermi.Fermi">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbmgeometry.spacecraft.fermi.</span></span><span class="sig-name descname"><span class="pre">Fermi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">quaternion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_to_space</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/fermi.html#Fermi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.fermi.Fermi" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A model of Fermi that can be plotted in 3D and read healpix maps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>quaternion</strong> – the quaternion array</p></li>
+<li><p><strong>sc_pos</strong> – the spacecraft position</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.fermi.Fermi.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">quaternion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_to_space</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/fermi.html#Fermi.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.fermi.Fermi.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>A model of Fermi that can be plotted in 3D and read healpix maps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>quaternion</strong> – the quaternion array</p></li>
+<li><p><strong>sc_pos</strong> – the spacecraft position</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.fermi.Fermi.spacecraft_components">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">spacecraft_components</span></span><a class="headerlink" href="#gbmgeometry.spacecraft.fermi.Fermi.spacecraft_components" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.fermi.Fermi.rays">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rays</span></span><a class="headerlink" href="#gbmgeometry.spacecraft.fermi.Fermi.rays" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.fermi.Fermi.add_ray">
+<span class="sig-name descname"><span class="pre">add_ray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ray_coordinate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probability</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#29FC5C'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/fermi.html#Fermi.add_ray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.fermi.Fermi.add_ray" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ray_coordinate</strong> – an astropy skycoord</p></li>
+<li><p><strong>probability</strong> – </p></li>
+<li><p><strong>color</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.fermi.Fermi.compute_intersections">
+<span class="sig-name descname"><span class="pre">compute_intersections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">detectors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/fermi.html#Fermi.compute_intersections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.fermi.Fermi.compute_intersections" title="Permalink to this definition"></a></dt>
+<dd><p>compute the intersections for the given
+detector string names (e.g. “n1”, “n2”)</p>
+<p>if none are given, then intersections are
+computed for all</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.fermi.Fermi.plot_fermi">
+<span class="sig-name descname"><span class="pre">plot_fermi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detectors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_rays</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_intersections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_det_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_dets_different</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/fermi.html#Fermi.plot_fermi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.fermi.Fermi.plot_fermi" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> – </p></li>
+<li><p><strong>detectors</strong> – </p></li>
+<li><p><strong>with_rays</strong> – </p></li>
+<li><p><strong>with_intersections</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.fermi.Fermi.plot_fermi_ipy">
+<span class="sig-name descname"><span class="pre">plot_fermi_ipy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/fermi.html#Fermi.plot_fermi_ipy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.fermi.Fermi.plot_fermi_ipy" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> – </p></li>
+<li><p><strong>detectors</strong> – </p></li>
+<li><p><strong>with_rays</strong> – </p></li>
+<li><p><strong>with_intersections</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.fermi.Fermi.read_healpix_map">
+<span class="sig-name descname"><span class="pre">read_healpix_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">healpix_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/fermi.html#Fermi.read_healpix_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.fermi.Fermi.read_healpix_map" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.fermi.Fermi._pix_to_sky">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_pix_to_sky</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nside</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/fermi.html#Fermi._pix_to_sky"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.fermi.Fermi._pix_to_sky" title="Permalink to this definition"></a></dt>
+<dd><p>Convert the pixels corresponding to the input indexes to sky coordinates (RA, Dec)</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-gbmgeometry.spacecraft.gbm_detectors">
+<span id="gbmgeometry-spacecraft-gbm-detectors-module"></span><h2>gbmgeometry.spacecraft.gbm_detectors module<a class="headerlink" href="#module-gbmgeometry.spacecraft.gbm_detectors" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.gbm_detectors.rotation_matrix">
+<span class="sig-prename descclassname"><span class="pre">gbmgeometry.spacecraft.gbm_detectors.</span></span><span class="sig-name descname"><span class="pre">rotation_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/gbm_detectors.html#rotation_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.gbm_detectors.rotation_matrix" title="Permalink to this definition"></a></dt>
+<dd><p>Return the rotation matrix associated with counterclockwise rotation about
+the given axis by theta radians.
+:param axis: Axis vector to rotate around
+:param theta: Angle to rotate
+:return: Rotation matrix</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.gbm_detectors.add_rotated_cylinder">
+<span class="sig-prename descclassname"><span class="pre">gbmgeometry.spacecraft.gbm_detectors.</span></span><span class="sig-name descname"><span class="pre">add_rotated_cylinder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'magenta'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ceiling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">floor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/gbm_detectors.html#add_rotated_cylinder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.gbm_detectors.add_rotated_cylinder" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the unit cylinder that corresponds to the curve r.
+:param ax: ax of figure to add the cylinder
+:param height: Height of cylinder
+:param radius: Radius of cylinder
+:param x_center: x-coord of center of cylinder
+:param y_center: y-coord of center of cylinder
+:param z_center: z-coord of center of cylinder
+:param color: color of cylinder
+:param alpha: alpha of cylinder
+:param theta: theta angle of cylinder orientation
+:param phi: phi angle of cylinder orientation
+:param ceiling: add a ceiling to cylinder?
+:param floor: add a floor to cylinder?
+:param label: Label for det
+:return:</p>
+</dd></dl>
+
+</section>
+<section id="module-gbmgeometry.spacecraft.geometry">
+<span id="gbmgeometry-spacecraft-geometry-module"></span><h2>gbmgeometry.spacecraft.geometry module<a class="headerlink" href="#module-gbmgeometry.spacecraft.geometry" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.get_sc_matrix">
+<span class="sig-prename descclassname"><span class="pre">gbmgeometry.spacecraft.geometry.</span></span><span class="sig-name descname"><span class="pre">get_sc_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q4</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/geometry.html#get_sc_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.get_sc_matrix" title="Permalink to this definition"></a></dt>
+<dd><p>build a sc matrix from quats</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>q1</strong> – </p></li>
+<li><p><strong>q2</strong> – </p></li>
+<li><p><strong>q3</strong> – </p></li>
+<li><p><strong>q4</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.Ray">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbmgeometry.spacecraft.geometry.</span></span><span class="sig-name descname"><span class="pre">Ray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#29FC5C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probability</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/geometry.html#Ray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.Ray" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.Ray.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#29FC5C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probability</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/geometry.html#Ray.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.Ray.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.Ray.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/geometry.html#Ray.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.Ray.plot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.Ray.detector_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">detector_name</span></span><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.Ray.detector_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.Ray.probability">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">probability</span></span><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.Ray.probability" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.Ray.detector_origin">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">detector_origin</span></span><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.Ray.detector_origin" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.Ray.ray_origin">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ray_origin</span></span><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.Ray.ray_origin" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.Ray.sympy_line">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sympy_line</span></span><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.Ray.sympy_line" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.Ray.point_on_ray">
+<span class="sig-name descname"><span class="pre">point_on_ray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/geometry.html#Ray.point_on_ray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.Ray.point_on_ray" title="Permalink to this definition"></a></dt>
+<dd><p>get a parametrized point on the ray</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>t</strong> – point between 0 and 1</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.Surface">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbmgeometry.spacecraft.geometry.</span></span><span class="sig-name descname"><span class="pre">Surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/geometry.html#Surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.Surface" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.Surface.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/geometry.html#Surface.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.Surface.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.Surface._calculate_origin">
+<span class="sig-name descname"><span class="pre">_calculate_origin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/geometry.html#Surface._calculate_origin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.Surface._calculate_origin" title="Permalink to this definition"></a></dt>
+<dd><p>compute the origin of the plane</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.Surface.is_intersecting">
+<span class="sig-name descname"><span class="pre">is_intersecting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/geometry.html#Surface.is_intersecting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.Surface.is_intersecting" title="Permalink to this definition"></a></dt>
+<dd><p>checks if ray intersects plane</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ray</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>bool, array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.Surface.origin">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">origin</span></span><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.Surface.origin" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.Volume">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbmgeometry.spacecraft.geometry.</span></span><span class="sig-name descname"><span class="pre">Volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grey'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_surfaces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/geometry.html#Volume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.Volume" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.Volume.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grey'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_surfaces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/geometry.html#Volume.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.Volume.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.Volume.planes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">planes</span></span><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.Volume.planes" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.Volume.center">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">center</span></span><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.Volume.center" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.Volume.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.Volume.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.Volume.plot_ipv">
+<span class="sig-name descname"><span class="pre">plot_ipv</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/geometry.html#Volume.plot_ipv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.Volume.plot_ipv" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.Volume.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/geometry.html#Volume.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.Volume.plot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.Volume.intersect_ray">
+<span class="sig-name descname"><span class="pre">intersect_ray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/geometry.html#Volume.intersect_ray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.Volume.intersect_ray" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.Volume.all_intersections">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_intersections</span></span><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.Volume.all_intersections" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.geometry.Volume.intersection">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">intersection</span></span><a class="headerlink" href="#gbmgeometry.spacecraft.geometry.Volume.intersection" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-gbmgeometry.spacecraft.lat">
+<span id="gbmgeometry-spacecraft-lat-module"></span><h2>gbmgeometry.spacecraft.lat module<a class="headerlink" href="#module-gbmgeometry.spacecraft.lat" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.lat.LAT">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbmgeometry.spacecraft.lat.</span></span><span class="sig-name descname"><span class="pre">LAT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quaternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/lat.html#LAT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.lat.LAT" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="gbmgeometry.geometry.html#gbmgeometry.geometry.volume.Volume" title="gbmgeometry.geometry.volume.Volume"><code class="xref py py-class docutils literal notranslate"><span class="pre">gbmgeometry.geometry.volume.Volume</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.lat.LAT.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quaternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/lat.html#LAT.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.lat.LAT.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.lat.LATRadiator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbmgeometry.spacecraft.lat.</span></span><span class="sig-name descname"><span class="pre">LATRadiator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sign</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_surfaces</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quaternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/lat.html#LATRadiator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.lat.LATRadiator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="gbmgeometry.geometry.html#gbmgeometry.geometry.volume.Volume" title="gbmgeometry.geometry.volume.Volume"><code class="xref py py-class docutils literal notranslate"><span class="pre">gbmgeometry.geometry.volume.Volume</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.lat.LATRadiator.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sign</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_surfaces</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quaternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/lat.html#LATRadiator.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.lat.LATRadiator.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.lat.LATRadiatorMinus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbmgeometry.spacecraft.lat.</span></span><span class="sig-name descname"><span class="pre">LATRadiatorMinus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quaternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/lat.html#LATRadiatorMinus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.lat.LATRadiatorMinus" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gbmgeometry.spacecraft.lat.LATRadiator" title="gbmgeometry.spacecraft.lat.LATRadiator"><code class="xref py py-class docutils literal notranslate"><span class="pre">gbmgeometry.spacecraft.lat.LATRadiator</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.lat.LATRadiatorMinus.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quaternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/lat.html#LATRadiatorMinus.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.lat.LATRadiatorMinus.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.lat.LATRadiatorPlus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbmgeometry.spacecraft.lat.</span></span><span class="sig-name descname"><span class="pre">LATRadiatorPlus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quaternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/lat.html#LATRadiatorPlus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.lat.LATRadiatorPlus" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gbmgeometry.spacecraft.lat.LATRadiator" title="gbmgeometry.spacecraft.lat.LATRadiator"><code class="xref py py-class docutils literal notranslate"><span class="pre">gbmgeometry.spacecraft.lat.LATRadiator</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.lat.LATRadiatorPlus.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quaternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/lat.html#LATRadiatorPlus.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.lat.LATRadiatorPlus.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-gbmgeometry.spacecraft.solar_panels">
+<span id="gbmgeometry-spacecraft-solar-panels-module"></span><h2>gbmgeometry.spacecraft.solar_panels module<a class="headerlink" href="#module-gbmgeometry.spacecraft.solar_panels" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.solar_panels.SolarPanel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbmgeometry.spacecraft.solar_panels.</span></span><span class="sig-name descname"><span class="pre">SolarPanel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sign</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quaternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/solar_panels.html#SolarPanel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.solar_panels.SolarPanel" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="gbmgeometry.geometry.html#gbmgeometry.geometry.volume.Volume" title="gbmgeometry.geometry.volume.Volume"><code class="xref py py-class docutils literal notranslate"><span class="pre">gbmgeometry.geometry.volume.Volume</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.solar_panels.SolarPanel.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sign</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quaternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/solar_panels.html#SolarPanel.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.solar_panels.SolarPanel.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.solar_panels.SolarPanelPlus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbmgeometry.spacecraft.solar_panels.</span></span><span class="sig-name descname"><span class="pre">SolarPanelPlus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quaternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/solar_panels.html#SolarPanelPlus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.solar_panels.SolarPanelPlus" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gbmgeometry.spacecraft.solar_panels.SolarPanel" title="gbmgeometry.spacecraft.solar_panels.SolarPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gbmgeometry.spacecraft.solar_panels.SolarPanel</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.solar_panels.SolarPanelPlus.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quaternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/solar_panels.html#SolarPanelPlus.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.solar_panels.SolarPanelPlus.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.solar_panels.SolarPanelMinus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbmgeometry.spacecraft.solar_panels.</span></span><span class="sig-name descname"><span class="pre">SolarPanelMinus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quaternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/solar_panels.html#SolarPanelMinus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.solar_panels.SolarPanelMinus" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#gbmgeometry.spacecraft.solar_panels.SolarPanel" title="gbmgeometry.spacecraft.solar_panels.SolarPanel"><code class="xref py py-class docutils literal notranslate"><span class="pre">gbmgeometry.spacecraft.solar_panels.SolarPanel</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.spacecraft.solar_panels.SolarPanelMinus.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quaternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/spacecraft/solar_panels.html#SolarPanelMinus.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.spacecraft.solar_panels.SolarPanelMinus.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-gbmgeometry.spacecraft">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-gbmgeometry.spacecraft" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, J. Michael Burgess.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

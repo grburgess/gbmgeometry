@@ -1,0 +1,21 @@
+gbmgeometry.io package
+======================
+
+Submodules
+----------
+
+gbmgeometry.io.data\_download module
+------------------------------------
+
+.. automodule:: gbmgeometry.io.data_download
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: gbmgeometry.io
+   :members:
+   :undoc-members:
+   :show-inheritance:

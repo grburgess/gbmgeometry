@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gbmgeometry.utils.plotting.space_plot &mdash; gbmgeometry  documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.0-rc.0/dist/embed-amd.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <link rel="stylesheet" href="../../../../_static/pygments/default.css" type="text/css" id="pygments-style">
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css">
+   
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> gbmgeometry
+            <img src="../../../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notebooks/demo.html">GBM Geometry Demo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notebooks/demo.html#Fermi-plotting-and-computing-blockage">Fermi plotting and computing blockage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notebooks/posinterp.html">The PositionInterpolator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notebooks/pointsource.html">Plotting Points on the Sky</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">twopc</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">gbmgeometry</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+  <!--
+  <div class="admonition note">
+    <p><a href="https://github.com/lukelbd">ProPlot author here</a>: Due to my day job as a graduate student, certain <a href="https://github.com/lukelbd/proplot/pulls?q=is%3Aopen+is%3Apr">feature additions</a> may be delayed to the summer of 2020. In the meantime, if you are interested in contributing to ProPlot, please see the <a href="https://proplot.readthedocs.io/en/latest/contributions.html">contribution guide</a>. Any amount of help is welcome!
+    </p>
+  </div>
+  -->
+  <li id="lightdark-li">
+    <label for="lightdark-checkbox" id="lightdark-label">
+      <input type="checkbox" id="lightdark-checkbox"/>
+      <div class="btn-neutral"></div>
+    </label>
+  </li>
+  
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>gbmgeometry.utils.plotting.space_plot</li>
+
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  <script type="text/javascript" src=../../../../_static/custom.js></script>
+  
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gbmgeometry.utils.plotting.space_plot</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">ipyvolume</span> <span class="k">as</span> <span class="nn">ipv</span>
+<span class="kn">from</span> <span class="nn">gbmgeometry.utils.plotting.heavenly_bodies</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Sol</span><span class="p">,</span>
+    <span class="n">Moon</span><span class="p">,</span>
+    <span class="n">Earth</span><span class="p">,</span>
+    <span class="n">StarField</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">gbmgeometry.gbm</span> <span class="kn">import</span> <span class="n">GBM</span>
+<span class="kn">from</span> <span class="nn">gbmgeometry.spacecraft.fermi</span> <span class="kn">import</span> <span class="n">Fermi</span>
+<span class="kn">from</span> <span class="nn">gbmgeometry.geometry</span> <span class="kn">import</span> <span class="n">Sphere</span>
+<span class="kn">from</span> <span class="nn">gbmgeometry.geometry.cone</span> <span class="kn">import</span> <span class="n">Cone</span>
+
+
+<span class="n">_open_angle</span> <span class="o">=</span> <span class="mf">10.0</span>
+
+<span class="n">_det_colors</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">n0</span><span class="o">=</span><span class="s2">&quot;#CC3311&quot;</span><span class="p">,</span>
+    <span class="n">n1</span><span class="o">=</span><span class="s2">&quot;#CC3311&quot;</span><span class="p">,</span>
+    <span class="n">n2</span><span class="o">=</span><span class="s2">&quot;#CC3311&quot;</span><span class="p">,</span>
+    <span class="n">n3</span><span class="o">=</span><span class="s2">&quot;#009988&quot;</span><span class="p">,</span>  <span class="c1"># teal</span>
+    <span class="n">n4</span><span class="o">=</span><span class="s2">&quot;#009988&quot;</span><span class="p">,</span>
+    <span class="n">n5</span><span class="o">=</span><span class="s2">&quot;#009988&quot;</span><span class="p">,</span>
+    <span class="n">n6</span><span class="o">=</span><span class="s2">&quot;#EE7733&quot;</span><span class="p">,</span>
+    <span class="n">n7</span><span class="o">=</span><span class="s2">&quot;#EE7733&quot;</span><span class="p">,</span>
+    <span class="n">n8</span><span class="o">=</span><span class="s2">&quot;#EE7733&quot;</span><span class="p">,</span>
+    <span class="n">n9</span><span class="o">=</span><span class="s2">&quot;#0077BB&quot;</span><span class="p">,</span>
+    <span class="n">na</span><span class="o">=</span><span class="s2">&quot;#0077BB&quot;</span><span class="p">,</span>
+    <span class="n">nb</span><span class="o">=</span><span class="s2">&quot;#0077BB&quot;</span><span class="p">,</span>
+    <span class="n">b0</span><span class="o">=</span><span class="s2">&quot;#F2E300&quot;</span><span class="p">,</span>
+    <span class="n">b1</span><span class="o">=</span><span class="s2">&quot;#F2E300&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="compute_distance"><a class="viewcode-back" href="../../../../notebooks/api/gbmgeometry.utils.plotting.html#gbmgeometry.compute_distance">[docs]</a><span class="k">def</span> <span class="nf">compute_distance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">radius</span><span class="p">):</span>
+
+    <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span> <span class="o">*</span> <span class="n">y</span> <span class="o">+</span> <span class="n">z</span> <span class="o">*</span> <span class="n">z</span><span class="p">)</span>
+
+    <span class="n">dist</span> <span class="o">+=</span> <span class="n">radius</span>
+
+    <span class="k">return</span> <span class="n">dist</span></div>
+
+
+<div class="viewcode-block" id="animate_in_space"><a class="viewcode-back" href="../../../../notebooks/api/gbmgeometry.utils.plotting.html#gbmgeometry.animate_in_space">[docs]</a><span class="k">def</span> <span class="nf">animate_in_space</span><span class="p">(</span>
+    <span class="n">position_interpolator</span><span class="p">,</span>
+    <span class="n">n_step</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+    <span class="n">show_detector_pointing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">show_earth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_sun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">show_moon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">background_color</span><span class="o">=</span><span class="s2">&quot;#01000F&quot;</span><span class="p">,</span>
+    <span class="n">detector_scaling_factor</span><span class="o">=</span><span class="mf">20000.0</span><span class="p">,</span>
+    <span class="n">show_stars</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">show_inactive</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">earth_time</span><span class="o">=</span><span class="s2">&quot;night&quot;</span><span class="p">,</span>
+    <span class="n">realistic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">interval</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Animiate fermi in Space!</span>
+
+<span class="sd">    :param position_interpolator: </span>
+<span class="sd">    :param n_step: </span>
+<span class="sd">    :param show_detector_pointing: </span>
+<span class="sd">    :param show_earth: </span>
+<span class="sd">    :param show_sun: </span>
+<span class="sd">    :param show_moon: </span>
+<span class="sd">    :param background_color: </span>
+<span class="sd">    :param detector_scaling_factor: </span>
+<span class="sd">    :param show_stars: </span>
+<span class="sd">    :returns: </span>
+<span class="sd">    :rtype: </span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">ipv</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+
+    <span class="n">ipv</span><span class="o">.</span><span class="n">pylab</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">box_off</span><span class="p">()</span>
+    <span class="n">ipv</span><span class="o">.</span><span class="n">pylab</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">axes_off</span><span class="p">()</span>
+    <span class="n">ipv</span><span class="o">.</span><span class="n">pylab</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">set_style_dark</span><span class="p">()</span>
+    <span class="n">ipv</span><span class="o">.</span><span class="n">pylab</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">background_color</span><span class="p">(</span><span class="n">background_color</span><span class="p">)</span>
+
+    <span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span> <span class="o">=</span> <span class="n">position_interpolator</span><span class="o">.</span><span class="n">minmax_time</span><span class="p">()</span>
+
+    <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span><span class="p">,</span> <span class="n">n_step</span><span class="p">)</span>
+
+    <span class="n">artists</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">distances</span> <span class="o">=</span> <span class="p">[</span><span class="mi">15000</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">show_earth</span><span class="p">:</span>
+
+        <span class="n">astro_times</span> <span class="o">=</span> <span class="p">[</span><span class="n">position_interpolator</span><span class="o">.</span><span class="n">astro_time</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">time</span><span class="p">]</span>
+
+        <span class="n">earth</span> <span class="o">=</span> <span class="n">Earth</span><span class="p">(</span>
+            <span class="n">earth_time</span><span class="o">=</span><span class="n">earth_time</span><span class="p">,</span> <span class="n">realistic</span><span class="o">=</span><span class="n">realistic</span><span class="p">,</span> <span class="n">astro_time</span><span class="o">=</span><span class="n">astro_times</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">earth</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">realistic</span><span class="p">:</span>
+            <span class="n">artists</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">show_sun</span><span class="p">:</span>
+
+        <span class="n">xs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">zs</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">time</span><span class="p">:</span>
+
+            <span class="n">sun_pos</span> <span class="o">=</span> <span class="n">position_interpolator</span><span class="o">.</span><span class="n">sun_position</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">sun_pos</span><span class="o">.</span><span class="n">cartesian</span><span class="o">.</span><span class="n">xyz</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;km&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+            <span class="n">xs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">ys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+            <span class="n">zs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+
+        <span class="n">sol</span> <span class="o">=</span> <span class="n">Sol</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xs</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ys</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">zs</span><span class="p">))</span>
+
+        <span class="n">distances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">compute_distance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">radius</span><span class="p">))</span>
+
+        <span class="n">artists</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sol</span><span class="o">.</span><span class="n">plot</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="n">show_moon</span><span class="p">:</span>
+
+        <span class="n">xs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ys</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">zs</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">time</span><span class="p">:</span>
+
+            <span class="n">moon_pos</span> <span class="o">=</span> <span class="n">position_interpolator</span><span class="o">.</span><span class="n">moon_position</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">moon_pos</span><span class="o">.</span><span class="n">cartesian</span><span class="o">.</span><span class="n">xyz</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;km&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+            <span class="n">xs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">ys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+            <span class="n">zs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+
+        <span class="n">moon</span> <span class="o">=</span> <span class="n">Moon</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xs</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ys</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">zs</span><span class="p">))</span>
+        <span class="n">distances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">compute_distance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">moon</span><span class="o">.</span><span class="n">radius</span><span class="p">))</span>
+        <span class="n">artists</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">moon</span><span class="o">.</span><span class="n">plot</span><span class="p">())</span>
+
+    <span class="c1"># now get fermi position</span>
+    <span class="n">sxs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">sys</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">szs</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">x_off</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">y_off</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">z_off</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">show_detector_pointing</span><span class="p">:</span>
+
+        <span class="n">distances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">detector_scaling_factor</span><span class="p">)</span>
+
+        <span class="n">gbm</span> <span class="o">=</span> <span class="n">GBM</span><span class="p">(</span>
+            <span class="n">position_interpolator</span><span class="o">.</span><span class="n">quaternion</span><span class="p">(</span><span class="n">tmin</span><span class="p">),</span> <span class="n">position_interpolator</span><span class="o">.</span><span class="n">sc_pos</span><span class="p">(</span><span class="n">tmin</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="n">dets_xo</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">dets_yo</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">dets_zo</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">dets_xp</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">dets_yp</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">dets_zp</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">gbm</span><span class="o">.</span><span class="n">detectors</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="n">dets_xo</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">dets_yo</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">dets_zo</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">dets_xp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">dets_yp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">dets_zp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">time</span><span class="p">:</span>
+
+        <span class="n">sx</span><span class="p">,</span> <span class="n">sy</span><span class="p">,</span> <span class="n">sz</span> <span class="o">=</span> <span class="n">position_interpolator</span><span class="o">.</span><span class="n">sc_pos</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+        <span class="n">sxs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sx</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sy</span><span class="p">)</span>
+        <span class="n">szs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sz</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">position_interpolator</span><span class="o">.</span><span class="n">is_fermi_active</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+            <span class="n">x_off</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sx</span><span class="p">)</span>
+            <span class="n">y_off</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sy</span><span class="p">)</span>
+            <span class="n">z_off</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sz</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">show_detector_pointing</span><span class="p">:</span>
+
+            <span class="n">gbm</span><span class="o">.</span><span class="n">set_quaternion</span><span class="p">(</span><span class="n">position_interpolator</span><span class="o">.</span><span class="n">quaternion</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">gbm</span><span class="o">.</span><span class="n">detectors</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+                <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">center_icrs</span><span class="o">.</span><span class="n">cartesian</span><span class="o">.</span><span class="n">xyz</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span>
+
+                <span class="n">dets_xo</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sx</span><span class="p">)</span>
+                <span class="n">dets_yo</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sy</span><span class="p">)</span>
+                <span class="n">dets_zo</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sz</span><span class="p">)</span>
+                <span class="n">dets_xp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sx</span> <span class="o">+</span> <span class="n">x</span><span class="p">)</span>
+                <span class="n">dets_yp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sy</span> <span class="o">+</span> <span class="n">y</span><span class="p">)</span>
+                <span class="n">dets_zp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sz</span> <span class="o">+</span> <span class="n">z</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">show_detector_pointing</span><span class="p">:</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">gbm</span><span class="o">.</span><span class="n">detectors</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="n">dets_xo</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dets_xo</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+            <span class="n">dets_yo</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dets_yo</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+            <span class="n">dets_zo</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dets_zo</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+            <span class="n">dets_xp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dets_xp</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+            <span class="n">dets_yp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dets_yp</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+            <span class="n">dets_zp</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dets_zp</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+
+            <span class="n">color</span> <span class="o">=</span> <span class="n">_det_colors</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+            <span class="n">cone</span> <span class="o">=</span> <span class="n">Cone</span><span class="p">(</span>
+                <span class="n">dets_xo</span><span class="p">[</span><span class="n">k</span><span class="p">],</span>
+                <span class="n">dets_yo</span><span class="p">[</span><span class="n">k</span><span class="p">],</span>
+                <span class="n">dets_zo</span><span class="p">[</span><span class="n">k</span><span class="p">],</span>
+                <span class="n">dets_xp</span><span class="p">[</span><span class="n">k</span><span class="p">],</span>
+                <span class="n">dets_yp</span><span class="p">[</span><span class="n">k</span><span class="p">],</span>
+                <span class="n">dets_zp</span><span class="p">[</span><span class="n">k</span><span class="p">],</span>
+                <span class="n">_open_angle</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">artists</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cone</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">))</span>
+
+    <span class="c1">#            artists.append(ipv.pylab.plot(dets_x[k], dets_y[k], dets_z[k], color=color))</span>
+
+    <span class="n">sxs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sxs</span><span class="p">)</span>
+    <span class="n">sys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sys</span><span class="p">)</span>
+    <span class="n">szs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">szs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">show_inactive</span><span class="p">:</span>
+
+        <span class="n">ipv</span><span class="o">.</span><span class="n">pylab</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x_off</span><span class="p">),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">y_off</span><span class="p">),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">z_off</span><span class="p">),</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#DC1212&quot;</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+            <span class="n">marke</span><span class="o">=</span><span class="s2">&quot;circle_2d&quot;</span><span class="p">,</span>
+            <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="c1"># fermi = FermiPoint(sxs, sys, szs)</span>
+    <span class="c1"># artists.append(fermi.plot())</span>
+
+    <span class="n">fermi_real</span> <span class="o">=</span> <span class="n">Fermi</span><span class="p">(</span>
+        <span class="n">position_interpolator</span><span class="o">.</span><span class="n">quaternion</span><span class="p">(</span><span class="n">time</span><span class="p">),</span>
+        <span class="n">sc_pos</span><span class="o">=</span><span class="n">position_interpolator</span><span class="o">.</span><span class="n">sc_pos</span><span class="p">(</span><span class="n">time</span><span class="p">),</span>
+        <span class="n">transform_to_space</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">artists</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">fermi_real</span><span class="o">.</span><span class="n">plot_fermi_ipy</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="n">show_stars</span><span class="p">:</span>
+
+        <span class="n">sf</span> <span class="o">=</span> <span class="n">StarField</span><span class="p">(</span><span class="n">n_stars</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">sf</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+
+    <span class="n">ipv</span><span class="o">.</span><span class="n">xyzlim</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">distances</span><span class="p">))</span>
+
+    <span class="n">ipv</span><span class="o">.</span><span class="n">animation_control</span><span class="p">(</span><span class="n">artists</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">)</span>
+
+    <span class="n">ipv</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="plot_in_space"><a class="viewcode-back" href="../../../../notebooks/api/gbmgeometry.utils.plotting.html#gbmgeometry.plot_in_space">[docs]</a><span class="k">def</span> <span class="nf">plot_in_space</span><span class="p">(</span>
+    <span class="n">position_interpolator</span><span class="p">,</span>
+    <span class="n">time</span><span class="p">,</span>
+    <span class="n">show_detector_pointing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">show_earth</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">show_sun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">show_moon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">background_color</span><span class="o">=</span><span class="s2">&quot;#01000F&quot;</span><span class="p">,</span>
+    <span class="n">detector_scaling_factor</span><span class="o">=</span><span class="mf">20000.0</span><span class="p">,</span>
+    <span class="n">show_stars</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">show_orbit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">realistic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">earth_time</span><span class="o">=</span><span class="s2">&quot;night&quot;</span><span class="p">,</span>
+    <span class="n">sky_points</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">min_distance</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot Fermi in Space!</span>
+
+<span class="sd">    :param position_interpolator: </span>
+<span class="sd">    :param time: </span>
+<span class="sd">    :param show_detector_pointing: </span>
+<span class="sd">    :param show_earth: </span>
+<span class="sd">    :param show_sun: </span>
+<span class="sd">    :param show_moon: </span>
+<span class="sd">    :param background_color: </span>
+<span class="sd">    :param detector_scaling_factor: </span>
+<span class="sd">    :returns: </span>
+<span class="sd">    :rtype: </span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">ipv</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
+
+    <span class="n">ipv</span><span class="o">.</span><span class="n">pylab</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">box_off</span><span class="p">()</span>
+    <span class="n">ipv</span><span class="o">.</span><span class="n">pylab</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">axes_off</span><span class="p">()</span>
+    <span class="n">ipv</span><span class="o">.</span><span class="n">pylab</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">set_style_dark</span><span class="p">()</span>
+    <span class="n">ipv</span><span class="o">.</span><span class="n">pylab</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">background_color</span><span class="p">(</span><span class="n">background_color</span><span class="p">)</span>
+
+    <span class="n">distances</span> <span class="o">=</span> <span class="p">[</span><span class="n">min_distance</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">sky_points</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">sky_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">sky_points</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">show_orbit</span><span class="p">:</span>
+
+        <span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span> <span class="o">=</span> <span class="n">position_interpolator</span><span class="o">.</span><span class="n">minmax_time</span><span class="p">()</span>
+        <span class="n">tt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+
+        <span class="n">sc_pos</span> <span class="o">=</span> <span class="n">position_interpolator</span><span class="o">.</span><span class="n">sc_pos</span><span class="p">(</span><span class="n">tt</span><span class="p">)</span>
+
+        <span class="n">ipv</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sc_pos</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">sc_pos</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">sc_pos</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">show_earth</span><span class="p">:</span>
+
+        <span class="n">earth</span> <span class="o">=</span> <span class="n">Earth</span><span class="p">(</span>
+            <span class="n">earth_time</span><span class="o">=</span><span class="n">earth_time</span><span class="p">,</span>
+            <span class="n">realistic</span><span class="o">=</span><span class="n">realistic</span><span class="p">,</span>
+            <span class="n">astro_time</span><span class="o">=</span><span class="n">position_interpolator</span><span class="o">.</span><span class="n">astro_time</span><span class="p">(</span><span class="n">time</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="n">earth</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">show_sun</span><span class="p">:</span>
+
+        <span class="n">sun_pos</span> <span class="o">=</span> <span class="n">position_interpolator</span><span class="o">.</span><span class="n">sun_position</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">sun_pos</span><span class="o">.</span><span class="n">cartesian</span><span class="o">.</span><span class="n">xyz</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;km&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="n">sol</span> <span class="o">=</span> <span class="n">Sol</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+        <span class="n">distances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">compute_distance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">sol</span><span class="o">.</span><span class="n">radius</span><span class="p">))</span>
+        <span class="n">sol</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">show_moon</span><span class="p">:</span>
+
+        <span class="n">moon_pos</span> <span class="o">=</span> <span class="n">position_interpolator</span><span class="o">.</span><span class="n">moon_position</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">moon_pos</span><span class="o">.</span><span class="n">cartesian</span><span class="o">.</span><span class="n">xyz</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&quot;km&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="n">moon</span> <span class="o">=</span> <span class="n">Moon</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">realistic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">distances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">compute_distance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">moon</span><span class="o">.</span><span class="n">radius</span><span class="p">))</span>
+        <span class="n">moon</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+
+    <span class="c1"># now get fermi position</span>
+
+    <span class="n">sx</span><span class="p">,</span> <span class="n">sy</span><span class="p">,</span> <span class="n">sz</span> <span class="o">=</span> <span class="n">position_interpolator</span><span class="o">.</span><span class="n">sc_pos</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+
+    <span class="n">fermi_real</span> <span class="o">=</span> <span class="n">Fermi</span><span class="p">(</span>
+        <span class="n">position_interpolator</span><span class="o">.</span><span class="n">quaternion</span><span class="p">(</span><span class="n">time</span><span class="p">),</span>
+        <span class="n">sc_pos</span><span class="o">=</span><span class="n">position_interpolator</span><span class="o">.</span><span class="n">sc_pos</span><span class="p">(</span><span class="n">time</span><span class="p">),</span>
+        <span class="n">transform_to_space</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fermi_real</span><span class="o">.</span><span class="n">plot_fermi_ipy</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">show_detector_pointing</span><span class="p">:</span>
+
+        <span class="n">distances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">detector_scaling_factor</span><span class="p">)</span>
+
+        <span class="n">gbm</span> <span class="o">=</span> <span class="n">GBM</span><span class="p">(</span>
+            <span class="n">position_interpolator</span><span class="o">.</span><span class="n">quaternion</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="n">position_interpolator</span><span class="o">.</span><span class="n">sc_pos</span><span class="p">(</span><span class="n">time</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">gbm</span><span class="o">.</span><span class="n">detectors</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">center_icrs</span><span class="o">.</span><span class="n">cartesian</span><span class="o">.</span><span class="n">xyz</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span>
+
+            <span class="c1"># x_line = np.array([sx, sx + x])</span>
+            <span class="c1"># y_line = np.array([sy, sy + y])</span>
+            <span class="c1"># z_line = np.array([sz, sz + z])</span>
+
+            <span class="n">color</span> <span class="o">=</span> <span class="n">_det_colors</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+            <span class="n">cone</span> <span class="o">=</span> <span class="n">Cone</span><span class="p">(</span><span class="n">sx</span><span class="p">,</span> <span class="n">sy</span><span class="p">,</span> <span class="n">sz</span><span class="p">,</span> <span class="n">sx</span> <span class="o">+</span> <span class="n">x</span><span class="p">,</span> <span class="n">sy</span> <span class="o">+</span> <span class="n">y</span><span class="p">,</span> <span class="n">sz</span> <span class="o">+</span> <span class="n">z</span><span class="p">,</span> <span class="n">_open_angle</span><span class="p">)</span>
+            <span class="n">cone</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">)</span>
+
+            <span class="c1"># ipv.pylab.plot(x_line, y_line, z_line, color=color)</span>
+
+    <span class="k">if</span> <span class="n">sky_points</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">sp</span> <span class="ow">in</span> <span class="n">sky_points</span><span class="p">:</span>
+
+            <span class="n">sp</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sx</span><span class="p">,</span> <span class="n">sy</span><span class="p">,</span> <span class="n">sz</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">distances</span><span class="p">))</span>
+
+            <span class="c1"># distances.append(sp.distance)</span>
+
+    <span class="k">if</span> <span class="n">show_stars</span><span class="p">:</span>
+
+        <span class="n">sf</span> <span class="o">=</span> <span class="n">StarField</span><span class="p">(</span><span class="n">n_stars</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="n">distances</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">sf</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+
+    <span class="c1"># move the camera here</span>
+
+    <span class="n">fig</span><span class="o">.</span><span class="n">camera</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+        <span class="n">position_interpolator</span><span class="o">.</span><span class="n">sc_pos</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+        <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">position_interpolator</span><span class="o">.</span><span class="n">sc_pos</span><span class="p">(</span><span class="n">time</span><span class="p">))</span>
+    <span class="p">)</span>
+
+    <span class="n">ipv</span><span class="o">.</span><span class="n">xyzlim</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">distances</span><span class="p">))</span>
+
+    <span class="n">ipv</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">fig</span></div>
+</pre></div>
+
+           </div>
+          </div>
+
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, J. Michael Burgess.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

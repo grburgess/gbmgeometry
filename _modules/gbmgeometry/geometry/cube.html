@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gbmgeometry.geometry.cube &mdash; gbmgeometry  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.0-rc.0/dist/embed-amd.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <link rel="stylesheet" href="../../../_static/pygments/default.css" type="text/css" id="pygments-style">
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css">
+   
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> gbmgeometry
+            <img src="../../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/demo.html">GBM Geometry Demo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/demo.html#Fermi-plotting-and-computing-blockage">Fermi plotting and computing blockage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/posinterp.html">The PositionInterpolator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/pointsource.html">Plotting Points on the Sky</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/modules.html">twopc</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gbmgeometry</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+  <!--
+  <div class="admonition note">
+    <p><a href="https://github.com/lukelbd">ProPlot author here</a>: Due to my day job as a graduate student, certain <a href="https://github.com/lukelbd/proplot/pulls?q=is%3Aopen+is%3Apr">feature additions</a> may be delayed to the summer of 2020. In the meantime, if you are interested in contributing to ProPlot, please see the <a href="https://proplot.readthedocs.io/en/latest/contributions.html">contribution guide</a>. Any amount of help is welcome!
+    </p>
+  </div>
+  -->
+  <li id="lightdark-li">
+    <label for="lightdark-checkbox" id="lightdark-label">
+      <input type="checkbox" id="lightdark-checkbox"/>
+      <div class="btn-neutral"></div>
+    </label>
+  </li>
+  
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>gbmgeometry.geometry.cube</li>
+
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  <script type="text/javascript" src=../../../_static/custom.js></script>
+  
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gbmgeometry.geometry.cube</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span><span class="p">,</span> <span class="n">repeat</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">ipyvolume</span> <span class="k">as</span> <span class="nn">ipv</span>
+<span class="kn">from</span> <span class="nn">gbmgeometry.geometry</span> <span class="kn">import</span> <span class="n">Quaternion</span>
+
+
+<div class="viewcode-block" id="Cube"><a class="viewcode-back" href="../../../notebooks/api/gbmgeometry.geometry.html#gbmgeometry.geometry.cube.Cube">[docs]</a><span class="k">class</span> <span class="nc">Cube</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Cube.__init__"><a class="viewcode-back" href="../../../notebooks/api/gbmgeometry.geometry.html#gbmgeometry.geometry.cube.Cube.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">x_width</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">y_width</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">z_width</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span>
+        <span class="n">transform_matrix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">sc_pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">quarternion</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">scaling_factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A 3D cube that can be animated</span>
+
+<span class="sd">        :param x: </span>
+<span class="sd">        :param y: </span>
+<span class="sd">        :param z: </span>
+<span class="sd">        :param x_width: </span>
+<span class="sd">        :param y_width: </span>
+<span class="sd">        :param z_width: </span>
+<span class="sd">        :param color: </span>
+<span class="sd">        :param transform_matrix: </span>
+<span class="sd">        :param sc_pos: </span>
+<span class="sd">        :param quarternion: </span>
+<span class="sd">        :param scaling_factor: </span>
+<span class="sd">        :returns: </span>
+<span class="sd">        :rtype: </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">factor</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+        <span class="k">if</span> <span class="n">transform_matrix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="n">factor</span> <span class="o">=</span> <span class="n">scaling_factor</span>
+            <span class="n">x</span> <span class="o">*=</span> <span class="n">factor</span>
+            <span class="n">y</span> <span class="o">*=</span> <span class="n">factor</span>
+            <span class="n">z</span> <span class="o">*=</span> <span class="n">factor</span>
+            <span class="c1"># also convert to</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">x_width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">y_width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_z</span> <span class="o">=</span> <span class="n">z</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">z_width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sc_pos</span> <span class="o">=</span> <span class="n">sc_pos</span>
+
+        <span class="c1"># print(f&quot;cube {x} {y} {z}&quot;)</span>
+        <span class="c1"># print(f&quot;corner {self._x} {self._y} {self._z}&quot;)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_height</span> <span class="o">=</span> <span class="n">y_width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_width</span> <span class="o">=</span> <span class="n">x_width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_depth</span> <span class="o">=</span> <span class="n">z_width</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_color</span> <span class="o">=</span> <span class="n">color</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_artists</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transform_matrix</span> <span class="o">=</span> <span class="n">transform_matrix</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_vector</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_vector_origin</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># check if we have vector of positions</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_transform_matrix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_transform_matrix</span><span class="o">.</span><span class="n">shape</span>
+        <span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+
+            <span class="c1"># this is the case if the transform is changing with time</span>
+            <span class="c1"># or the sc_pos is changing with time</span>
+
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_sc_pos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="p">),</span> <span class="s2">&quot;the sc_pos and trans matrix are not the same lenght&quot;</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_is_vector</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_vector_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_x</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+
+            <span class="c1"># this is the case that the origin is changing with time.</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_is_vector</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_is_vector_origin</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_vector_length</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+    <span class="k">def</span> <span class="nf">_create_Ploy3DCollection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line1</span><span class="p">,</span> <span class="n">line2</span><span class="p">,</span> <span class="n">line3</span><span class="p">,</span> <span class="n">line4</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">line1</span><span class="p">,</span> <span class="n">line2</span><span class="p">,</span> <span class="n">line3</span><span class="p">,</span> <span class="n">line4</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_vector</span><span class="p">:</span>
+
+            <span class="c1"># print(x)</span>
+
+            <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">__</span> <span class="k">for</span> <span class="n">__</span> <span class="ow">in</span> <span class="n">iterable_to_chunks</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">2</span><span class="p">)])</span>
+            <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">__</span> <span class="k">for</span> <span class="n">__</span> <span class="ow">in</span> <span class="n">iterable_to_chunks</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">2</span><span class="p">)])</span>
+            <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">__</span> <span class="k">for</span> <span class="n">__</span> <span class="ow">in</span> <span class="n">iterable_to_chunks</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="mi">2</span><span class="p">)])</span>
+
+            <span class="k">return</span> <span class="n">ipv</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_color</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_X</span><span class="p">[</span><span class="n">side</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">__</span> <span class="k">for</span> <span class="n">__</span> <span class="ow">in</span> <span class="n">iterable_to_chunks</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">2</span><span class="p">)])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_Y</span><span class="p">[</span><span class="n">side</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">__</span> <span class="k">for</span> <span class="n">__</span> <span class="ow">in</span> <span class="n">iterable_to_chunks</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">2</span><span class="p">)])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_Z</span><span class="p">[</span><span class="n">side</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">__</span> <span class="k">for</span> <span class="n">__</span> <span class="ow">in</span> <span class="n">iterable_to_chunks</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="mi">2</span><span class="p">)])</span>
+
+            <span class="c1"># on the last iteration we make the plot and return it</span>
+
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vector_length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+
+                <span class="k">return</span> <span class="n">ipv</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_X</span><span class="p">[</span><span class="n">side</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Y</span><span class="p">[</span><span class="n">side</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_Z</span><span class="p">[</span><span class="n">side</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_color</span>
+                <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">artists</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_artists</span>
+
+<div class="viewcode-block" id="Cube.plot"><a class="viewcode-back" href="../../../notebooks/api/gbmgeometry.geometry.html#gbmgeometry.geometry.cube.Cube.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_vector</span><span class="p">:</span>
+
+            <span class="p">(</span>
+                <span class="n">front_top_right</span><span class="p">,</span>
+                <span class="n">front_top_left</span><span class="p">,</span>
+                <span class="n">front_bot_right</span><span class="p">,</span>
+                <span class="n">front_bot_left</span><span class="p">,</span>
+                <span class="n">rear_top_right</span><span class="p">,</span>
+                <span class="n">rear_top_left</span><span class="p">,</span>
+                <span class="n">rear_bot_right</span><span class="p">,</span>
+                <span class="n">rear_bot_left</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_assemble</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_z</span><span class="p">)</span>
+
+            <span class="n">top</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_Ploy3DCollection</span><span class="p">(</span>
+                <span class="n">front_top_left</span><span class="p">,</span> <span class="n">front_top_right</span><span class="p">,</span> <span class="n">rear_top_left</span><span class="p">,</span> <span class="n">rear_top_right</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">bot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_Ploy3DCollection</span><span class="p">(</span>
+                <span class="n">front_bot_left</span><span class="p">,</span> <span class="n">front_bot_right</span><span class="p">,</span> <span class="n">rear_bot_left</span><span class="p">,</span> <span class="n">rear_bot_right</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">front</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_Ploy3DCollection</span><span class="p">(</span>
+                <span class="n">front_bot_left</span><span class="p">,</span> <span class="n">front_bot_right</span><span class="p">,</span> <span class="n">front_top_left</span><span class="p">,</span> <span class="n">front_top_right</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">rear</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_Ploy3DCollection</span><span class="p">(</span>
+                <span class="n">rear_top_left</span><span class="p">,</span> <span class="n">rear_top_right</span><span class="p">,</span> <span class="n">rear_bot_left</span><span class="p">,</span> <span class="n">rear_bot_right</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">left</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_Ploy3DCollection</span><span class="p">(</span>
+                <span class="n">front_bot_left</span><span class="p">,</span> <span class="n">front_top_left</span><span class="p">,</span> <span class="n">rear_bot_left</span><span class="p">,</span> <span class="n">rear_top_left</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_Ploy3DCollection</span><span class="p">(</span>
+                <span class="n">front_bot_right</span><span class="p">,</span> <span class="n">front_top_right</span><span class="p">,</span> <span class="n">rear_bot_right</span><span class="p">,</span> <span class="n">rear_top_right</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vector_length</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vector_length</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_vector_length</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_vector_length</span><span class="p">):</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_vector_origin</span><span class="p">:</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_z</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+                <span class="k">else</span><span class="p">:</span>
+
+                    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_z</span>
+
+                <span class="p">(</span>
+                    <span class="n">front_top_right</span><span class="p">,</span>
+                    <span class="n">front_top_left</span><span class="p">,</span>
+                    <span class="n">front_bot_right</span><span class="p">,</span>
+                    <span class="n">front_bot_left</span><span class="p">,</span>
+                    <span class="n">rear_top_right</span><span class="p">,</span>
+                    <span class="n">rear_top_left</span><span class="p">,</span>
+                    <span class="n">rear_bot_right</span><span class="p">,</span>
+                    <span class="n">rear_bot_left</span><span class="p">,</span>
+                <span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_assemble</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+
+                <span class="n">top</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_Ploy3DCollection</span><span class="p">(</span>
+                    <span class="n">front_top_left</span><span class="p">,</span>
+                    <span class="n">front_top_right</span><span class="p">,</span>
+                    <span class="n">rear_top_left</span><span class="p">,</span>
+                    <span class="n">rear_top_right</span><span class="p">,</span>
+                    <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                    <span class="n">side</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="n">bot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_Ploy3DCollection</span><span class="p">(</span>
+                    <span class="n">front_bot_left</span><span class="p">,</span>
+                    <span class="n">front_bot_right</span><span class="p">,</span>
+                    <span class="n">rear_bot_left</span><span class="p">,</span>
+                    <span class="n">rear_bot_right</span><span class="p">,</span>
+                    <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                    <span class="n">side</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="n">front</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_Ploy3DCollection</span><span class="p">(</span>
+                    <span class="n">front_bot_left</span><span class="p">,</span>
+                    <span class="n">front_bot_right</span><span class="p">,</span>
+                    <span class="n">front_top_left</span><span class="p">,</span>
+                    <span class="n">front_top_right</span><span class="p">,</span>
+                    <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                    <span class="n">side</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="n">rear</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_Ploy3DCollection</span><span class="p">(</span>
+                    <span class="n">rear_top_left</span><span class="p">,</span>
+                    <span class="n">rear_top_right</span><span class="p">,</span>
+                    <span class="n">rear_bot_left</span><span class="p">,</span>
+                    <span class="n">rear_bot_right</span><span class="p">,</span>
+                    <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                    <span class="n">side</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="n">left</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_Ploy3DCollection</span><span class="p">(</span>
+                    <span class="n">front_bot_left</span><span class="p">,</span>
+                    <span class="n">front_top_left</span><span class="p">,</span>
+                    <span class="n">rear_bot_left</span><span class="p">,</span>
+                    <span class="n">rear_top_left</span><span class="p">,</span>
+                    <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                    <span class="n">side</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="n">right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_Ploy3DCollection</span><span class="p">(</span>
+                    <span class="n">front_bot_right</span><span class="p">,</span>
+                    <span class="n">front_top_right</span><span class="p">,</span>
+                    <span class="n">rear_bot_right</span><span class="p">,</span>
+                    <span class="n">rear_top_right</span><span class="p">,</span>
+                    <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                    <span class="n">side</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_artists</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">top</span><span class="p">,</span> <span class="n">bot</span><span class="p">,</span> <span class="n">front</span><span class="p">,</span> <span class="n">rear</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">])</span></div>
+
+    <span class="k">def</span> <span class="nf">_assemble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="n">front_bot_left</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span>
+        <span class="n">front_bot_right</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_width</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span>
+        <span class="n">front_top_left</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_height</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span>
+        <span class="n">front_top_right</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_width</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_height</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span>
+
+        <span class="n">rear_bot_left</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_depth</span><span class="p">])</span>
+        <span class="n">rear_bot_right</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_width</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_depth</span><span class="p">])</span>
+        <span class="n">rear_top_left</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_height</span><span class="p">,</span> <span class="n">z</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_depth</span><span class="p">])</span>
+        <span class="n">rear_top_right</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_width</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_height</span><span class="p">,</span> <span class="n">z</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_depth</span><span class="p">,])</span>
+
+        <span class="n">points</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">front_top_right</span><span class="p">,</span>
+            <span class="n">front_top_left</span><span class="p">,</span>
+            <span class="n">front_bot_right</span><span class="p">,</span>
+            <span class="n">front_bot_left</span><span class="p">,</span>
+            <span class="n">rear_top_right</span><span class="p">,</span>
+            <span class="n">rear_top_left</span><span class="p">,</span>
+            <span class="n">rear_bot_right</span><span class="p">,</span>
+            <span class="n">rear_bot_left</span><span class="p">,</span>
+        <span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform_matrix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="c1"># we now rotate the point FIRST</span>
+            <span class="c1"># and then translate the point</span>
+
+            <span class="n">new_points</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span><span class="p">:</span>
+
+                <span class="n">new_point</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rotate</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+
+                <span class="n">new_point</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_translate</span><span class="p">(</span><span class="n">new_point</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+
+                <span class="c1"># print(f&quot;before {point} after {new_point}&quot;)</span>
+
+                <span class="n">new_points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_point</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">new_points</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="n">points</span>
+
+    <span class="k">def</span> <span class="nf">_translate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">i</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="n">point</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sc_pos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="n">point</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sc_pos</span>
+
+    <span class="k">def</span> <span class="nf">_rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">i</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_transform_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">point</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_transform_matrix</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">point</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="iterable_to_chunks"><a class="viewcode-back" href="../../../notebooks/api/gbmgeometry.geometry.html#gbmgeometry.geometry.cube.iterable_to_chunks">[docs]</a><span class="k">def</span> <span class="nf">iterable_to_chunks</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Split a list to chunks</span>
+<span class="sd">    iterable : an iterable object, e.g. generator, list, array, etc.</span>
+<span class="sd">    size : chunk size, positive integer</span>
+<span class="sd">    fill : padding values.</span>
+<span class="sd">    Example :</span>
+<span class="sd">      tochunks(&#39;abcdefg&#39;, 3, &#39;x&#39;)</span>
+<span class="sd">    Output :</span>
+<span class="sd">      (&#39;a&#39;,&#39;b&#39;,&#39;c&#39;), (&#39;d&#39;,&#39;e&#39;,&#39;f&#39;), (&#39;g&#39;,&#39;x&#39;,&#39;x&#39;)</span>
+<span class="sd">    reference :</span>
+<span class="sd">      http://stackoverflow.com/a/312644</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">chain</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">repeat</span><span class="p">(</span><span class="n">fill</span><span class="p">,</span> <span class="n">size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))]</span> <span class="o">*</span> <span class="n">size</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, J. Michael Burgess.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

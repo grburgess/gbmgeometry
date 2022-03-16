@@ -1,0 +1,2 @@
+gbmgeometry/__version__.py export-subst
+gbmgeometry/_version.py export-subst

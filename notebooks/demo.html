@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GBM Geometry Demo &mdash; gbmgeometry  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.0-rc.0/dist/embed-amd.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The PositionInterpolator" href="posinterp.html" />
+    <link rel="prev" title="Welcome to gbmgeometry’s documentation!" href="../index.html" />
+  <link rel="stylesheet" href="../_static/pygments/default.css" type="text/css" id="pygments-style">
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css">
+   
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> gbmgeometry
+            <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">GBM Geometry Demo</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Interpolating-the-spacecraft-position">Interpolating the spacecraft position</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Single-GBM-detector-properties">Single GBM detector properties</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#We-can-also-go-back-into-the-GBMFrame">We can also go back into the GBMFrame</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Earth-Centered-Coordinates">Earth Centered Coordinates</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#Working-with-the-GBM-class">Working with the GBM class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Source/Detector-Separation">Source/Detector Separation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#Fermi-plotting-and-computing-blockage">Fermi plotting and computing blockage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Simple-plotting">Simple plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#computing-intersections">computing intersections</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="posinterp.html">The PositionInterpolator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pointsource.html">Plotting Points on the Sky</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/modules.html">twopc</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">gbmgeometry</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+  <!--
+  <div class="admonition note">
+    <p><a href="https://github.com/lukelbd">ProPlot author here</a>: Due to my day job as a graduate student, certain <a href="https://github.com/lukelbd/proplot/pulls?q=is%3Aopen+is%3Apr">feature additions</a> may be delayed to the summer of 2020. In the meantime, if you are interested in contributing to ProPlot, please see the <a href="https://proplot.readthedocs.io/en/latest/contributions.html">contribution guide</a>. Any amount of help is welcome!
+    </p>
+  </div>
+  -->
+  <li id="lightdark-li">
+    <label for="lightdark-checkbox" id="lightdark-label">
+      <input type="checkbox" id="lightdark-checkbox"/>
+      <div class="btn-neutral"></div>
+    </label>
+  </li>
+  
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>GBM Geometry Demo</li>
+
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  <script type="text/javascript" src=../_static/custom.js></script>
+  
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt *,
+div.nbinput.container div.input_area pre,
+div.nboutput.container div.output_area pre,
+div.nbinput.container div.input_area .highlight,
+div.nboutput.container div.output_area .highlight {
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+div.nbinput.container > div[class*=highlight],
+div.nboutput.container > div[class*=highlight] {
+    margin: 0;
+}
+
+div.nbinput.container div.prompt *,
+div.nboutput.container div.prompt * {
+    background: none;
+}
+
+div.nboutput.container div.output_area .highlight,
+div.nboutput.container div.output_area pre {
+    background: unset;
+}
+
+div.nboutput.container div.output_area div.highlight {
+    color: unset;  /* override Pygments text color */
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    /*background: #f5f5f5;*/
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+    margin: 0;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt .copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="GBM-Geometry-Demo">
+<h1>GBM Geometry Demo<a class="headerlink" href="#GBM-Geometry-Demo" title="Permalink to this headline"></a></h1>
+<p><strong>gbmeometry</strong> is a module with routines for handling GBM geometry. It performs a few tasks: * creates an astropy coordinate frame for Fermi GBM given a quarternion and spacecraft position * allows for coordinate transforms from Fermi frame to an astropy frame (J2000, etc.) * plots the GBM NaI detectors at a given time for a given FOV * determines if an astropy SkyCoord location is within a NaI’s FOV * creates interpolations over GBM quarternions and SC coordinates</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">from</span> <span class="nn">astropy.coordinates</span> <span class="kn">import</span> <span class="n">SkyCoord</span>
+<span class="kn">import</span> <span class="nn">astropy.coordinates</span> <span class="k">as</span> <span class="nn">coord</span>
+<span class="kn">import</span> <span class="nn">astropy.units</span> <span class="k">as</span> <span class="nn">u</span>
+<span class="kn">from</span> <span class="nn">gbmgeometry</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">gbmgeometry.utils.package_utils</span> <span class="kn">import</span> <span class="n">get_path_of_data_file</span>
+<br/><br/></pre></div>
+</div>
+</div>
+<section id="Interpolating-the-spacecraft-position">
+<h2>Interpolating the spacecraft position<a class="headerlink" href="#Interpolating-the-spacecraft-position" title="Permalink to this headline"></a></h2>
+<p>First let’s create an interpolating object for a given TRIGDAT file (POSHIST files are also readable)</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">interp</span> <span class="o">=</span> <span class="n">PositionInterpolator</span><span class="o">.</span><span class="n">from_trigdat</span><span class="p">(</span><span class="n">get_path_of_data_file</span><span class="p">(</span><span class="s2">&quot;glg_trigdat_all_bn080916009_v02.fit&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<p>The quaternion and sc_pos functions can take as inputs the time since trigger</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Quaternions&quot;</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="n">interp</span><span class="o">.</span><span class="n">quaternion</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="nb">print</span> <span class="p">(</span><span class="n">interp</span><span class="o">.</span><span class="n">quaternion</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+<span class="nb">print</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;SC XYZ&quot;</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="n">interp</span><span class="o">.</span><span class="n">sc_pos</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="nb">print</span> <span class="p">(</span><span class="n">interp</span><span class="o">.</span><span class="n">sc_pos</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+<br/><br/><br/><br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Quaternions
+[0.09894184 0.81399423 0.56763536 0.07357984]
+[0.09651158 0.81315938 0.56970097 0.06998621]
+SC XYZ
+[3184.75 5985.5  1456.75]
+[3111.77432458 6015.91372132 1488.98009345]
+</pre></div></div>
+</div>
+</section>
+<section id="Single-GBM-detector-properties">
+<h2>Single GBM detector properties<a class="headerlink" href="#Single-GBM-detector-properties" title="Permalink to this headline"></a></h2>
+<p>One can look at a single detector which knows about it’s orientation in the Fermi SC coordinates as well as where it is currently pointing on its optical axis in J2000. In fact, since the GBM frame is part of the astropy coordinate family, it can be transformed into any system!</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">interp</span><span class="o">.</span><span class="n">quaternion</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+array([0.0986775 , 0.81390325, 0.56786244, 0.07318777])
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">na</span> <span class="o">=</span> <span class="n">NaIA</span><span class="p">(</span><span class="n">interp</span><span class="o">.</span><span class="n">quaternion</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="nb">print</span> <span class="p">(</span><span class="n">na</span><span class="o">.</span><span class="n">center</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="n">na</span><span class="o">.</span><span class="n">center_icrs</span><span class="p">)</span> <span class="c1">#J2000</span>
+<span class="nb">print</span> <span class="p">(</span><span class="n">na</span><span class="o">.</span><span class="n">center</span><span class="o">.</span><span class="n">galactic</span><span class="p">)</span> <span class="c1"># Galactic</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Changing in time&quot;</span><span class="p">)</span>
+<span class="n">na</span><span class="o">.</span><span class="n">set_quaternion</span><span class="p">(</span><span class="n">interp</span><span class="o">.</span><span class="n">quaternion</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="n">na</span><span class="o">.</span><span class="n">center</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="n">na</span><span class="o">.</span><span class="n">center_icrs</span><span class="p">)</span> <span class="c1">#J2000</span>
+<span class="nb">print</span> <span class="p">(</span><span class="n">na</span><span class="o">.</span><span class="n">center</span><span class="o">.</span><span class="n">galactic</span><span class="p">)</span> <span class="c1"># Galactic</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;SkyCoord (GBMFrame: sc_pos_X=None, sc_pos_Y=None, sc_pos_Z=None, quaternion_1=0.09867749622828526, quaternion_2=0.8139032523975553, quaternion_3=0.5678624418045289, quaternion_4=0.07318777342560503): (lon, lat) in deg
+    (123.73, -0.42)&gt;
+&lt;SkyCoord (ICRS): (ra, dec) in deg
+    (12.8426513, 51.9249513)&gt;
+&lt;SkyCoord (Galactic): (l, b) in deg
+    (122.92135609, -10.94679491)&gt;
+Changing in time
+&lt;SkyCoord (GBMFrame: sc_pos_X=None, sc_pos_Y=None, sc_pos_Z=None, quaternion_1=0.07365115360430513, quaternion_2=0.8058104624624784, quaternion_3=0.5863608294681484, quaternion_4=0.037717550642801925): (lon, lat) in deg
+    (123.73, -0.42)&gt;
+&lt;SkyCoord (ICRS): (ra, dec) in deg
+    (14.14827804, 51.13038764)&gt;
+&lt;SkyCoord (Galactic): (l, b) in deg
+    (123.75793083, -11.73309177)&gt;
+</pre></div></div>
+</div>
+<section id="We-can-also-go-back-into-the-GBMFrame">
+<h3>We can also go back into the GBMFrame<a class="headerlink" href="#We-can-also-go-back-into-the-GBMFrame" title="Permalink to this headline"></a></h3>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">center_j2000</span> <span class="o">=</span> <span class="n">na</span><span class="o">.</span><span class="n">center_icrs</span>
+<span class="n">center_j2000</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;SkyCoord (ICRS): (ra, dec) in deg
+    (14.14827804, 51.13038764)&gt;
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">center_j2000</span><span class="o">.</span><span class="n">transform_to</span><span class="p">(</span><span class="n">GBMFrame</span><span class="p">(</span><span class="o">**</span><span class="n">interp</span><span class="o">.</span><span class="n">quaternion_dict</span><span class="p">(</span><span class="mf">100.</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;SkyCoord (GBMFrame: sc_pos_X=None, sc_pos_Y=None, sc_pos_Z=None, quaternion_1=0.07365115360430513, quaternion_2=0.8058104624624784, quaternion_3=0.5863608294681484, quaternion_4=0.037717550642801925): (lon, lat) in deg
+    (123.73020963, -0.4198826)&gt;
+</pre></div></div>
+</div>
+<section id="Earth-Centered-Coordinates">
+<h4>Earth Centered Coordinates<a class="headerlink" href="#Earth-Centered-Coordinates" title="Permalink to this headline"></a></h4>
+<p>The sc_pos are Earth centered coordinates (in km for trigdat and m for poshist) and can also be passed. It is a good idea to specify the units!</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">na</span> <span class="o">=</span> <span class="n">NaIA</span><span class="p">(</span><span class="n">interp</span><span class="o">.</span><span class="n">quaternion</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="n">interp</span><span class="o">.</span><span class="n">sc_pos</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">km</span><span class="p">)</span>
+<span class="n">na</span><span class="o">.</span><span class="n">get_center</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;SkyCoord (GBMFrame: sc_pos_X=3184.75 km, sc_pos_Y=5985.5 km, sc_pos_Z=1456.75 km, quaternion_1=0.09894184023141861, quaternion_2=0.8139942288398743, quaternion_3=0.5676353573799133, quaternion_4=0.07357984036207199): (lon, lat) in deg
+    (123.73, -0.42)&gt;
+</pre></div></div>
+</div>
+</section>
+</section>
+</section>
+<section id="Working-with-the-GBM-class">
+<h2>Working with the GBM class<a class="headerlink" href="#Working-with-the-GBM-class" title="Permalink to this headline"></a></h2>
+<p>Ideally, we want to know about many detectors. The GBM class performs operations on all detectors for ease of use. It also has plotting capabilities.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">myGBM</span> <span class="o">=</span> <span class="n">GBM</span><span class="p">(</span><span class="n">interp</span><span class="o">.</span><span class="n">quaternion</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span><span class="n">sc_pos</span><span class="o">=</span><span class="n">interp</span><span class="o">.</span><span class="n">sc_pos</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">km</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>We can either plot the detectors with a field of view:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">myGBM</span><span class="o">.</span><span class="n">plot_detector_pointings</span><span class="p">(</span><span class="n">fov</span><span class="o">=</span><span class="mi">10</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_17_0.png" src="../_images/notebooks_demo_17_0.png" />
+</div>
+</div>
+<p>or just where the optical axis is pointing</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">myGBM</span><span class="o">.</span><span class="n">plot_detector_pointings</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="mi">10</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_19_0.png" src="../_images/notebooks_demo_19_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">myGBM</span><span class="o">.</span><span class="n">plot_detector_pointings</span><span class="p">(</span><span class="n">fov</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">projection</span> <span class="o">=</span> <span class="s2">&quot;astro globe&quot;</span><span class="p">,</span> <span class="n">center</span> <span class="o">=</span> <span class="n">SkyCoord</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="o">-</span><span class="mi">30</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span> <span class="n">frame</span><span class="o">=</span><span class="s2">&quot;icrs&quot;</span><span class="p">),</span> <span class="n">show_earth</span><span class="o">=</span><span class="kc">False</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_20_0.png" src="../_images/notebooks_demo_20_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><br/><span></span><span class="n">myGBM</span><span class="o">.</span><span class="n">get_centers</span><span class="p">()</span>
+<br/><br/></pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&lt;SkyCoord (GBMFrame: sc_pos_X=3184.75 km, sc_pos_Y=5985.5 km, sc_pos_Z=1456.75 km, quaternion_1=0.09894184023141861, quaternion_2=0.8139942288398743, quaternion_3=0.5676353573799133, quaternion_4=0.07357984036207199): (lon, lat) in deg
+     (45.89, 69.42)&gt;,
+ &lt;SkyCoord (GBMFrame: sc_pos_X=3184.75 km, sc_pos_Y=5985.5 km, sc_pos_Z=1456.75 km, quaternion_1=0.09894184023141861, quaternion_2=0.8139942288398743, quaternion_3=0.5676353573799133, quaternion_4=0.07357984036207199): (lon, lat) in deg
+     (45.11, 44.69)&gt;,
+ &lt;SkyCoord (GBMFrame: sc_pos_X=3184.75 km, sc_pos_Y=5985.5 km, sc_pos_Z=1456.75 km, quaternion_1=0.09894184023141861, quaternion_2=0.8139942288398743, quaternion_3=0.5676353573799133, quaternion_4=0.07357984036207199): (lon, lat) in deg
+     (58.44, -0.21)&gt;,
+ &lt;SkyCoord (GBMFrame: sc_pos_X=3184.75 km, sc_pos_Y=5985.5 km, sc_pos_Z=1456.75 km, quaternion_1=0.09894184023141861, quaternion_2=0.8139942288398743, quaternion_3=0.5676353573799133, quaternion_4=0.07357984036207199): (lon, lat) in deg
+     (314.87, 44.76)&gt;,
+ &lt;SkyCoord (GBMFrame: sc_pos_X=3184.75 km, sc_pos_Y=5985.5 km, sc_pos_Z=1456.75 km, quaternion_1=0.09894184023141861, quaternion_2=0.8139942288398743, quaternion_3=0.5676353573799133, quaternion_4=0.07357984036207199): (lon, lat) in deg
+     (303.15, -0.27)&gt;,
+ &lt;SkyCoord (GBMFrame: sc_pos_X=3184.75 km, sc_pos_Y=5985.5 km, sc_pos_Z=1456.75 km, quaternion_1=0.09894184023141861, quaternion_2=0.8139942288398743, quaternion_3=0.5676353573799133, quaternion_4=0.07357984036207199): (lon, lat) in deg
+     (3.35, 0.03)&gt;,
+ &lt;SkyCoord (GBMFrame: sc_pos_X=3184.75 km, sc_pos_Y=5985.5 km, sc_pos_Z=1456.75 km, quaternion_1=0.09894184023141861, quaternion_2=0.8139942288398743, quaternion_3=0.5676353573799133, quaternion_4=0.07357984036207199): (lon, lat) in deg
+     (224.93, 69.57)&gt;,
+ &lt;SkyCoord (GBMFrame: sc_pos_X=3184.75 km, sc_pos_Y=5985.5 km, sc_pos_Z=1456.75 km, quaternion_1=0.09894184023141861, quaternion_2=0.8139942288398743, quaternion_3=0.5676353573799133, quaternion_4=0.07357984036207199): (lon, lat) in deg
+     (224.62, 43.82)&gt;,
+ &lt;SkyCoord (GBMFrame: sc_pos_X=3184.75 km, sc_pos_Y=5985.5 km, sc_pos_Z=1456.75 km, quaternion_1=0.09894184023141861, quaternion_2=0.8139942288398743, quaternion_3=0.5676353573799133, quaternion_4=0.07357984036207199): (lon, lat) in deg
+     (236.61, 0.03)&gt;,
+ &lt;SkyCoord (GBMFrame: sc_pos_X=3184.75 km, sc_pos_Y=5985.5 km, sc_pos_Z=1456.75 km, quaternion_1=0.09894184023141861, quaternion_2=0.8139942288398743, quaternion_3=0.5676353573799133, quaternion_4=0.07357984036207199): (lon, lat) in deg
+     (135.19, 44.45)&gt;,
+ &lt;SkyCoord (GBMFrame: sc_pos_X=3184.75 km, sc_pos_Y=5985.5 km, sc_pos_Z=1456.75 km, quaternion_1=0.09894184023141861, quaternion_2=0.8139942288398743, quaternion_3=0.5676353573799133, quaternion_4=0.07357984036207199): (lon, lat) in deg
+     (123.73, -0.42)&gt;,
+ &lt;SkyCoord (GBMFrame: sc_pos_X=3184.75 km, sc_pos_Y=5985.5 km, sc_pos_Z=1456.75 km, quaternion_1=0.09894184023141861, quaternion_2=0.8139942288398743, quaternion_3=0.5676353573799133, quaternion_4=0.07357984036207199): (lon, lat) in deg
+     (183.74, -0.32)&gt;,
+ &lt;SkyCoord (GBMFrame: sc_pos_X=3184.75 km, sc_pos_Y=5985.5 km, sc_pos_Z=1456.75 km, quaternion_1=0.09894184023141861, quaternion_2=0.8139942288398743, quaternion_3=0.5676353573799133, quaternion_4=0.07357984036207199): (lon, lat) in deg
+     (0., 0.)&gt;,
+ &lt;SkyCoord (GBMFrame: sc_pos_X=3184.75 km, sc_pos_Y=5985.5 km, sc_pos_Z=1456.75 km, quaternion_1=0.09894184023141861, quaternion_2=0.8139942288398743, quaternion_3=0.5676353573799133, quaternion_4=0.07357984036207199): (lon, lat) in deg
+     (180., 0.)&gt;]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">icrs</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">myGBM</span><span class="o">.</span><span class="n">get_centers</span><span class="p">()]</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&lt;SkyCoord (ICRS): (ra, dec) in deg
+     (90.02053912, -5.02944102)&gt;,
+ &lt;SkyCoord (ICRS): (ra, dec) in deg
+     (106.9639318, 13.09532427)&gt;,
+ &lt;SkyCoord (ICRS): (ra, dec) in deg
+     (137.09793576, 52.86180786)&gt;,
+ &lt;SkyCoord (ICRS): (ra, dec) in deg
+     (121.3144115, -45.95986919)&gt;,
+ &lt;SkyCoord (ICRS): (ra, dec) in deg
+     (194.28783066, -52.03023808)&gt;,
+ &lt;SkyCoord (ICRS): (ra, dec) in deg
+     (164.65699738, 2.70662314)&gt;,
+ &lt;SkyCoord (ICRS): (ra, dec) in deg
+     (58.29477735, -33.54731071)&gt;,
+ &lt;SkyCoord (ICRS): (ra, dec) in deg
+     (28.32615836, -45.28243674)&gt;,
+ &lt;SkyCoord (ICRS): (ra, dec) in deg
+     (318.5160438, -51.24281778)&gt;,
+ &lt;SkyCoord (ICRS): (ra, dec) in deg
+     (44.56221395, 13.56776347)&gt;,
+ &lt;SkyCoord (ICRS): (ra, dec) in deg
+     (12.83264883, 51.9340734)&gt;,
+ &lt;SkyCoord (ICRS): (ra, dec) in deg
+     (344.24965886, -2.97248228)&gt;,
+ &lt;SkyCoord (ICRS): (ra, dec) in deg
+     (165.84085686, -0.42750824)&gt;,
+ &lt;SkyCoord (ICRS): (ra, dec) in deg
+     (345.84085686, 0.42750824)&gt;]
+</pre></div></div>
+</div>
+</section>
+<section id="Source/Detector-Separation">
+<h2>Source/Detector Separation<a class="headerlink" href="#Source/Detector-Separation" title="Permalink to this headline"></a></h2>
+<p>We can even look at the separation angles for the detectors and a source.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">grb</span> <span class="o">=</span> <span class="n">SkyCoord</span><span class="p">(</span><span class="n">ra</span><span class="o">=</span><span class="mf">130.</span><span class="p">,</span><span class="n">dec</span><span class="o">=-</span><span class="mi">45</span> <span class="p">,</span><span class="n">frame</span><span class="o">=</span><span class="s1">&#39;icrs&#39;</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">)</span>
+
+<span class="n">seps</span> <span class="o">=</span> <span class="n">myGBM</span><span class="o">.</span><span class="n">get_separation</span><span class="p">(</span><span class="n">grb</span><span class="p">)</span>
+
+
+
+<span class="n">seps</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+n0     53.005218
+n1     61.732524
+n2     98.051083
+n3      6.161940
+n4     41.739311
+n5     56.797086
+n6     54.847311
+n7     66.309967
+n8     83.475797
+n9     96.385021
+na    139.092757
+nb    123.163854
+b0     54.656741
+b1    125.343259
+dtype: float64
+</pre></div></div>
+</div>
+</section>
+</section>
+<section id="Fermi-plotting-and-computing-blockage">
+<h1>Fermi plotting and computing blockage<a class="headerlink" href="#Fermi-plotting-and-computing-blockage" title="Permalink to this headline"></a></h1>
+<section id="Simple-plotting">
+<h2>Simple plotting<a class="headerlink" href="#Simple-plotting" title="Permalink to this headline"></a></h2>
+<p>It is possible to plot a 3D model of Fermi that is to scale:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gbmgeometry.spacecraft.fermi</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<span class="n">f</span> <span class="o">=</span> <span class="n">Fermi</span><span class="p">(</span><span class="n">quaternion</span><span class="o">=</span><span class="n">interp</span><span class="o">.</span><span class="n">quaternion</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="n">interp</span><span class="o">.</span><span class="n">sc_pos</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+<span class="n">f</span><span class="o">.</span><span class="n">plot_fermi</span><span class="p">(</span><span class="n">color_dets_different</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot_det_label</span><span class="o">=</span><span class="kc">False</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_26_0.png" src="../_images/notebooks_demo_26_0.png" />
+</div>
+</div>
+</section>
+<section id="computing-intersections">
+<h2>computing intersections<a class="headerlink" href="#computing-intersections" title="Permalink to this headline"></a></h2>
+<p>It is sometimes required to see if photons from a GRB are blocked by spacecraft parts for a given detector. We can test this with the Fermi object:</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">add_ray</span><span class="p">(</span><span class="n">ray_coordinate</span><span class="o">=</span><span class="n">grb</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>we can specify to compute for a subset of detectors</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">compute_intersections</span><span class="p">(</span><span class="s2">&quot;n1&quot;</span><span class="p">,</span><span class="s2">&quot;n2&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+OrderedDict([(&#39;n1&#39;,
+              OrderedDict([(0,
+                            OrderedDict([(&#39;surface&#39;, [&#39;LAT Radiator+ -y&#39;]),
+                                         (&#39;point&#39;,
+                                          [array([81.46506793, 96.2       , 41.55346871])]),
+                                         (&#39;distance&#39;,
+                                          [43.19931864505643])]))])),
+             (&#39;n2&#39;,
+              OrderedDict([(0,
+                            OrderedDict([(&#39;surface&#39;, [&#39;LAT Radiator+ -y&#39;]),
+                                         (&#39;point&#39;,
+                                          [array([77.03030294, 96.2       , 49.26398105])]),
+                                         (&#39;distance&#39;,
+                                          [70.33735217701951])]))]))])
+</pre></div></div>
+</div>
+<p>or compute for all detectors</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">compute_intersections</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+OrderedDict([(&#39;n0&#39;,
+              OrderedDict([(0,
+                            OrderedDict([(&#39;surface&#39;, [&#39;LAT Radiator+ -y&#39;]),
+                                         (&#39;point&#39;,
+                                          [array([82.84222535, 96.2       , 86.97456421])]),
+                                         (&#39;distance&#39;,
+                                          [29.16877080456398])]))])),
+             (&#39;n1&#39;,
+              OrderedDict([(0,
+                            OrderedDict([(&#39;surface&#39;, [&#39;LAT Radiator+ -y&#39;]),
+                                         (&#39;point&#39;,
+                                          [array([81.46506793, 96.2       , 41.55346871])]),
+                                         (&#39;distance&#39;,
+                                          [43.19931864505643])]))])),
+             (&#39;n2&#39;,
+              OrderedDict([(0,
+                            OrderedDict([(&#39;surface&#39;, [&#39;LAT Radiator+ -y&#39;]),
+                                         (&#39;point&#39;,
+                                          [array([77.03030294, 96.2       , 49.26398105])]),
+                                         (&#39;distance&#39;,
+                                          [70.33735217701951])]))])),
+             (&#39;n3&#39;,
+              OrderedDict([(0,
+                            OrderedDict([(&#39;surface&#39;, []),
+                                         (&#39;point&#39;, []),
+                                         (&#39;distance&#39;, [])]))])),
+             (&#39;n4&#39;,
+              OrderedDict([(0,
+                            OrderedDict([(&#39;surface&#39;, []),
+                                         (&#39;point&#39;, []),
+                                         (&#39;distance&#39;, [])]))])),
+             (&#39;n5&#39;,
+              OrderedDict([(0,
+                            OrderedDict([(&#39;surface&#39;, []),
+                                         (&#39;point&#39;, []),
+                                         (&#39;distance&#39;, [])]))])),
+             (&#39;n6&#39;,
+              OrderedDict([(0,
+                            OrderedDict([(&#39;surface&#39;, []),
+                                         (&#39;point&#39;, []),
+                                         (&#39;distance&#39;, [])]))])),
+             (&#39;n7&#39;,
+              OrderedDict([(0,
+                            OrderedDict([(&#39;surface&#39;, []),
+                                         (&#39;point&#39;, []),
+                                         (&#39;distance&#39;, [])]))])),
+             (&#39;n8&#39;,
+              OrderedDict([(0,
+                            OrderedDict([(&#39;surface&#39;, []),
+                                         (&#39;point&#39;, []),
+                                         (&#39;distance&#39;, [])]))])),
+             (&#39;n9&#39;,
+              OrderedDict([(0,
+                            OrderedDict([(&#39;surface&#39;, []),
+                                         (&#39;point&#39;, []),
+                                         (&#39;distance&#39;, [])]))])),
+             (&#39;na&#39;,
+              OrderedDict([(0,
+                            OrderedDict([(&#39;surface&#39;, []),
+                                         (&#39;point&#39;, []),
+                                         (&#39;distance&#39;, [])]))])),
+             (&#39;nb&#39;,
+              OrderedDict([(0,
+                            OrderedDict([(&#39;surface&#39;, []),
+                                         (&#39;point&#39;, []),
+                                         (&#39;distance&#39;, [])]))])),
+             (&#39;b0&#39;,
+              OrderedDict([(0,
+                            OrderedDict([(&#39;surface&#39;, []),
+                                         (&#39;point&#39;, []),
+                                         (&#39;distance&#39;, [])]))])),
+             (&#39;b1&#39;,
+              OrderedDict([(0,
+                            OrderedDict([(&#39;surface&#39;, []),
+                                         (&#39;point&#39;, []),
+                                         (&#39;distance&#39;, [])]))]))])
+</pre></div></div>
+</div>
+<p>Finally, we can plot this</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">f</span><span class="o">.</span><span class="n">plot_fermi</span><span class="p">(</span><span class="n">color_dets_different</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot_det_label</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">with_intersections</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">with_rays</span><span class="o">=</span><span class="kc">True</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_demo_34_0.png" src="../_images/notebooks_demo_34_0.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+<script type="application/vnd.jupyter.widget-state+json">
+{"state": {"1c7f27ae5bce48628c9ee9ef00d8eb8d": {"model_module": "jupyter-vuetify", "model_module_version": "^1.8.2", "model_name": "ThemeColorsModel", "state": {"_model_module": "jupyter-vuetify", "_model_module_version": "^1.8.2", "_model_name": "ThemeColorsModel", "_theme_name": "dark", "_view_count": null, "_view_module": null, "_view_module_version": "^1.8.2", "_view_name": null, "accent": "#FF4081", "anchor": null, "error": "#FF5252", "info": "#2196F3", "primary": "#2196F3", "secondary": "#424242", "success": "#4CAF50", "warning": "#FB8C00"}}, "2823bffd66824229b5f421a8d0bec1ff": {"model_module": "jupyter-vue", "model_module_version": "^1.7.0", "model_name": "ForceLoadModel", "state": {"_dom_classes": [], "_model_module": "jupyter-vue", "_model_module_version": "^1.7.0", "_model_name": "ForceLoadModel", "_view_count": null, "_view_module": null, "_view_module_version": "", "_view_name": null, "layout": "IPY_MODEL_c4d0a5c2de0a450684a57d629c597f8c", "tabbable": null, "tooltip": null}}, "9f74b3e5279345cfb3964e0399308758": {"model_module": "jupyter-vuetify", "model_module_version": "^1.8.2", "model_name": "ThemeModel", "state": {"_model_module": "jupyter-vuetify", "_model_module_version": "^1.8.2", "_model_name": "ThemeModel", "_view_count": null, "_view_module": null, "_view_module_version": "^1.8.2", "_view_name": null, "dark": null}}, "c4d0a5c2de0a450684a57d629c597f8c": {"model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "model_name": "LayoutModel", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "f0eeae994a8f495280e406c037f72f29": {"model_module": "jupyter-vuetify", "model_module_version": "^1.8.2", "model_name": "ThemeColorsModel", "state": {"_model_module": "jupyter-vuetify", "_model_module_version": "^1.8.2", "_model_name": "ThemeColorsModel", "_theme_name": "light", "_view_count": null, "_view_module": null, "_view_module_version": "^1.8.2", "_view_name": null, "accent": "#82B1FF", "anchor": null, "error": "#FF5252", "info": "#2196F3", "primary": "#1976D2", "secondary": "#424242", "success": "#4CAF50", "warning": "#FB8C00"}}}, "version_major": 2, "version_minor": 0}
+</script></section>
+</section>
+
+
+           </div>
+          </div>
+
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="Welcome to gbmgeometry’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="posinterp.html" class="btn btn-neutral float-right" title="The PositionInterpolator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, J. Michael Burgess.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

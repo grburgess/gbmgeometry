@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gbmgeometry.utils.plotting.heavenly_bodies &mdash; gbmgeometry  documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.0-rc.0/dist/embed-amd.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  <link rel="stylesheet" href="../../../../_static/pygments/default.css" type="text/css" id="pygments-style">
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css">
+   
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> gbmgeometry
+            <img src="../../../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notebooks/demo.html">GBM Geometry Demo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notebooks/demo.html#Fermi-plotting-and-computing-blockage">Fermi plotting and computing blockage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notebooks/posinterp.html">The PositionInterpolator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notebooks/pointsource.html">Plotting Points on the Sky</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/modules.html">twopc</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">gbmgeometry</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+  <!--
+  <div class="admonition note">
+    <p><a href="https://github.com/lukelbd">ProPlot author here</a>: Due to my day job as a graduate student, certain <a href="https://github.com/lukelbd/proplot/pulls?q=is%3Aopen+is%3Apr">feature additions</a> may be delayed to the summer of 2020. In the meantime, if you are interested in contributing to ProPlot, please see the <a href="https://proplot.readthedocs.io/en/latest/contributions.html">contribution guide</a>. Any amount of help is welcome!
+    </p>
+  </div>
+  -->
+  <li id="lightdark-li">
+    <label for="lightdark-checkbox" id="lightdark-label">
+      <input type="checkbox" id="lightdark-checkbox"/>
+      <div class="btn-neutral"></div>
+    </label>
+  </li>
+  
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>gbmgeometry.utils.plotting.heavenly_bodies</li>
+
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  <script type="text/javascript" src=../../../../_static/custom.js></script>
+  
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gbmgeometry.utils.plotting.heavenly_bodies</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">ipyvolume</span> <span class="k">as</span> <span class="nn">ipv</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">PIL.Image</span> <span class="k">as</span> <span class="nn">pil_image</span>
+<span class="kn">from</span> <span class="nn">gbmgeometry.utils.package_utils</span> <span class="kn">import</span> <span class="n">get_path_of_data_file</span>
+<span class="kn">from</span> <span class="nn">gbmgeometry.geometry</span> <span class="kn">import</span> <span class="n">Sphere</span>
+<span class="kn">from</span> <span class="nn">gbmgeometry.geometry.cirs_to_gcrs</span> <span class="kn">import</span> <span class="n">cirs_to_gcrs</span>
+
+<span class="n">_earth_img</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">day</span><span class="o">=</span><span class="n">get_path_of_data_file</span><span class="p">(</span><span class="s2">&quot;earth_day.jpg&quot;</span><span class="p">),</span>
+    <span class="n">night</span><span class="o">=</span><span class="n">get_path_of_data_file</span><span class="p">(</span><span class="s2">&quot;earth_night.jpg&quot;</span><span class="p">),</span>
+    <span class="n">midnight</span><span class="o">=</span><span class="n">get_path_of_data_file</span><span class="p">(</span><span class="s2">&quot;earth_midnight.jpg&quot;</span><span class="p">),</span>
+    <span class="n">thats_no_moon</span><span class="o">=</span><span class="n">get_path_of_data_file</span><span class="p">(</span><span class="s2">&quot;thats_no_moon.jpg&quot;</span><span class="p">),</span>
+    <span class="n">i_have_a_bad_feeling_about_this</span><span class="o">=</span><span class="n">get_path_of_data_file</span><span class="p">(</span><span class="s2">&quot;thats_no_moon_big.jpg&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="Earth"><a class="viewcode-back" href="../../../../notebooks/api/gbmgeometry.utils.plotting.html#gbmgeometry.utils.plotting.heavenly_bodies.Earth">[docs]</a><span class="k">class</span> <span class="nc">Earth</span><span class="p">(</span><span class="n">Sphere</span><span class="p">):</span>
+<div class="viewcode-block" id="Earth.__init__"><a class="viewcode-back" href="../../../../notebooks/api/gbmgeometry.utils.plotting.html#gbmgeometry.utils.plotting.heavenly_bodies.Earth.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">detail_level</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#040C6A&quot;</span><span class="p">,</span>
+        <span class="n">earth_time</span><span class="o">=</span><span class="s2">&quot;day&quot;</span><span class="p">,</span>
+        <span class="n">realistic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">astro_time</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The Planet Earth. Earth is at the origin</span>
+
+<span class="sd">        :param ax: </span>
+<span class="sd">        :param detail_level: </span>
+<span class="sd">        :param color: </span>
+<span class="sd">        :returns: </span>
+<span class="sd">        :rtype: </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">transform_matrix</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">realistic</span><span class="p">:</span>
+
+            <span class="k">assert</span> <span class="n">astro_time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="n">earth_time</span> <span class="ow">in</span> <span class="n">_earth_img</span>
+            <span class="p">),</span> <span class="s2">&quot;oops, please choose, day, night, or midnight&quot;</span>
+
+            <span class="n">image</span> <span class="o">=</span> <span class="n">pil_image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">_earth_img</span><span class="p">[</span><span class="n">earth_time</span><span class="p">])</span>
+
+            <span class="c1"># compute the transformtion matrix</span>
+
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">astro_time</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+
+                <span class="n">transform_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">astro_time</span><span class="p">),</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">astro_time</span><span class="p">)):</span>
+                    <span class="n">transform_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">cirs_to_gcrs</span><span class="p">(</span><span class="n">astro_time</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+            <span class="k">else</span><span class="p">:</span>
+
+                <span class="n">transform_matrix</span> <span class="o">=</span> <span class="n">cirs_to_gcrs</span><span class="p">(</span><span class="n">astro_time</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">image</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Earth</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+            <span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">z</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">detail_level</span><span class="o">=</span><span class="n">detail_level</span><span class="p">,</span>
+            <span class="n">radius</span><span class="o">=</span><span class="mf">6371.0</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+            <span class="n">image</span><span class="o">=</span><span class="n">image</span><span class="p">,</span>
+            <span class="n">transform_matrix</span><span class="o">=</span><span class="n">transform_matrix</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">realistic</span><span class="p">:</span>
+
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">get_path_of_data_file</span><span class="p">(</span><span class="s2">&quot;countries.h5&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+
+                <span class="n">xs</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">][()]</span>
+                <span class="n">ys</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">][()]</span>
+                <span class="n">zs</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">][()]</span>
+
+                <span class="n">ipv</span><span class="o">.</span><span class="n">pylab</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">zs</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Sol"><a class="viewcode-back" href="../../../../notebooks/api/gbmgeometry.utils.plotting.html#gbmgeometry.utils.plotting.heavenly_bodies.Sol">[docs]</a><span class="k">class</span> <span class="nc">Sol</span><span class="p">(</span><span class="n">Sphere</span><span class="p">):</span>
+<div class="viewcode-block" id="Sol.__init__"><a class="viewcode-back" href="../../../../notebooks/api/gbmgeometry.utils.plotting.html#gbmgeometry.utils.plotting.heavenly_bodies.Sol.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">detail_level</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#EF990F&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The Sun. This is variable with respect to the satellite and Earth, so </span>
+<span class="sd">        coordinates have to be provided with at a single time or as an array</span>
+
+<span class="sd">        :param ax: </span>
+<span class="sd">        :param detail_level: </span>
+<span class="sd">        :param color: </span>
+<span class="sd">        :returns: </span>
+<span class="sd">        :rtype: </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Sol</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
+            <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+            <span class="n">detail_level</span><span class="o">=</span><span class="n">detail_level</span><span class="p">,</span>
+            <span class="n">radius</span><span class="o">=</span><span class="mf">696340.0</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Moon"><a class="viewcode-back" href="../../../../notebooks/api/gbmgeometry.utils.plotting.html#gbmgeometry.utils.plotting.heavenly_bodies.Moon">[docs]</a><span class="k">class</span> <span class="nc">Moon</span><span class="p">(</span><span class="n">Sphere</span><span class="p">):</span>
+<div class="viewcode-block" id="Moon.__init__"><a class="viewcode-back" href="../../../../notebooks/api/gbmgeometry.utils.plotting.html#gbmgeometry.utils.plotting.heavenly_bodies.Moon.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">y</span><span class="p">,</span>
+        <span class="n">z</span><span class="p">,</span>
+        <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">detail_level</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#68696A&quot;</span><span class="p">,</span>
+        <span class="n">realistic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The Sun. This is variable with respect to the satellite and Earth, so </span>
+<span class="sd">        coordinates have to be provided with at a single time or as an array</span>
+
+<span class="sd">        :param ax: </span>
+<span class="sd">        :param detail_level: </span>
+<span class="sd">        :param color: </span>
+<span class="sd">        :returns: </span>
+<span class="sd">        :rtype: </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># it is crazy slow to animate and image!</span>
+
+        <span class="k">if</span> <span class="n">realistic</span><span class="p">:</span>
+
+            <span class="n">image</span> <span class="o">=</span> <span class="n">pil_image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">_earth_img</span><span class="p">[</span><span class="s2">&quot;thats_no_moon&quot;</span><span class="p">])</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Moon</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
+            <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span>
+            <span class="n">detail_level</span><span class="o">=</span><span class="n">detail_level</span><span class="p">,</span>
+            <span class="n">radius</span><span class="o">=</span><span class="mf">1731.1</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+            <span class="n">image</span><span class="o">=</span><span class="n">image</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<span class="k">def</span> <span class="nf">_xyz</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span>
+
+
+<span class="k">def</span> <span class="nf">_sample_theta_phi</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">))</span>
+    <span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">r</span> <span class="o">*</span> <span class="mf">0.95</span><span class="p">,</span> <span class="n">r</span> <span class="o">*</span> <span class="mf">1.1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">_xyz</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">phi</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span>
+
+
+<div class="viewcode-block" id="StarField"><a class="viewcode-back" href="../../../../notebooks/api/gbmgeometry.utils.plotting.html#gbmgeometry.utils.plotting.heavenly_bodies.StarField">[docs]</a><span class="k">class</span> <span class="nc">StarField</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="StarField.__init__"><a class="viewcode-back" href="../../../../notebooks/api/gbmgeometry.utils.plotting.html#gbmgeometry.utils.plotting.heavenly_bodies.StarField.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_stars</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        a star field</span>
+
+<span class="sd">        :param n_stars: </span>
+<span class="sd">        :param distance: </span>
+<span class="sd">        :returns: </span>
+<span class="sd">        :rtype: </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_z</span> <span class="o">=</span> <span class="n">_sample_theta_phi</span><span class="p">(</span><span class="n">n_stars</span><span class="p">,</span> <span class="n">distance</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="StarField.plot"><a class="viewcode-back" href="../../../../notebooks/api/gbmgeometry.utils.plotting.html#gbmgeometry.utils.plotting.heavenly_bodies.StarField.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">ipv</span><span class="o">.</span><span class="n">pylab</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_x</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_y</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_z</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span>
+            <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;sphere&quot;</span><span class="p">,</span>
+            <span class="n">size</span><span class="o">=</span><span class="mf">0.07</span><span class="p">,</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, J. Michael Burgess.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

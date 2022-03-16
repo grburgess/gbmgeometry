@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gbmgeometry.utils package &mdash; gbmgeometry  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.0-rc.0/dist/embed-amd.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <link rel="stylesheet" href="../../_static/pygments/default.css" type="text/css" id="pygments-style">
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css">
+   
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> gbmgeometry
+            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../demo.html">GBM Geometry Demo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../demo.html#Fermi-plotting-and-computing-blockage">Fermi plotting and computing blockage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../posinterp.html">The PositionInterpolator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pointsource.html">Plotting Points on the Sky</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">twopc</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gbmgeometry</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+  <!--
+  <div class="admonition note">
+    <p><a href="https://github.com/lukelbd">ProPlot author here</a>: Due to my day job as a graduate student, certain <a href="https://github.com/lukelbd/proplot/pulls?q=is%3Aopen+is%3Apr">feature additions</a> may be delayed to the summer of 2020. In the meantime, if you are interested in contributing to ProPlot, please see the <a href="https://proplot.readthedocs.io/en/latest/contributions.html">contribution guide</a>. Any amount of help is welcome!
+    </p>
+  </div>
+  -->
+  <li id="lightdark-li">
+    <label for="lightdark-checkbox" id="lightdark-label">
+      <input type="checkbox" id="lightdark-checkbox"/>
+      <div class="btn-neutral"></div>
+    </label>
+  </li>
+  
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>gbmgeometry.utils package</li>
+
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  <script type="text/javascript" src=../../_static/custom.js></script>
+  
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="gbmgeometry-utils-package">
+<h1>gbmgeometry.utils package<a class="headerlink" href="#gbmgeometry-utils-package" title="Permalink to this headline"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gbmgeometry.utils.plotting.html">gbmgeometry.utils.plotting package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gbmgeometry.utils.plotting.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gbmgeometry.utils.plotting.html#module-gbmgeometry.utils.plotting.angle">gbmgeometry.utils.plotting.angle module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gbmgeometry.utils.plotting.html#module-gbmgeometry.utils.plotting.heavenly_bodies">gbmgeometry.utils.plotting.heavenly_bodies module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gbmgeometry.utils.plotting.html#module-gbmgeometry.utils.plotting.itrs_frame_monkeypatch">gbmgeometry.utils.plotting.itrs_frame_monkeypatch module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gbmgeometry.utils.plotting.html#module-gbmgeometry.utils.plotting.projections">gbmgeometry.utils.plotting.projections module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="gbmgeometry.utils.plotting.html#complete-example">Complete Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="gbmgeometry.utils.plotting.html#module-gbmgeometry.utils.plotting.sky_point">gbmgeometry.utils.plotting.sky_point module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gbmgeometry.utils.plotting.html#module-gbmgeometry.utils.plotting.skyplot">gbmgeometry.utils.plotting.skyplot module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gbmgeometry.utils.plotting.html#module-gbmgeometry.utils.plotting.space_plot">gbmgeometry.utils.plotting.space_plot module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gbmgeometry.utils.plotting.html#module-gbmgeometry.utils.plotting.spherical_circle">gbmgeometry.utils.plotting.spherical_circle module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gbmgeometry.utils.plotting.html#module-gbmgeometry.utils.plotting">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-gbmgeometry.utils.array_to_cmap">
+<span id="gbmgeometry-utils-array-to-cmap-module"></span><h2>gbmgeometry.utils.array_to_cmap module<a class="headerlink" href="#module-gbmgeometry.utils.array_to_cmap" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="gbmgeometry.utils.array_to_cmap.array_to_cmap">
+<span class="sig-prename descclassname"><span class="pre">gbmgeometry.utils.array_to_cmap.</span></span><span class="sig-name descname"><span class="pre">array_to_cmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/utils/array_to_cmap.html#array_to_cmap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.utils.array_to_cmap.array_to_cmap" title="Permalink to this definition"></a></dt>
+<dd><p>Generates a color map and color list that is normalized
+to the values in an array. Allows for adding a 3rd dimension
+onto a plot</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> – a list a values to map into a cmap</p></li>
+<li><p><strong>cmap</strong> – the mpl colormap to use</p></li>
+<li><p><strong>use_log</strong> – if the mapping should be done in log space</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-gbmgeometry.utils.file_converters">
+<span id="gbmgeometry-utils-file-converters-module"></span><h2>gbmgeometry.utils.file_converters module<a class="headerlink" href="#module-gbmgeometry.utils.file_converters" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="gbmgeometry.utils.file_converters.convert_poshist2hdf5">
+<span class="sig-prename descclassname"><span class="pre">gbmgeometry.utils.file_converters.</span></span><span class="sig-name descname"><span class="pre">convert_poshist2hdf5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/utils/file_converters.html#convert_poshist2hdf5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.utils.file_converters.convert_poshist2hdf5" title="Permalink to this definition"></a></dt>
+<dd><p>convert a GBM poshist file to HDF5</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src_file</strong> – poshist file</p></li>
+<li><p><strong>dest_file</strong> – destination file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbmgeometry.utils.file_converters.convert_trigdat2hdf5">
+<span class="sig-prename descclassname"><span class="pre">gbmgeometry.utils.file_converters.</span></span><span class="sig-name descname"><span class="pre">convert_trigdat2hdf5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/utils/file_converters.html#convert_trigdat2hdf5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.utils.file_converters.convert_trigdat2hdf5" title="Permalink to this definition"></a></dt>
+<dd><p>convert a GBM trigdat file to HDF5</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src_file</strong> – poshist file</p></li>
+<li><p><strong>dest_file</strong> – destination file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbmgeometry.utils.file_converters.make_image_hdf5">
+<span class="sig-prename descclassname"><span class="pre">gbmgeometry.utils.file_converters.</span></span><span class="sig-name descname"><span class="pre">make_image_hdf5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/utils/file_converters.html#make_image_hdf5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.utils.file_converters.make_image_hdf5" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-gbmgeometry.utils.gbm_time">
+<span id="gbmgeometry-utils-gbm-time-module"></span><h2>gbmgeometry.utils.gbm_time module<a class="headerlink" href="#module-gbmgeometry.utils.gbm_time" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbmgeometry.utils.gbm_time.GBMTime">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbmgeometry.utils.gbm_time.</span></span><span class="sig-name descname"><span class="pre">GBMTime</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/utils/gbm_time.html#GBMTime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.utils.gbm_time.GBMTime" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.utils.gbm_time.GBMTime.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time_object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/utils/gbm_time.html#GBMTime.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.utils.gbm_time.GBMTime.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.utils.gbm_time.GBMTime.met">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">met</span></span><a class="headerlink" href="#gbmgeometry.utils.gbm_time.GBMTime.met" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.utils.gbm_time.GBMTime.utc">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">utc</span></span><a class="headerlink" href="#gbmgeometry.utils.gbm_time.GBMTime.utc" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.utils.gbm_time.GBMTime.time">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">time</span></span><a class="headerlink" href="#gbmgeometry.utils.gbm_time.GBMTime.time" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.utils.gbm_time.GBMTime.t_zero">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">t_zero</span></span><a class="headerlink" href="#gbmgeometry.utils.gbm_time.GBMTime.t_zero" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.utils.gbm_time.GBMTime.mission_week">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mission_week</span></span><a class="headerlink" href="#gbmgeometry.utils.gbm_time.GBMTime.mission_week" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.utils.gbm_time.GBMTime.from_UTC_fits">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_UTC_fits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date_string</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/utils/gbm_time.html#GBMTime.from_UTC_fits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.utils.gbm_time.GBMTime.from_UTC_fits" title="Permalink to this definition"></a></dt>
+<dd><p>Create a time object from a fits UTC representation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>date_string</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.utils.gbm_time.GBMTime.from_MET">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_MET</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">met</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/utils/gbm_time.html#GBMTime.from_MET"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.utils.gbm_time.GBMTime.from_MET" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.utils.gbm_time.GBMTime._calculate_met_from_mjd">
+<span class="sig-name descname"><span class="pre">_calculate_met_from_mjd</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/utils/gbm_time.html#GBMTime._calculate_met_from_mjd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.utils.gbm_time.GBMTime._calculate_met_from_mjd" title="Permalink to this definition"></a></dt>
+<dd><p>calculated the Fermi MET given MJD
+:return:</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-gbmgeometry.utils.package_utils">
+<span id="gbmgeometry-utils-package-utils-module"></span><h2>gbmgeometry.utils.package_utils module<a class="headerlink" href="#module-gbmgeometry.utils.package_utils" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="gbmgeometry.utils.package_utils.get_path_of_data_file">
+<span class="sig-prename descclassname"><span class="pre">gbmgeometry.utils.package_utils.</span></span><span class="sig-name descname"><span class="pre">get_path_of_data_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/utils/package_utils.html#get_path_of_data_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.utils.package_utils.get_path_of_data_file" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbmgeometry.utils.package_utils.get_path_of_data_dir">
+<span class="sig-prename descclassname"><span class="pre">gbmgeometry.utils.package_utils.</span></span><span class="sig-name descname"><span class="pre">get_path_of_data_dir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/utils/package_utils.html#get_path_of_data_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.utils.package_utils.get_path_of_data_dir" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-gbmgeometry.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-gbmgeometry.utils" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, J. Michael Burgess.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

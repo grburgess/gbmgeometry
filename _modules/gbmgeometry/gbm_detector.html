@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gbmgeometry.gbm_detector &mdash; gbmgeometry  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.0-rc.0/dist/embed-amd.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <link rel="stylesheet" href="../../_static/pygments/default.css" type="text/css" id="pygments-style">
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css">
+   
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> gbmgeometry
+            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/demo.html">GBM Geometry Demo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/demo.html#Fermi-plotting-and-computing-blockage">Fermi plotting and computing blockage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/posinterp.html">The PositionInterpolator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/pointsource.html">Plotting Points on the Sky</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">twopc</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gbmgeometry</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+  <!--
+  <div class="admonition note">
+    <p><a href="https://github.com/lukelbd">ProPlot author here</a>: Due to my day job as a graduate student, certain <a href="https://github.com/lukelbd/proplot/pulls?q=is%3Aopen+is%3Apr">feature additions</a> may be delayed to the summer of 2020. In the meantime, if you are interested in contributing to ProPlot, please see the <a href="https://proplot.readthedocs.io/en/latest/contributions.html">contribution guide</a>. Any amount of help is welcome!
+    </p>
+  </div>
+  -->
+  <li id="lightdark-li">
+    <label for="lightdark-checkbox" id="lightdark-label">
+      <input type="checkbox" id="lightdark-checkbox"/>
+      <div class="btn-neutral"></div>
+    </label>
+  </li>
+  
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>gbmgeometry.gbm_detector</li>
+
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  <script type="text/javascript" src=../../_static/custom.js></script>
+  
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gbmgeometry.gbm_detector</h1><div class="highlight"><pre>
+<span></span><span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;drjfunk&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">astropy.coordinates</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SkyCoord</span><span class="p">,</span>
+    <span class="n">get_sun</span><span class="p">,</span>
+    <span class="n">get_body</span><span class="p">,</span>
+    <span class="n">get_body_barycentric</span><span class="p">,</span>
+    <span class="n">get_moon</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">spherical_geometry.polygon</span> <span class="kn">import</span> <span class="n">SphericalPolygon</span>
+<span class="kn">import</span> <span class="nn">astropy.units</span> <span class="k">as</span> <span class="nn">u</span>
+
+<span class="kn">from</span> <span class="nn">gbmgeometry.utils.plotting</span> <span class="kn">import</span> <span class="n">skyplot</span><span class="p">,</span> <span class="n">SphericalCircle</span>
+
+<span class="kn">from</span> <span class="nn">.gbm_frame</span> <span class="kn">import</span> <span class="n">GBMFrame</span>
+
+
+<div class="viewcode-block" id="GBMDetector"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.GBMDetector">[docs]</a><span class="k">class</span> <span class="nc">GBMDetector</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="GBMDetector.__init__"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.GBMDetector.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        </span>
+<span class="sd">        :param name: </span>
+<span class="sd">        :param quaternion: </span>
+<span class="sd">        :param sc_pos: </span>
+<span class="sd">        :param time: </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_position</span><span class="p">(</span><span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_xyz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_az</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_zen</span><span class="p">),</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_az</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_zen</span><span class="p">),</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_zen</span><span class="p">),</span>
+            <span class="p">]</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="GBMDetector.update_position"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.GBMDetector.update_position">[docs]</a>    <span class="k">def</span> <span class="nf">update_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        </span>
+<span class="sd">        :param quaternion: </span>
+<span class="sd">        :param sc_pos: </span>
+<span class="sd">        :param time: </span>
+<span class="sd">        :return: </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time</span> <span class="o">=</span> <span class="n">time</span>
+
+        <span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="n">q3</span><span class="p">,</span> <span class="n">q4</span> <span class="o">=</span> <span class="n">quaternion</span>
+
+        <span class="k">if</span> <span class="n">sc_pos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">scx</span><span class="p">,</span> <span class="n">scy</span><span class="p">,</span> <span class="n">scz</span> <span class="o">=</span> <span class="n">sc_pos</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_heigth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">scx</span> <span class="o">*</span> <span class="n">scx</span> <span class="o">+</span> <span class="n">scy</span> <span class="o">*</span> <span class="n">scy</span> <span class="o">+</span> <span class="n">scz</span> <span class="o">*</span> <span class="n">scz</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">scx</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">scy</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">scz</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_quaternion</span> <span class="o">=</span> <span class="n">quaternion</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sc_pos</span> <span class="o">=</span> <span class="n">sc_pos</span>
+        <span class="c1"># define the direction of the detector in the GBMFrame</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_center</span> <span class="o">=</span> <span class="n">SkyCoord</span><span class="p">(</span>
+            <span class="n">lon</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_az</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span>
+            <span class="n">lat</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_zen</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;deg&quot;</span><span class="p">,</span>
+            <span class="n">frame</span><span class="o">=</span><span class="n">GBMFrame</span><span class="p">(</span>
+                <span class="n">quaternion_1</span><span class="o">=</span><span class="n">q1</span><span class="p">,</span>
+                <span class="n">quaternion_2</span><span class="o">=</span><span class="n">q2</span><span class="p">,</span>
+                <span class="n">quaternion_3</span><span class="o">=</span><span class="n">q3</span><span class="p">,</span>
+                <span class="n">quaternion_4</span><span class="o">=</span><span class="n">q4</span><span class="p">,</span>
+                <span class="n">sc_pos_X</span><span class="o">=</span><span class="n">scx</span><span class="p">,</span>
+                <span class="n">sc_pos_Y</span><span class="o">=</span><span class="n">scy</span><span class="p">,</span>
+                <span class="n">sc_pos_Z</span><span class="o">=</span><span class="n">scz</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_center_icrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_center</span><span class="o">.</span><span class="n">icrs</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># we can calculate the sun position</span>
+            <span class="c1"># in GCRS</span>
+            <span class="n">tmp_sun</span> <span class="o">=</span> <span class="n">get_sun</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_time</span><span class="p">)</span>
+            <span class="c1"># in ICRS</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sun_position_icrs</span> <span class="o">=</span> <span class="n">SkyCoord</span><span class="p">(</span>
+                <span class="n">tmp_sun</span><span class="o">.</span><span class="n">ra</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span>
+                <span class="n">tmp_sun</span><span class="o">.</span><span class="n">dec</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span>
+                <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;deg&quot;</span><span class="p">,</span>
+                <span class="n">frame</span><span class="o">=</span><span class="s2">&quot;gcrs&quot;</span><span class="p">,</span>
+                <span class="n">obstime</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_time</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">icrs</span>
+            <span class="c1"># in CenterFrame</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sun_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sun_position_icrs</span><span class="o">.</span><span class="n">transform_to</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_center</span><span class="o">.</span><span class="n">frame</span>
+            <span class="p">)</span>
+
+            <span class="c1"># position of earth in satellite frame:</span>
+
+        <span class="k">if</span> <span class="n">sc_pos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_earth_pos_norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geo_to_gbm</span><span class="p">(</span>
+                <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_sc_pos</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sc_pos</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">scxn</span><span class="p">,</span> <span class="n">scyn</span><span class="p">,</span> <span class="n">sczn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_earth_pos_norm</span>
+            <span class="n">earth_theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span>
+                <span class="n">sczn</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">scxn</span> <span class="o">*</span> <span class="n">scxn</span> <span class="o">+</span> <span class="n">scyn</span> <span class="o">*</span> <span class="n">scyn</span> <span class="o">+</span> <span class="n">sczn</span> <span class="o">*</span> <span class="n">sczn</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">earth_phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">scyn</span><span class="p">,</span> <span class="n">scxn</span><span class="p">)</span>
+            <span class="n">earth_ra</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">earth_phi</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">earth_ra</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">earth_ra</span> <span class="o">=</span> <span class="n">earth_ra</span> <span class="o">+</span> <span class="mi">360</span>
+            <span class="n">earth_dec</span> <span class="o">=</span> <span class="mi">90</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">earth_theta</span><span class="p">)</span>
+
+            <span class="c1"># earth as SkyCoord</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_earth_position</span> <span class="o">=</span> <span class="n">SkyCoord</span><span class="p">(</span>
+                <span class="n">lon</span><span class="o">=</span><span class="n">earth_ra</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span>
+                <span class="n">lat</span><span class="o">=</span><span class="n">earth_dec</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span>
+                <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;deg&quot;</span><span class="p">,</span>
+                <span class="n">frame</span><span class="o">=</span><span class="n">GBMFrame</span><span class="p">(</span>
+                    <span class="n">quaternion_1</span><span class="o">=</span><span class="n">q1</span><span class="p">,</span>
+                    <span class="n">quaternion_2</span><span class="o">=</span><span class="n">q2</span><span class="p">,</span>
+                    <span class="n">quaternion_3</span><span class="o">=</span><span class="n">q3</span><span class="p">,</span>
+                    <span class="n">quaternion_4</span><span class="o">=</span><span class="n">q4</span><span class="p">,</span>
+                    <span class="n">sc_pos_X</span><span class="o">=</span><span class="n">scx</span><span class="p">,</span>
+                    <span class="n">sc_pos_Y</span><span class="o">=</span><span class="n">scy</span><span class="p">,</span>
+                    <span class="n">sc_pos_Z</span><span class="o">=</span><span class="n">scz</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scx</span> <span class="o">=</span> <span class="n">scx</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scy</span> <span class="o">=</span> <span class="n">scy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scz</span> <span class="o">=</span> <span class="n">scz</span></div>
+
+<div class="viewcode-block" id="GBMDetector.set_quaternion"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.GBMDetector.set_quaternion">[docs]</a>    <span class="k">def</span> <span class="nf">set_quaternion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        quaternion</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_quaternion</span> <span class="o">=</span> <span class="n">quaternion</span>
+
+        <span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="n">q3</span><span class="p">,</span> <span class="n">q4</span> <span class="o">=</span> <span class="n">quaternion</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sc_pos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">scx</span><span class="p">,</span> <span class="n">scy</span><span class="p">,</span> <span class="n">scz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sc_pos</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">scx</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">scy</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">scz</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_center</span> <span class="o">=</span> <span class="n">SkyCoord</span><span class="p">(</span>
+            <span class="n">lon</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_az</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span>
+            <span class="n">lat</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_zen</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;deg&quot;</span><span class="p">,</span>
+            <span class="n">frame</span><span class="o">=</span><span class="n">GBMFrame</span><span class="p">(</span>
+                <span class="n">quaternion_1</span><span class="o">=</span><span class="n">q1</span><span class="p">,</span>
+                <span class="n">quaternion_2</span><span class="o">=</span><span class="n">q2</span><span class="p">,</span>
+                <span class="n">quaternion_3</span><span class="o">=</span><span class="n">q3</span><span class="p">,</span>
+                <span class="n">quaternion_4</span><span class="o">=</span><span class="n">q4</span><span class="p">,</span>
+                <span class="n">sc_pos_X</span><span class="o">=</span><span class="n">scx</span><span class="p">,</span>
+                <span class="n">sc_pos_Y</span><span class="o">=</span><span class="n">scy</span><span class="p">,</span>
+                <span class="n">sc_pos_Z</span><span class="o">=</span><span class="n">scz</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_center_icrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_center</span><span class="o">.</span><span class="n">icrs</span></div>
+
+<div class="viewcode-block" id="GBMDetector.set_sc_pos"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.GBMDetector.set_sc_pos">[docs]</a>    <span class="k">def</span> <span class="nf">set_sc_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sc_pos</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        quaternion</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="n">q3</span><span class="p">,</span> <span class="n">q4</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_quaternion</span>
+
+        <span class="k">if</span> <span class="n">sc_pos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">scx</span><span class="p">,</span> <span class="n">scy</span><span class="p">,</span> <span class="n">scz</span> <span class="o">=</span> <span class="n">sc_pos</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">scx</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">scy</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">scz</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_center</span> <span class="o">=</span> <span class="n">SkyCoord</span><span class="p">(</span>
+            <span class="n">lon</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_az</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span>
+            <span class="n">lat</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_zen</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;deg&quot;</span><span class="p">,</span>
+            <span class="n">frame</span><span class="o">=</span><span class="n">GBMFrame</span><span class="p">(</span>
+                <span class="n">quaternion_1</span><span class="o">=</span><span class="n">q1</span><span class="p">,</span>
+                <span class="n">quaternion_2</span><span class="o">=</span><span class="n">q2</span><span class="p">,</span>
+                <span class="n">quaternion_3</span><span class="o">=</span><span class="n">q3</span><span class="p">,</span>
+                <span class="n">quaternion_4</span><span class="o">=</span><span class="n">q4</span><span class="p">,</span>
+                <span class="n">sc_pos_X</span><span class="o">=</span><span class="n">scx</span><span class="p">,</span>
+                <span class="n">sc_pos_Y</span><span class="o">=</span><span class="n">scy</span><span class="p">,</span>
+                <span class="n">sc_pos_Z</span><span class="o">=</span><span class="n">scz</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_center_icrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_center</span><span class="o">.</span><span class="n">icrs</span></div>
+
+<div class="viewcode-block" id="GBMDetector.get_fov"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.GBMDetector.get_fov">[docs]</a>    <span class="k">def</span> <span class="nf">get_fov</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">fermi_frame</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array of RA and DEC</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">steps</span> <span class="o">=</span> <span class="mi">500</span>
+
+        <span class="k">if</span> <span class="n">fermi_frame</span><span class="p">:</span>
+            <span class="n">fermi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_center</span>
+
+            <span class="n">poly</span> <span class="o">=</span> <span class="n">SphericalPolygon</span><span class="o">.</span><span class="n">from_cone</span><span class="p">(</span>
+                <span class="n">fermi</span><span class="o">.</span><span class="n">lon</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">fermi</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="n">steps</span>
+            <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">j2000</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_center</span><span class="o">.</span><span class="n">icrs</span>
+
+            <span class="n">poly</span> <span class="o">=</span> <span class="n">SphericalPolygon</span><span class="o">.</span><span class="n">from_cone</span><span class="p">(</span>
+                <span class="n">j2000</span><span class="o">.</span><span class="n">ra</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">j2000</span><span class="o">.</span><span class="n">dec</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="n">steps</span>
+            <span class="p">)</span>
+
+        <span class="c1"># ra, dec</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">poly</span><span class="o">.</span><span class="n">to_radec</span><span class="p">()][</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="GBMDetector.get_center"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.GBMDetector.get_center">[docs]</a>    <span class="k">def</span> <span class="nf">get_center</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_center</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># heigth above earth center</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: height of the satelite</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_heigth</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sun_position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: sun position as SkyCoord object in sat frame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sun_position</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sun_position_icrs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: sun position as SkyCood object in icrs frame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sun_position</span><span class="o">.</span><span class="n">icrs</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">moon_position_icrs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;                                                                                                                                                                                                                                                                   </span>
+<span class="sd">        :return: moon position as SkyCood object in icrs frame                                                                                                                                                                                                                </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tmp_moon</span> <span class="o">=</span> <span class="n">get_moon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_time</span><span class="p">)</span>
+        <span class="c1"># in ICRS</span>
+        <span class="k">return</span> <span class="n">SkyCoord</span><span class="p">(</span>
+            <span class="n">tmp_moon</span><span class="o">.</span><span class="n">ra</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span>
+            <span class="n">tmp_moon</span><span class="o">.</span><span class="n">dec</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span>
+            <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;deg&quot;</span><span class="p">,</span>
+            <span class="n">frame</span><span class="o">=</span><span class="s2">&quot;gcrs&quot;</span><span class="p">,</span>
+            <span class="n">obstime</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_time</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">icrs</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sun_angle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: angle between det pointing and sun position</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_center</span><span class="o">.</span><span class="n">separation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sun_position</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sun_earth_angle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: angle between center of earth an sun postition (seen from the satelite)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sun_position</span><span class="o">.</span><span class="n">separation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_earth_position</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">earth_position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: earth position as SkyCoord in sat frame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_earth_position</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">earth_position_icrs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: earth position as SkyCoord in ICRS frame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_earth_position</span><span class="o">.</span><span class="n">icrs</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">earth_az_zen_sat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: the longitude and latitude of the earth center in sat. frame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_earth_position</span><span class="o">.</span><span class="n">lon</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_earth_position</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">deg</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">det_ra_dec_icrs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: the det pointing in icrs frame (ra, dec</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">_center</span><span class="o">.</span><span class="n">icrs</span><span class="p">)</span><span class="o">.</span><span class="n">ra</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_center</span><span class="o">.</span><span class="n">icrs</span><span class="p">)</span><span class="o">.</span><span class="n">dec</span><span class="o">.</span><span class="n">deg</span><span class="p">]</span>
+
+<div class="viewcode-block" id="GBMDetector.geo_to_gbm"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.GBMDetector.geo_to_gbm">[docs]</a>    <span class="k">def</span> <span class="nf">geo_to_gbm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos_geo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Compute the transformation from heliocentric Sgr coordinates to</span>
+<span class="sd">            spherical Galactic.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="n">q3</span><span class="p">,</span> <span class="n">q4</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_quaternion</span>  <span class="c1"># q1,q2,q3,q4</span>
+        <span class="n">sc_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">q1</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">q2</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">q3</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">q4</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">q1</span> <span class="o">*</span> <span class="n">q2</span> <span class="o">+</span> <span class="n">q4</span> <span class="o">*</span> <span class="n">q3</span><span class="p">)</span>
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">q1</span> <span class="o">*</span> <span class="n">q3</span> <span class="o">-</span> <span class="n">q4</span> <span class="o">*</span> <span class="n">q2</span><span class="p">)</span>
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">q1</span> <span class="o">*</span> <span class="n">q2</span> <span class="o">-</span> <span class="n">q4</span> <span class="o">*</span> <span class="n">q3</span><span class="p">)</span>
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">q1</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">q2</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">q3</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">q4</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">q2</span> <span class="o">*</span> <span class="n">q3</span> <span class="o">+</span> <span class="n">q4</span> <span class="o">*</span> <span class="n">q1</span><span class="p">)</span>
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">q1</span> <span class="o">*</span> <span class="n">q3</span> <span class="o">+</span> <span class="n">q4</span> <span class="o">*</span> <span class="n">q2</span><span class="p">)</span>
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">q2</span> <span class="o">*</span> <span class="n">q3</span> <span class="o">-</span> <span class="n">q4</span> <span class="o">*</span> <span class="n">q1</span><span class="p">)</span>
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">q1</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">q2</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">q3</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">q4</span> <span class="o">**</span> <span class="mi">2</span>
+
+        <span class="n">X0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">sc_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="n">pos_geo</span><span class="p">)</span>
+        <span class="n">X1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">sc_matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:],</span> <span class="n">pos_geo</span><span class="p">)</span>
+        <span class="n">X2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">sc_matrix</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:],</span> <span class="n">pos_geo</span><span class="p">),</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">pos_sat</span> <span class="o">=</span> <span class="p">[</span><span class="n">X0</span><span class="p">,</span> <span class="n">X1</span><span class="p">,</span> <span class="n">X2</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pos_sat</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GBMDetector.gbm_to_geo"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.GBMDetector.gbm_to_geo">[docs]</a>    <span class="k">def</span> <span class="nf">gbm_to_geo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos_gbm</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Compute the transformation from heliocentric Sgr coordinates to</span>
+<span class="sd">            spherical Galactic.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="n">q3</span><span class="p">,</span> <span class="n">q4</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_quaternion</span>  <span class="c1"># q1,q2,q3,q4</span>
+        <span class="n">sc_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">q1</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">q2</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">q3</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">q4</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">q1</span> <span class="o">*</span> <span class="n">q2</span> <span class="o">+</span> <span class="n">q4</span> <span class="o">*</span> <span class="n">q3</span><span class="p">)</span>
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">q1</span> <span class="o">*</span> <span class="n">q3</span> <span class="o">-</span> <span class="n">q4</span> <span class="o">*</span> <span class="n">q2</span><span class="p">)</span>
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">q1</span> <span class="o">*</span> <span class="n">q2</span> <span class="o">-</span> <span class="n">q4</span> <span class="o">*</span> <span class="n">q3</span><span class="p">)</span>
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">q1</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">q2</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">q3</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">q4</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">q2</span> <span class="o">*</span> <span class="n">q3</span> <span class="o">+</span> <span class="n">q4</span> <span class="o">*</span> <span class="n">q1</span><span class="p">)</span>
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">q1</span> <span class="o">*</span> <span class="n">q3</span> <span class="o">+</span> <span class="n">q4</span> <span class="o">*</span> <span class="n">q2</span><span class="p">)</span>
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">q2</span> <span class="o">*</span> <span class="n">q3</span> <span class="o">-</span> <span class="n">q4</span> <span class="o">*</span> <span class="n">q1</span><span class="p">)</span>
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">q1</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">q2</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">q3</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">q4</span> <span class="o">**</span> <span class="mi">2</span>
+
+        <span class="n">X0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">sc_matrix</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">pos_gbm</span><span class="p">)</span>
+        <span class="n">X1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">sc_matrix</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">pos_gbm</span><span class="p">)</span>
+        <span class="n">X2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">sc_matrix</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">pos_gbm</span><span class="p">),</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">pos_geo</span> <span class="o">=</span> <span class="p">[</span><span class="n">X0</span><span class="p">,</span> <span class="n">X1</span><span class="p">,</span> <span class="n">X2</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pos_geo</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">earth_angle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: angle between det pointing and earth position</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_center</span><span class="o">.</span><span class="n">separation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_earth_position</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sun_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :return: sun position in sat frame expressed with x,y and z coordinate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sun_position</span><span class="o">.</span><span class="n">lon</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sun_position</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">deg</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lon</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">lon</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sun_lon_lat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;                                                                                                                                                                                                                                                                   </span>
+<span class="sd">        :return: sun position in sat frame expressed with lon, lat                                                                                                                                                                                                 </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sun_position</span><span class="o">.</span><span class="n">lon</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sun_position</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">deg</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">earth_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;                                                                                                                                                                                                                                                                   </span>
+<span class="sd">        :return: earth position in sat frame expressed with x,y and z coordinate                                                                                                                                                                                             </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_earth_position</span><span class="o">.</span><span class="n">lon</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_earth_position</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">deg</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lon</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">lon</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">center</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_center</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">center_icrs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_center_icrs</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">az</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_az</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">zen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zen</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">xyz</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_xyz</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mount_point</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mount_point</span>
+
+<div class="viewcode-block" id="GBMDetector.plot_pointing"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.GBMDetector.plot_pointing">[docs]</a>    <span class="k">def</span> <span class="nf">plot_pointing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fov</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">ax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="n">skymap_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="k">if</span> <span class="s2">&quot;projection&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">skymap_kwargs</span><span class="p">[</span><span class="s2">&quot;projection&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;projection&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="s2">&quot;center&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">skymap_kwargs</span><span class="p">[</span><span class="s2">&quot;center&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;center&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="s2">&quot;radius&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+                <span class="n">skymap_kwargs</span><span class="p">[</span><span class="s2">&quot;radius&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;radius&quot;</span><span class="p">)</span>
+
+            <span class="n">ax</span> <span class="o">=</span> <span class="n">skyplot</span><span class="p">(</span><span class="o">**</span><span class="n">skymap_kwargs</span><span class="p">)</span>
+
+        <span class="c1"># compute the annulus for this set of detectors</span>
+
+        <span class="k">if</span> <span class="n">fov</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="k">assert</span> <span class="n">fov</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;fov must be a positive number in units of deg&quot;</span>
+
+            <span class="n">circle</span> <span class="o">=</span> <span class="n">SphericalCircle</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_center_icrs</span><span class="o">.</span><span class="n">ra</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_center_icrs</span><span class="o">.</span><span class="n">dec</span><span class="p">,</span>
+                <span class="n">fov</span><span class="p">,</span>
+                <span class="n">vertex_unit</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span>
+                <span class="n">resolution</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span>
+                <span class="c1">#            edgecolor=color,</span>
+                <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">get_transform</span><span class="p">(</span><span class="s2">&quot;icrs&quot;</span><span class="p">),</span>
+                <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
+
+            <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">circle</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_center_icrs</span><span class="o">.</span><span class="n">ra</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">center_icrs</span><span class="o">.</span><span class="n">dec</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span>
+                <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">get_transform</span><span class="p">(</span><span class="s2">&quot;icrs&quot;</span><span class="p">),</span>
+                <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ax</span></div></div>
+
+
+<div class="viewcode-block" id="NaI0"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.NaI0">[docs]</a><span class="k">class</span> <span class="nc">NaI0</span><span class="p">(</span><span class="n">GBMDetector</span><span class="p">):</span>
+<div class="viewcode-block" id="NaI0.__init__"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.NaI0.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        quaternion</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_az</span> <span class="o">=</span> <span class="mf">45.89</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zen</span> <span class="o">=</span> <span class="mi">90</span> <span class="o">-</span> <span class="mf">20.58</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mount_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">96.1</span><span class="p">,</span> <span class="mf">80.4</span><span class="p">,</span> <span class="mf">107.6</span><span class="p">])</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">NaI0</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;n0&quot;</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="NaI1"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.NaI1">[docs]</a><span class="k">class</span> <span class="nc">NaI1</span><span class="p">(</span><span class="n">GBMDetector</span><span class="p">):</span>
+<div class="viewcode-block" id="NaI1.__init__"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.NaI1.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        quaternion</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_az</span> <span class="o">=</span> <span class="mf">45.11</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zen</span> <span class="o">=</span> <span class="mi">90</span> <span class="o">-</span> <span class="mf">45.31</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mount_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">101.1</span><span class="p">,</span> <span class="mf">72.8</span><span class="p">,</span> <span class="mf">72.1</span><span class="p">])</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">NaI1</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;n1&quot;</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="NaI2"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.NaI2">[docs]</a><span class="k">class</span> <span class="nc">NaI2</span><span class="p">(</span><span class="n">GBMDetector</span><span class="p">):</span>
+<div class="viewcode-block" id="NaI2.__init__"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.NaI2.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        quaternion</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_az</span> <span class="o">=</span> <span class="mf">58.44</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zen</span> <span class="o">=</span> <span class="mi">90</span> <span class="o">-</span> <span class="mf">90.21</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mount_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">109.0</span><span class="p">,</span> <span class="mf">58.1</span><span class="p">,</span> <span class="mf">99.0</span><span class="p">])</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">NaI2</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;n2&quot;</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="NaI3"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.NaI3">[docs]</a><span class="k">class</span> <span class="nc">NaI3</span><span class="p">(</span><span class="n">GBMDetector</span><span class="p">):</span>
+<div class="viewcode-block" id="NaI3.__init__"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.NaI3.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        quaternion</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_az</span> <span class="o">=</span> <span class="mf">314.87</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zen</span> <span class="o">=</span> <span class="mi">90</span> <span class="o">-</span> <span class="mf">45.24</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mount_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">97.7</span><span class="p">,</span> <span class="o">-</span><span class="mf">76.3</span><span class="p">,</span> <span class="mf">102.5</span><span class="p">])</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">NaI3</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;n3&quot;</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="NaI4"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.NaI4">[docs]</a><span class="k">class</span> <span class="nc">NaI4</span><span class="p">(</span><span class="n">GBMDetector</span><span class="p">):</span>
+<div class="viewcode-block" id="NaI4.__init__"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.NaI4.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        quaternion</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_az</span> <span class="o">=</span> <span class="mf">303.15</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zen</span> <span class="o">=</span> <span class="mf">90.0</span> <span class="o">-</span> <span class="mf">90.27</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mount_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">109.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">57.5</span><span class="p">,</span> <span class="mf">83.6</span><span class="p">])</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">NaI4</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;n4&quot;</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="NaI5"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.NaI5">[docs]</a><span class="k">class</span> <span class="nc">NaI5</span><span class="p">(</span><span class="n">GBMDetector</span><span class="p">):</span>
+<div class="viewcode-block" id="NaI5.__init__"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.NaI5.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        quaternion</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_az</span> <span class="o">=</span> <span class="mf">3.35</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zen</span> <span class="o">=</span> <span class="mi">90</span> <span class="o">-</span> <span class="mf">89.97</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mount_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">99.6</span><span class="p">,</span> <span class="o">-</span><span class="mf">49.7</span><span class="p">,</span> <span class="mf">100.1</span><span class="p">])</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">NaI5</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;n5&quot;</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="NaI6"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.NaI6">[docs]</a><span class="k">class</span> <span class="nc">NaI6</span><span class="p">(</span><span class="n">GBMDetector</span><span class="p">):</span>
+<div class="viewcode-block" id="NaI6.__init__"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.NaI6.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        quaternion</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_az</span> <span class="o">=</span> <span class="mf">224.93</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zen</span> <span class="o">=</span> <span class="mi">90</span> <span class="o">-</span> <span class="mf">20.43</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mount_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">95.8</span><span class="p">,</span> <span class="o">-</span><span class="mf">80.3</span><span class="p">,</span> <span class="mf">107.1</span><span class="p">])</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">NaI6</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;n6&quot;</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="NaI7"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.NaI7">[docs]</a><span class="k">class</span> <span class="nc">NaI7</span><span class="p">(</span><span class="n">GBMDetector</span><span class="p">):</span>
+<div class="viewcode-block" id="NaI7.__init__"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.NaI7.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        quaternion</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_az</span> <span class="o">=</span> <span class="mf">224.62</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zen</span> <span class="o">=</span> <span class="mi">90</span> <span class="o">-</span> <span class="mf">46.18</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mount_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">100.6</span><span class="p">,</span> <span class="o">-</span><span class="mf">72.5</span><span class="p">,</span> <span class="mf">71.6</span><span class="p">])</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">NaI7</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;n7&quot;</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="NaI8"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.NaI8">[docs]</a><span class="k">class</span> <span class="nc">NaI8</span><span class="p">(</span><span class="n">GBMDetector</span><span class="p">):</span>
+<div class="viewcode-block" id="NaI8.__init__"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.NaI8.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        quaternion</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_az</span> <span class="o">=</span> <span class="mf">236.61</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zen</span> <span class="o">=</span> <span class="mi">90</span> <span class="o">-</span> <span class="mf">89.97</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mount_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">108.4</span><span class="p">,</span> <span class="o">-</span><span class="mf">57.2</span><span class="p">,</span> <span class="mf">99.0</span><span class="p">])</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">NaI8</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;n8&quot;</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="NaI9"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.NaI9">[docs]</a><span class="k">class</span> <span class="nc">NaI9</span><span class="p">(</span><span class="n">GBMDetector</span><span class="p">):</span>
+<div class="viewcode-block" id="NaI9.__init__"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.NaI9.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        quaternion</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_az</span> <span class="o">=</span> <span class="mf">135.19</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zen</span> <span class="o">=</span> <span class="mi">90</span> <span class="o">-</span> <span class="mf">45.55</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mount_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">97.5</span><span class="p">,</span> <span class="mf">76.5</span><span class="p">,</span> <span class="mf">102.5</span><span class="p">])</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">NaI9</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;n9&quot;</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="NaIA"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.NaIA">[docs]</a><span class="k">class</span> <span class="nc">NaIA</span><span class="p">(</span><span class="n">GBMDetector</span><span class="p">):</span>
+<div class="viewcode-block" id="NaIA.__init__"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.NaIA.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        quaternion</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_az</span> <span class="o">=</span> <span class="mf">123.73</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zen</span> <span class="o">=</span> <span class="mi">90</span> <span class="o">-</span> <span class="mf">90.42</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mount_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">108.7</span><span class="p">,</span> <span class="mf">57.7</span><span class="p">,</span> <span class="mf">83.7</span><span class="p">])</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">NaIA</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;na&quot;</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="NaIB"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.NaIB">[docs]</a><span class="k">class</span> <span class="nc">NaIB</span><span class="p">(</span><span class="n">GBMDetector</span><span class="p">):</span>
+<div class="viewcode-block" id="NaIB.__init__"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.NaIB.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        quaternion</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_az</span> <span class="o">=</span> <span class="mf">183.74</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zen</span> <span class="o">=</span> <span class="mi">90</span> <span class="o">-</span> <span class="mf">90.32</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mount_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">99.3</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">,</span> <span class="mf">100.2</span><span class="p">])</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">NaIB</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;nb&quot;</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="BGO0"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.BGO0">[docs]</a><span class="k">class</span> <span class="nc">BGO0</span><span class="p">(</span><span class="n">GBMDetector</span><span class="p">):</span>
+<div class="viewcode-block" id="BGO0.__init__"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.BGO0.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        quaternion</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_az</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zen</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mount_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">126.05</span><span class="p">,</span> <span class="mf">0.13</span><span class="p">,</span> <span class="mf">63.32</span><span class="p">])</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">BGO0</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;b0&quot;</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="BGO1"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.BGO1">[docs]</a><span class="k">class</span> <span class="nc">BGO1</span><span class="p">(</span><span class="n">GBMDetector</span><span class="p">):</span>
+<div class="viewcode-block" id="BGO1.__init__"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.gbm_detector.BGO1.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        quaternion</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_az</span> <span class="o">=</span> <span class="mf">180.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_zen</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mount_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">126.14</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">67.22</span><span class="p">])</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">BGO1</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s2">&quot;b1&quot;</span><span class="p">,</span> <span class="n">quaternion</span><span class="p">,</span> <span class="n">sc_pos</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, J. Michael Burgess.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,85 @@
+gbmgeometry.geometry package
+============================
+
+Submodules
+----------
+
+gbmgeometry.geometry.cirs\_to\_gcrs module
+------------------------------------------
+
+.. automodule:: gbmgeometry.geometry.cirs_to_gcrs
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+gbmgeometry.geometry.cone module
+--------------------------------
+
+.. automodule:: gbmgeometry.geometry.cone
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+gbmgeometry.geometry.cube module
+--------------------------------
+
+.. automodule:: gbmgeometry.geometry.cube
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+gbmgeometry.geometry.get\_sc\_matrix module
+-------------------------------------------
+
+.. automodule:: gbmgeometry.geometry.get_sc_matrix
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+gbmgeometry.geometry.quarternion module
+---------------------------------------
+
+.. automodule:: gbmgeometry.geometry.quarternion
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+gbmgeometry.geometry.ray module
+-------------------------------
+
+.. automodule:: gbmgeometry.geometry.ray
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+gbmgeometry.geometry.sphere module
+----------------------------------
+
+.. automodule:: gbmgeometry.geometry.sphere
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+gbmgeometry.geometry.surface module
+-----------------------------------
+
+.. automodule:: gbmgeometry.geometry.surface
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+gbmgeometry.geometry.volume module
+----------------------------------
+
+.. automodule:: gbmgeometry.geometry.volume
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: gbmgeometry.geometry
+   :members:
+   :undoc-members:
+   :show-inheritance:

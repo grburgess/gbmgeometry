@@ -1,0 +1,53 @@
+gbmgeometry.spacecraft package
+==============================
+
+Submodules
+----------
+
+gbmgeometry.spacecraft.fermi module
+-----------------------------------
+
+.. automodule:: gbmgeometry.spacecraft.fermi
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+gbmgeometry.spacecraft.gbm\_detectors module
+--------------------------------------------
+
+.. automodule:: gbmgeometry.spacecraft.gbm_detectors
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+gbmgeometry.spacecraft.geometry module
+--------------------------------------
+
+.. automodule:: gbmgeometry.spacecraft.geometry
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+gbmgeometry.spacecraft.lat module
+---------------------------------
+
+.. automodule:: gbmgeometry.spacecraft.lat
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+gbmgeometry.spacecraft.solar\_panels module
+-------------------------------------------
+
+.. automodule:: gbmgeometry.spacecraft.solar_panels
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: gbmgeometry.spacecraft
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,53 @@
+gbmgeometry.utils package
+=========================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   gbmgeometry.utils.plotting
+
+Submodules
+----------
+
+gbmgeometry.utils.array\_to\_cmap module
+----------------------------------------
+
+.. automodule:: gbmgeometry.utils.array_to_cmap
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+gbmgeometry.utils.file\_converters module
+-----------------------------------------
+
+.. automodule:: gbmgeometry.utils.file_converters
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+gbmgeometry.utils.gbm\_time module
+----------------------------------
+
+.. automodule:: gbmgeometry.utils.gbm_time
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+gbmgeometry.utils.package\_utils module
+---------------------------------------
+
+.. automodule:: gbmgeometry.utils.package_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: gbmgeometry.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gbmgeometry.position_interpolator &mdash; gbmgeometry  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.0-rc.0/dist/embed-amd.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <link rel="stylesheet" href="../../_static/pygments/default.css" type="text/css" id="pygments-style">
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css">
+   
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> gbmgeometry
+            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/demo.html">GBM Geometry Demo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/demo.html#Fermi-plotting-and-computing-blockage">Fermi plotting and computing blockage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/posinterp.html">The PositionInterpolator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notebooks/pointsource.html">Plotting Points on the Sky</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">twopc</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gbmgeometry</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+  <!--
+  <div class="admonition note">
+    <p><a href="https://github.com/lukelbd">ProPlot author here</a>: Due to my day job as a graduate student, certain <a href="https://github.com/lukelbd/proplot/pulls?q=is%3Aopen+is%3Apr">feature additions</a> may be delayed to the summer of 2020. In the meantime, if you are interested in contributing to ProPlot, please see the <a href="https://proplot.readthedocs.io/en/latest/contributions.html">contribution guide</a>. Any amount of help is welcome!
+    </p>
+  </div>
+  -->
+  <li id="lightdark-li">
+    <label for="lightdark-checkbox" id="lightdark-label">
+      <input type="checkbox" id="lightdark-checkbox"/>
+      <div class="btn-neutral"></div>
+    </label>
+  </li>
+  
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>gbmgeometry.position_interpolator</li>
+
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  <script type="text/javascript" src=../../_static/custom.js></script>
+  
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gbmgeometry.position_interpolator</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">typing</span> <span class="k">as</span> <span class="nn">tp</span>
+
+<span class="kn">import</span> <span class="nn">astropy.io.fits</span> <span class="k">as</span> <span class="nn">fits</span>
+<span class="kn">import</span> <span class="nn">astropy.time</span> <span class="k">as</span> <span class="nn">astro_time</span>
+<span class="kn">import</span> <span class="nn">astropy.units</span> <span class="k">as</span> <span class="nn">u</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.interpolate</span> <span class="k">as</span> <span class="nn">interpolate</span>
+<span class="kn">from</span> <span class="nn">astropy.coordinates</span> <span class="kn">import</span> <span class="n">get_body</span><span class="p">,</span> <span class="n">get_moon</span><span class="p">,</span> <span class="n">get_sun</span>
+
+<span class="kn">from</span> <span class="nn">gbmgeometry.utils.gbm_time</span> <span class="kn">import</span> <span class="n">GBMTime</span>
+
+
+<div class="viewcode-block" id="PositionInterpolator"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.PositionInterpolator">[docs]</a><span class="k">class</span> <span class="nc">PositionInterpolator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="PositionInterpolator.__init__"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.PositionInterpolator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">quats</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+                 <span class="n">sc_pos</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+                 <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                 <span class="n">trigtime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">factor</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">flags</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        An object for interpolating the orbit of </span>
+<span class="sd">        GBM</span>
+
+<span class="sd">        :param quaternions</span>
+<span class="sd">        :param sc_pos: </span>
+<span class="sd">        :param time:</span>
+<span class="sd">        :param trigtime:</span>
+<span class="sd">        :param factor:</span>
+<span class="sd">        :param flags:</span>
+<span class="sd">        :returns: </span>
+<span class="sd">        :rtype: </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_quats</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">quats</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sc_pos</span><span class="p">:</span> <span class="n">tp</span><span class="o">.</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">sc_pos</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trigtime</span> <span class="o">=</span> <span class="n">trigtime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_factor</span> <span class="o">=</span> <span class="n">factor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="o">=</span> <span class="n">flags</span>
+
+        <span class="c1"># Interpolate the stuf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_interpolate_quaternion</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_interpolate_sc_pos</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_interpolate_flags</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PositionInterpolator.from_trigdat_hdf5"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.PositionInterpolator.from_trigdat_hdf5">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_trigdat_hdf5</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">trigdat_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        create and interpolator from a trigdat</span>
+<span class="sd">        HDF5 file</span>
+
+<span class="sd">        :param cls: </span>
+<span class="sd">        :param trigdat_file: </span>
+<span class="sd">        :returns: </span>
+<span class="sd">        :rtype: </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">trigdat_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+
+            <span class="n">quats</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;quats&quot;</span><span class="p">][()]</span>
+            <span class="n">sc_pos</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;sc_pos&quot;</span><span class="p">][()]</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">][()]</span>
+
+            <span class="n">trigtime</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;trigtime&quot;</span><span class="p">]</span>
+
+        <span class="n">factor</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">quats</span><span class="o">=</span><span class="n">quats</span><span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="n">sc_pos</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="n">trigtime</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="n">factor</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="PositionInterpolator.from_poshist_hdf5"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.PositionInterpolator.from_poshist_hdf5">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_poshist_hdf5</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">poshist_file</span><span class="p">,</span> <span class="n">T0</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        create and interpolator from a poshist</span>
+<span class="sd">        HDF5 file</span>
+
+<span class="sd">        :param cls: </span>
+<span class="sd">        :param poshist_file: </span>
+<span class="sd">        :param T0:</span>
+<span class="sd">        :returns: </span>
+<span class="sd">        :rtype: </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">poshist_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+
+            <span class="n">quats</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;quats&quot;</span><span class="p">][()]</span>
+            <span class="n">sc_pos</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;sc_pos&quot;</span><span class="p">][()]</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">][()]</span>
+            <span class="n">flags</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;flags&quot;</span><span class="p">][()]</span>
+
+        <span class="n">factor</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">km</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">T0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">time</span> <span class="o">-=</span> <span class="n">T0</span>
+
+            <span class="n">trigtime</span> <span class="o">=</span> <span class="n">T0</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">trigtime</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">quats</span><span class="o">=</span><span class="n">quats</span><span class="p">,</span>
+            <span class="n">sc_pos</span><span class="o">=</span><span class="n">sc_pos</span><span class="p">,</span>
+            <span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">,</span>
+            <span class="n">trigtime</span><span class="o">=</span><span class="n">trigtime</span><span class="p">,</span>
+            <span class="n">factor</span><span class="o">=</span><span class="n">factor</span><span class="p">,</span>
+            <span class="n">flags</span><span class="o">=</span><span class="n">flags</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="PositionInterpolator.from_trigdat"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.PositionInterpolator.from_trigdat">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_trigdat</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">trigdat_file</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param cls: </span>
+<span class="sd">        :param trigdat_file: </span>
+<span class="sd">        :returns: </span>
+<span class="sd">        :rtype: </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">trigdat_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">trigdat</span><span class="p">:</span>
+
+            <span class="n">trigtime</span> <span class="o">=</span> <span class="n">trigdat</span><span class="p">[</span><span class="s2">&quot;EVNTRATE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s2">&quot;TRIGTIME&quot;</span><span class="p">]</span>
+            <span class="n">tstart</span> <span class="o">=</span> <span class="n">trigdat</span><span class="p">[</span><span class="s2">&quot;EVNTRATE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;TIME&quot;</span><span class="p">]</span> <span class="o">-</span> <span class="n">trigtime</span>
+
+            <span class="n">quats</span> <span class="o">=</span> <span class="n">trigdat</span><span class="p">[</span><span class="s2">&quot;EVNTRATE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;SCATTITD&quot;</span><span class="p">]</span>
+            <span class="n">sc_pos</span> <span class="o">=</span> <span class="n">trigdat</span><span class="p">[</span><span class="s2">&quot;EVNTRATE&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;EIC&quot;</span><span class="p">]</span>
+
+            <span class="n">sort_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">tstart</span><span class="p">)</span>
+            <span class="n">tstart</span> <span class="o">=</span> <span class="n">tstart</span><span class="p">[</span><span class="n">sort_mask</span><span class="p">]</span>
+
+            <span class="n">quats</span> <span class="o">=</span> <span class="n">quats</span><span class="p">[</span><span class="n">sort_mask</span><span class="p">]</span>
+            <span class="n">sc_pos</span> <span class="o">=</span> <span class="n">sc_pos</span><span class="p">[</span><span class="n">sort_mask</span><span class="p">]</span>
+
+            <span class="n">time</span> <span class="o">=</span> <span class="n">tstart</span>
+
+        <span class="c1"># the sc is in km so no need to convert</span>
+
+        <span class="n">factor</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">quats</span><span class="o">=</span><span class="n">quats</span><span class="p">,</span> <span class="n">sc_pos</span><span class="o">=</span><span class="n">sc_pos</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">,</span> <span class="n">trigtime</span><span class="o">=</span><span class="n">trigtime</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="n">factor</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="PositionInterpolator.from_poshist"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.PositionInterpolator.from_poshist">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_poshist</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">poshist_file</span><span class="p">,</span> <span class="n">T0</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        create an interpolator from a posthist fits file</span>
+
+<span class="sd">        :param cls: </span>
+<span class="sd">        :param poshist_file: </span>
+<span class="sd">        :param T0: </span>
+<span class="sd">        :returns: </span>
+<span class="sd">        :rtype: </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="n">fits</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">poshist_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">poshist</span><span class="p">:</span>
+
+            <span class="n">time</span> <span class="o">=</span> <span class="n">poshist</span><span class="p">[</span><span class="s2">&quot;GLAST POS HIST&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;SCLK_UTC&quot;</span><span class="p">]</span>
+
+            <span class="n">flags</span> <span class="o">=</span> <span class="n">poshist</span><span class="p">[</span><span class="s2">&quot;GLAST POS HIST&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;FLAGS&quot;</span><span class="p">]</span>
+
+            <span class="n">quats</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">poshist</span><span class="p">[</span><span class="s2">&quot;GLAST POS HIST&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;QSJ_1&quot;</span><span class="p">],</span>
+                    <span class="n">poshist</span><span class="p">[</span><span class="s2">&quot;GLAST POS HIST&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;QSJ_2&quot;</span><span class="p">],</span>
+                    <span class="n">poshist</span><span class="p">[</span><span class="s2">&quot;GLAST POS HIST&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;QSJ_3&quot;</span><span class="p">],</span>
+                    <span class="n">poshist</span><span class="p">[</span><span class="s2">&quot;GLAST POS HIST&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;QSJ_4&quot;</span><span class="p">],</span>
+                <span class="p">]</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">T</span>
+
+            <span class="n">sc_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">poshist</span><span class="p">[</span><span class="s2">&quot;GLAST POS HIST&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;POS_X&quot;</span><span class="p">],</span>
+                    <span class="n">poshist</span><span class="p">[</span><span class="s2">&quot;GLAST POS HIST&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;POS_Y&quot;</span><span class="p">],</span>
+                    <span class="n">poshist</span><span class="p">[</span><span class="s2">&quot;GLAST POS HIST&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;POS_Z&quot;</span><span class="p">],</span>
+                <span class="p">]</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">T</span>
+
+            <span class="c1"># if using posthist then units are in m</span>
+
+        <span class="n">factor</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">m</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">km</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">T0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">time</span> <span class="o">-=</span> <span class="n">T0</span>
+
+            <span class="n">trigtime</span> <span class="o">=</span> <span class="n">T0</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">trigtime</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">quats</span><span class="o">=</span><span class="n">quats</span><span class="p">,</span>
+            <span class="n">sc_pos</span><span class="o">=</span><span class="n">sc_pos</span><span class="p">,</span>
+            <span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">,</span>
+            <span class="n">trigtime</span><span class="o">=</span><span class="n">trigtime</span><span class="p">,</span>
+            <span class="n">factor</span><span class="o">=</span><span class="n">factor</span><span class="p">,</span>
+            <span class="n">flags</span><span class="o">=</span><span class="n">flags</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time</span>
+
+<div class="viewcode-block" id="PositionInterpolator.utc"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.PositionInterpolator.utc">[docs]</a>    <span class="k">def</span> <span class="nf">utc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+
+        <span class="n">met</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">met</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+        <span class="n">time</span> <span class="o">=</span> <span class="n">GBMTime</span><span class="o">.</span><span class="n">from_MET</span><span class="p">(</span><span class="n">met</span><span class="p">)</span>
+        <span class="c1"># print(time.time.fits)</span>
+        <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">fits</span></div>
+
+<div class="viewcode-block" id="PositionInterpolator.astro_time"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.PositionInterpolator.astro_time">[docs]</a>    <span class="k">def</span> <span class="nf">astro_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">astro_time</span><span class="o">.</span><span class="n">Time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">utc</span><span class="p">(</span><span class="n">t</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="PositionInterpolator.met"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.PositionInterpolator.met">[docs]</a>    <span class="k">def</span> <span class="nf">met</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trigtime</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="n">met</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trigtime</span> <span class="o">+</span> <span class="n">t</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">met</span> <span class="o">=</span> <span class="n">t</span>
+
+        <span class="k">return</span> <span class="n">met</span></div>
+
+<div class="viewcode-block" id="PositionInterpolator.sun_position"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.PositionInterpolator.sun_position">[docs]</a>    <span class="k">def</span> <span class="nf">sun_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the position of the sun at the give time</span>
+<span class="sd">        relative to the geocenter</span>
+
+
+<span class="sd">        :param t: </span>
+<span class="sd">        :returns: </span>
+<span class="sd">        :rtype: </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">get_sun</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">astro_time</span><span class="p">(</span><span class="n">t</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="PositionInterpolator.moon_position"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.PositionInterpolator.moon_position">[docs]</a>    <span class="k">def</span> <span class="nf">moon_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the position of the moon at the give time</span>
+<span class="sd">        relative to the geocenter</span>
+
+
+<span class="sd">        :param t: </span>
+<span class="sd">        :returns: </span>
+<span class="sd">        :rtype: </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">get_moon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">astro_time</span><span class="p">(</span><span class="n">t</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="PositionInterpolator.body_position"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.PositionInterpolator.body_position">[docs]</a>    <span class="k">def</span> <span class="nf">body_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="s2">&quot;uranus&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the position of the body at the give time</span>
+<span class="sd">        relative to the geocenter</span>
+
+
+<span class="sd">        :param t: </span>
+<span class="sd">        :param body:</span>
+<span class="sd">        :returns: </span>
+<span class="sd">        :rtype: </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">get_body</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">astro_time</span><span class="p">(</span><span class="n">t</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="PositionInterpolator.minmax_time"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.PositionInterpolator.minmax_time">[docs]</a>    <span class="k">def</span> <span class="nf">minmax_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        return a tuple of (tmin, tmax)</span>
+<span class="sd">        for the whole interpolator</span>
+
+<span class="sd">        :returns: </span>
+<span class="sd">        :rtype: </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_time</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_time</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PositionInterpolator.maxtime"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.PositionInterpolator.maxtime">[docs]</a>    <span class="k">def</span> <span class="nf">maxtime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time</span></div>
+
+<div class="viewcode-block" id="PositionInterpolator.quaternion"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.PositionInterpolator.quaternion">[docs]</a>    <span class="k">def</span> <span class="nf">quaternion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        return the quaternion</span>
+
+<span class="sd">        :param t: </span>
+<span class="sd">        :returns: </span>
+<span class="sd">        :rtype: </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_quaternion_t</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">T</span></div>
+
+<div class="viewcode-block" id="PositionInterpolator.quaternion_dict"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.PositionInterpolator.quaternion_dict">[docs]</a>    <span class="k">def</span> <span class="nf">quaternion_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;quaternion_</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)]</span>
+
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_quaternion_t</span><span class="p">(</span><span class="n">t</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="PositionInterpolator.sc_pos"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.PositionInterpolator.sc_pos">[docs]</a>    <span class="k">def</span> <span class="nf">sc_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        the space craft postions in X,Y,Z geocentric coordinates</span>
+
+<span class="sd">        units are always assumed to be kilometers</span>
+
+<span class="sd">        :param t: </span>
+<span class="sd">        :returns: </span>
+<span class="sd">        :rtype: </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scxyz_t</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">T</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factor</span></div>
+
+<div class="viewcode-block" id="PositionInterpolator.sc_pos_dict"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.PositionInterpolator.sc_pos_dict">[docs]</a>    <span class="k">def</span> <span class="nf">sc_pos_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;sc_pos_</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">]]</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scxyz_t</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factor</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="PositionInterpolator.is_earth_occulted"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.PositionInterpolator.is_earth_occulted">[docs]</a>    <span class="k">def</span> <span class="nf">is_earth_occulted</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+
+        <span class="n">earth_radius</span> <span class="o">=</span> <span class="mf">6371.0</span>
+
+        <span class="n">sc_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sc_pos</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+
+            <span class="n">fermi_radius</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">sc_pos</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+
+            <span class="n">horizon_angle</span> <span class="o">=</span> <span class="mi">90</span> <span class="o">-</span> \
+                <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">earth_radius</span> <span class="o">/</span> <span class="n">fermi_radius</span><span class="p">))</span>
+
+            <span class="n">min_vis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">horizon_angle</span><span class="p">)</span>
+
+            <span class="n">cart_position</span> <span class="o">=</span> <span class="n">ang2cart</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">)</span>
+
+            <span class="n">ang_sep</span> <span class="o">=</span> <span class="n">get_ang</span><span class="p">(</span><span class="n">cart_position</span><span class="p">,</span> <span class="o">-</span><span class="n">sc_pos</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">ang_sep</span> <span class="o">&lt;</span> <span class="n">min_vis</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">scp</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sc_pos</span><span class="p">):</span>
+
+                <span class="n">fermi_radius</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">scp</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+
+                <span class="n">horizon_angle</span> <span class="o">=</span> <span class="mi">90</span> <span class="o">-</span> \
+                    <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">earth_radius</span> <span class="o">/</span> <span class="n">fermi_radius</span><span class="p">))</span>
+
+                <span class="n">min_vis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">horizon_angle</span><span class="p">)</span>
+
+                <span class="n">cart_position</span> <span class="o">=</span> <span class="n">ang2cart</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">)</span>
+
+                <span class="n">ang_sep</span> <span class="o">=</span> <span class="n">get_ang</span><span class="p">(</span><span class="n">cart_position</span><span class="p">,</span> <span class="o">-</span><span class="n">scp</span><span class="p">)</span>
+
+                <span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">ang_sep</span> <span class="o">&lt;</span> <span class="n">min_vis</span>
+
+            <span class="k">return</span> <span class="n">out</span></div>
+
+    <span class="k">def</span> <span class="nf">_interpolate_quaternion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_quaternion_t</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_quats</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_interpolate_sc_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scxyz_t</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sc_pos</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_interpolate_flags</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="o">==</span> <span class="mi">1</span>
+
+            <span class="n">slices_true</span> <span class="o">=</span> <span class="n">slice_disjoint</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_on_times</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">for</span> <span class="n">s1</span><span class="p">,</span> <span class="n">s2</span> <span class="ow">in</span> <span class="n">slices_true</span><span class="p">:</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_on_times</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_time</span><span class="p">[</span><span class="n">s1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time</span><span class="p">[</span><span class="n">s2</span><span class="p">]])</span>
+
+<div class="viewcode-block" id="PositionInterpolator.is_fermi_active"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.PositionInterpolator.is_fermi_active">[docs]</a>    <span class="k">def</span> <span class="nf">is_fermi_active</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        test if fermi is active at the time</span>
+
+<span class="sd">        :param t: </span>
+<span class="sd">        :returns: </span>
+<span class="sd">        :rtype: </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+                <span class="k">return</span> <span class="kc">True</span>
+
+            <span class="k">for</span> <span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_times</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="n">tmin</span> <span class="o">&lt;=</span> <span class="n">t</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">t</span> <span class="o">&lt;=</span> <span class="n">tmax</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flags</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
+            <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">tt</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">tmin</span><span class="p">,</span> <span class="n">tmax</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_times</span><span class="p">:</span>
+
+                    <span class="k">if</span> <span class="p">(</span><span class="n">tmin</span> <span class="o">&lt;=</span> <span class="n">tt</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">tt</span> <span class="o">&lt;=</span> <span class="n">tmax</span><span class="p">):</span>
+                        <span class="n">out</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="PositionInterpolator.sc_matrix"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.PositionInterpolator.sc_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">sc_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+
+        <span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="n">q3</span><span class="p">,</span> <span class="n">q4</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quaternion</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="n">sc_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">q1</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">q2</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">q3</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">q4</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">q1</span> <span class="o">*</span> <span class="n">q2</span> <span class="o">+</span> <span class="n">q4</span> <span class="o">*</span> <span class="n">q3</span><span class="p">)</span>
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">q1</span> <span class="o">*</span> <span class="n">q3</span> <span class="o">-</span> <span class="n">q4</span> <span class="o">*</span> <span class="n">q2</span><span class="p">)</span>
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">q1</span> <span class="o">*</span> <span class="n">q2</span> <span class="o">-</span> <span class="n">q4</span> <span class="o">*</span> <span class="n">q3</span><span class="p">)</span>
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">q1</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">q2</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">q3</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">q4</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">q2</span> <span class="o">*</span> <span class="n">q3</span> <span class="o">+</span> <span class="n">q4</span> <span class="o">*</span> <span class="n">q1</span><span class="p">)</span>
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">q1</span> <span class="o">*</span> <span class="n">q3</span> <span class="o">+</span> <span class="n">q4</span> <span class="o">*</span> <span class="n">q2</span><span class="p">)</span>
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">q2</span> <span class="o">*</span> <span class="n">q3</span> <span class="o">-</span> <span class="n">q4</span> <span class="o">*</span> <span class="n">q1</span><span class="p">)</span>
+        <span class="n">sc_matrix</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">q1</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">q2</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">q3</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">q4</span> <span class="o">**</span> <span class="mi">2</span>
+
+        <span class="k">return</span> <span class="n">sc_matrix</span></div>
+
+<div class="viewcode-block" id="PositionInterpolator.geo_matrix"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.PositionInterpolator.geo_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">geo_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sc_matrix</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">T</span></div>
+
+<div class="viewcode-block" id="PositionInterpolator.altitude"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.PositionInterpolator.altitude">[docs]</a>    <span class="k">def</span> <span class="nf">altitude</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param t: </span>
+<span class="sd">        :return: </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">earth_radius</span> <span class="o">=</span> <span class="mf">6371.0</span>
+        <span class="n">fermi_radius</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">sc_pos</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">fermi_radius</span> <span class="o">-</span> <span class="n">earth_radius</span></div>
+
+<div class="viewcode-block" id="PositionInterpolator.normalize"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.PositionInterpolator.normalize">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">x</span> <span class="o">/</span> <span class="n">norm</span></div></div>
+
+
+<div class="viewcode-block" id="ang2cart"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.ang2cart">[docs]</a><span class="k">def</span> <span class="nf">ang2cart</span><span class="p">(</span><span class="n">ra</span><span class="p">,</span> <span class="n">dec</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :param ra:</span>
+<span class="sd">    :param dec:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">ra</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">ra</span><span class="p">)</span>
+    <span class="n">dec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span>
+
+    <span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ra</span><span class="p">)</span>
+    <span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">ra</span><span class="p">)</span>
+    <span class="n">pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pos</span></div>
+
+
+<div class="viewcode-block" id="get_ang"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.get_ang">[docs]</a><span class="k">def</span> <span class="nf">get_ang</span><span class="p">(</span><span class="n">X1</span><span class="p">,</span> <span class="n">X2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :param X1:</span>
+<span class="sd">    :param X2:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">norm1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">X1</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X1</span><span class="p">))</span>
+    <span class="n">norm2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">X2</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X2</span><span class="p">))</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X1</span> <span class="o">/</span> <span class="n">norm1</span><span class="p">,</span> <span class="n">X2</span> <span class="o">/</span> <span class="n">norm2</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="slice_disjoint"><a class="viewcode-back" href="../../notebooks/api/gbmgeometry.html#gbmgeometry.position_interpolator.slice_disjoint">[docs]</a><span class="k">def</span> <span class="nf">slice_disjoint</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns an array of disjoint indices from a bool array</span>
+<span class="sd">    :param arr: and array of bools</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">arr</span> <span class="o">=</span> <span class="p">(</span><span class="n">arr</span><span class="p">)</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">slices</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">start_slice</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">arr</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">end_slice</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">slices</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">start_slice</span><span class="p">,</span> <span class="n">end_slice</span><span class="p">])</span>
+            <span class="n">start_slice</span> <span class="o">=</span> <span class="n">arr</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">counter</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[[</span><span class="n">arr</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">arr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]]</span>
+    <span class="k">if</span> <span class="n">end_slice</span> <span class="o">!=</span> <span class="n">arr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">slices</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">start_slice</span><span class="p">,</span> <span class="n">arr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+    <span class="k">return</span> <span class="n">slices</span></div>
+</pre></div>
+
+           </div>
+          </div>
+
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, J. Michael Burgess.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

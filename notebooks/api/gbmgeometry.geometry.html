@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gbmgeometry.geometry package &mdash; gbmgeometry  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.0-rc.0/dist/embed-amd.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <link rel="stylesheet" href="../../_static/pygments/default.css" type="text/css" id="pygments-style">
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css">
+   
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> gbmgeometry
+            <img src="../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../demo.html">GBM Geometry Demo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../demo.html#Fermi-plotting-and-computing-blockage">Fermi plotting and computing blockage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../posinterp.html">The PositionInterpolator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pointsource.html">Plotting Points on the Sky</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">twopc</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gbmgeometry</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+  <!--
+  <div class="admonition note">
+    <p><a href="https://github.com/lukelbd">ProPlot author here</a>: Due to my day job as a graduate student, certain <a href="https://github.com/lukelbd/proplot/pulls?q=is%3Aopen+is%3Apr">feature additions</a> may be delayed to the summer of 2020. In the meantime, if you are interested in contributing to ProPlot, please see the <a href="https://proplot.readthedocs.io/en/latest/contributions.html">contribution guide</a>. Any amount of help is welcome!
+    </p>
+  </div>
+  -->
+  <li id="lightdark-li">
+    <label for="lightdark-checkbox" id="lightdark-label">
+      <input type="checkbox" id="lightdark-checkbox"/>
+      <div class="btn-neutral"></div>
+    </label>
+  </li>
+  
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>gbmgeometry.geometry package</li>
+
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  <script type="text/javascript" src=../../_static/custom.js></script>
+  
+           <div itemprop="articleBody">
+             
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<section id="gbmgeometry-geometry-package">
+<h1>gbmgeometry.geometry package<a class="headerlink" href="#gbmgeometry-geometry-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-gbmgeometry.geometry.cirs_to_gcrs">
+<span id="gbmgeometry-geometry-cirs-to-gcrs-module"></span><h2>gbmgeometry.geometry.cirs_to_gcrs module<a class="headerlink" href="#module-gbmgeometry.geometry.cirs_to_gcrs" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.cirs_to_gcrs.cirs_to_gcrs">
+<span class="sig-prename descclassname"><span class="pre">gbmgeometry.geometry.cirs_to_gcrs.</span></span><span class="sig-name descname"><span class="pre">cirs_to_gcrs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/cirs_to_gcrs.html#cirs_to_gcrs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.cirs_to_gcrs.cirs_to_gcrs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-gbmgeometry.geometry.cone">
+<span id="gbmgeometry-geometry-cone-module"></span><h2>gbmgeometry.geometry.cone module<a class="headerlink" href="#module-gbmgeometry.geometry.cone" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.cone.Cone">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbmgeometry.geometry.cone.</span></span><span class="sig-name descname"><span class="pre">Cone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/cone.html#Cone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.cone.Cone" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.cone.Cone.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zo</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/cone.html#Cone.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.cone.Cone.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.cone.Cone.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/cone.html#Cone.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.cone.Cone.plot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-gbmgeometry.geometry.cube">
+<span id="gbmgeometry-geometry-cube-module"></span><h2>gbmgeometry.geometry.cube module<a class="headerlink" href="#module-gbmgeometry.geometry.cube" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.cube.Cube">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbmgeometry.geometry.cube.</span></span><span class="sig-name descname"><span class="pre">Cube</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'red'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quarternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/cube.html#Cube"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.cube.Cube" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A 3D cube that can be animated</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – </p></li>
+<li><p><strong>y</strong> – </p></li>
+<li><p><strong>z</strong> – </p></li>
+<li><p><strong>x_width</strong> – </p></li>
+<li><p><strong>y_width</strong> – </p></li>
+<li><p><strong>z_width</strong> – </p></li>
+<li><p><strong>color</strong> – </p></li>
+<li><p><strong>transform_matrix</strong> – </p></li>
+<li><p><strong>sc_pos</strong> – </p></li>
+<li><p><strong>quarternion</strong> – </p></li>
+<li><p><strong>scaling_factor</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.cube.Cube.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'red'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quarternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/cube.html#Cube.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.cube.Cube.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>A 3D cube that can be animated</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – </p></li>
+<li><p><strong>y</strong> – </p></li>
+<li><p><strong>z</strong> – </p></li>
+<li><p><strong>x_width</strong> – </p></li>
+<li><p><strong>y_width</strong> – </p></li>
+<li><p><strong>z_width</strong> – </p></li>
+<li><p><strong>color</strong> – </p></li>
+<li><p><strong>transform_matrix</strong> – </p></li>
+<li><p><strong>sc_pos</strong> – </p></li>
+<li><p><strong>quarternion</strong> – </p></li>
+<li><p><strong>scaling_factor</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.cube.Cube.artists">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">artists</span></span><a class="headerlink" href="#gbmgeometry.geometry.cube.Cube.artists" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.cube.Cube.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/cube.html#Cube.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.cube.Cube.plot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.cube.iterable_to_chunks">
+<span class="sig-prename descclassname"><span class="pre">gbmgeometry.geometry.cube.</span></span><span class="sig-name descname"><span class="pre">iterable_to_chunks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">iterable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/cube.html#iterable_to_chunks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.cube.iterable_to_chunks" title="Permalink to this definition"></a></dt>
+<dd><p>Split a list to chunks
+iterable : an iterable object, e.g. generator, list, array, etc.
+size : chunk size, positive integer
+fill : padding values.
+Example :</p>
+<blockquote>
+<div><p>tochunks(‘abcdefg’, 3, ‘x’)</p>
+</div></blockquote>
+<dl class="simple">
+<dt>Output :</dt><dd><p>(‘a’,’b’,’c’), (‘d’,’e’,’f’), (‘g’,’x’,’x’)</p>
+</dd>
+<dt>reference :</dt><dd><p><a class="reference external" href="http://stackoverflow.com/a/312644">http://stackoverflow.com/a/312644</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-gbmgeometry.geometry.get_sc_matrix">
+<span id="gbmgeometry-geometry-get-sc-matrix-module"></span><h2>gbmgeometry.geometry.get_sc_matrix module<a class="headerlink" href="#module-gbmgeometry.geometry.get_sc_matrix" title="Permalink to this headline"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.get_sc_matrix.get_sc_matrix">
+<span class="sig-prename descclassname"><span class="pre">gbmgeometry.geometry.get_sc_matrix.</span></span><span class="sig-name descname"><span class="pre">get_sc_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q4</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/get_sc_matrix.html#get_sc_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.get_sc_matrix.get_sc_matrix" title="Permalink to this definition"></a></dt>
+<dd><p>build a sc matrix from quats</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>q1</strong> – </p></li>
+<li><p><strong>q2</strong> – </p></li>
+<li><p><strong>q3</strong> – </p></li>
+<li><p><strong>q4</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-gbmgeometry.geometry.quarternion">
+<span id="gbmgeometry-geometry-quarternion-module"></span><h2>gbmgeometry.geometry.quarternion module<a class="headerlink" href="#module-gbmgeometry.geometry.quarternion" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.quarternion.Quaternion">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbmgeometry.geometry.quarternion.</span></span><span class="sig-name descname"><span class="pre">Quaternion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/quarternion.html#Quaternion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.quarternion.Quaternion" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.quarternion.Quaternion.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/quarternion.html#Quaternion.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.quarternion.Quaternion.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.quarternion.Quaternion.w">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">w</span></span><a class="headerlink" href="#gbmgeometry.geometry.quarternion.Quaternion.w" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.quarternion.Quaternion.x">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#gbmgeometry.geometry.quarternion.Quaternion.x" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.quarternion.Quaternion.y">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">y</span></span><a class="headerlink" href="#gbmgeometry.geometry.quarternion.Quaternion.y" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.quarternion.Quaternion.z">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z</span></span><a class="headerlink" href="#gbmgeometry.geometry.quarternion.Quaternion.z" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.quarternion.Quaternion.q">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">q</span></span><a class="headerlink" href="#gbmgeometry.geometry.quarternion.Quaternion.q" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.quarternion.Quaternion.vector">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vector</span></span><a class="headerlink" href="#gbmgeometry.geometry.quarternion.Quaternion.vector" title="Permalink to this definition"></a></dt>
+<dd><p>get the vector part</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.quarternion.Quaternion.scalar">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scalar</span></span><a class="headerlink" href="#gbmgeometry.geometry.quarternion.Quaternion.scalar" title="Permalink to this definition"></a></dt>
+<dd><p>get the scalar part</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.quarternion.Quaternion.magnitude">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">magnitude</span></span><a class="headerlink" href="#gbmgeometry.geometry.quarternion.Quaternion.magnitude" title="Permalink to this definition"></a></dt>
+<dd><p>get the magnitude</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.quarternion.Quaternion.is_unit">
+<span class="sig-name descname"><span class="pre">is_unit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/quarternion.html#Quaternion.is_unit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.quarternion.Quaternion.is_unit" title="Permalink to this definition"></a></dt>
+<dd><p>check for unit quaternion</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.quarternion.Quaternion.normalized">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">normalized</span></span><a class="headerlink" href="#gbmgeometry.geometry.quarternion.Quaternion.normalized" title="Permalink to this definition"></a></dt>
+<dd><p>normalize a quaternion</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.quarternion.Quaternion.conjugate">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">conjugate</span></span><a class="headerlink" href="#gbmgeometry.geometry.quarternion.Quaternion.conjugate" title="Permalink to this definition"></a></dt>
+<dd><p>get conjugate of a quaternion</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.quarternion.Quaternion.inverse">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inverse</span></span><a class="headerlink" href="#gbmgeometry.geometry.quarternion.Quaternion.inverse" title="Permalink to this definition"></a></dt>
+<dd><p>get inverse of a quaternion</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.quarternion.Quaternion.log">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">log</span></span><a class="headerlink" href="#gbmgeometry.geometry.quarternion.Quaternion.log" title="Permalink to this definition"></a></dt>
+<dd><p>get log of a quaternion</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.quarternion.Quaternion.exp">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exp</span></span><a class="headerlink" href="#gbmgeometry.geometry.quarternion.Quaternion.exp" title="Permalink to this definition"></a></dt>
+<dd><p>get exp of a quaternion</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.quarternion.Quaternion.axisangle">
+<span class="sig-name descname"><span class="pre">axisangle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/quarternion.html#Quaternion.axisangle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.quarternion.Quaternion.axisangle" title="Permalink to this definition"></a></dt>
+<dd><p>quaternion to axis-angle</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.quarternion.Quaternion.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/quarternion.html#Quaternion.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.quarternion.Quaternion.add" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.quarternion.Quaternion.sub">
+<span class="sig-name descname"><span class="pre">sub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/quarternion.html#Quaternion.sub"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.quarternion.Quaternion.sub" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.quarternion.Quaternion.mul">
+<span class="sig-name descname"><span class="pre">mul</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/quarternion.html#Quaternion.mul"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.quarternion.Quaternion.mul" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.quarternion.Quaternion.div">
+<span class="sig-name descname"><span class="pre">div</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/quarternion.html#Quaternion.div"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.quarternion.Quaternion.div" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.quarternion.Quaternion.rotatePoint">
+<span class="sig-name descname"><span class="pre">rotatePoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/quarternion.html#Quaternion.rotatePoint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.quarternion.Quaternion.rotatePoint" title="Permalink to this definition"></a></dt>
+<dd><p>rotate a point using P = q P q^-1</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-gbmgeometry.geometry.ray">
+<span id="gbmgeometry-geometry-ray-module"></span><h2>gbmgeometry.geometry.ray module<a class="headerlink" href="#module-gbmgeometry.geometry.ray" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.ray.Ray">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbmgeometry.geometry.ray.</span></span><span class="sig-name descname"><span class="pre">Ray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#29FC5C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probability</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/ray.html#Ray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.ray.Ray" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.ray.Ray.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">detector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#29FC5C'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probability</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/ray.html#Ray.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.ray.Ray.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.ray.Ray.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/ray.html#Ray.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.ray.Ray.plot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.ray.Ray.detector_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">detector_name</span></span><a class="headerlink" href="#gbmgeometry.geometry.ray.Ray.detector_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.ray.Ray.probability">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">probability</span></span><a class="headerlink" href="#gbmgeometry.geometry.ray.Ray.probability" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.ray.Ray.detector_origin">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">detector_origin</span></span><a class="headerlink" href="#gbmgeometry.geometry.ray.Ray.detector_origin" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.ray.Ray.ray_origin">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ray_origin</span></span><a class="headerlink" href="#gbmgeometry.geometry.ray.Ray.ray_origin" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.ray.Ray.sympy_line">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sympy_line</span></span><a class="headerlink" href="#gbmgeometry.geometry.ray.Ray.sympy_line" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.ray.Ray.point_on_ray">
+<span class="sig-name descname"><span class="pre">point_on_ray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/ray.html#Ray.point_on_ray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.ray.Ray.point_on_ray" title="Permalink to this definition"></a></dt>
+<dd><p>get a parametrized point on the ray</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>t</strong> – point between 0 and 1</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-gbmgeometry.geometry.sphere">
+<span id="gbmgeometry-geometry-sphere-module"></span><h2>gbmgeometry.geometry.sphere module<a class="headerlink" href="#module-gbmgeometry.geometry.sphere" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.sphere.Sphere">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbmgeometry.geometry.sphere.</span></span><span class="sig-name descname"><span class="pre">Sphere</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#FFFFFF'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/sphere.html#Sphere"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.sphere.Sphere" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.sphere.Sphere.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#FFFFFF'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/sphere.html#Sphere.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.sphere.Sphere.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.sphere.Sphere.radius">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">radius</span></span><a class="headerlink" href="#gbmgeometry.geometry.sphere.Sphere.radius" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.sphere.Sphere.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/sphere.html#Sphere.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.sphere.Sphere.plot" title="Permalink to this definition"></a></dt>
+<dd><p>plot the sphere</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.sphere.compute_single_rotation">
+<span class="sig-prename descclassname"><span class="pre">gbmgeometry.geometry.sphere.</span></span><span class="sig-name descname"><span class="pre">compute_single_rotation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xyz</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail_level</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/sphere.html#compute_single_rotation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.sphere.compute_single_rotation" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.sphere.compute_multiple_rotation">
+<span class="sig-prename descclassname"><span class="pre">gbmgeometry.geometry.sphere.</span></span><span class="sig-name descname"><span class="pre">compute_multiple_rotation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xyz</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detail_level</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_steps</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/sphere.html#compute_multiple_rotation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.sphere.compute_multiple_rotation" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-gbmgeometry.geometry.surface">
+<span id="gbmgeometry-geometry-surface-module"></span><h2>gbmgeometry.geometry.surface module<a class="headerlink" href="#module-gbmgeometry.geometry.surface" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.surface.Surface">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbmgeometry.geometry.surface.</span></span><span class="sig-name descname"><span class="pre">Surface</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/surface.html#Surface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.surface.Surface" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.surface.Surface.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertices</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/surface.html#Surface.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.surface.Surface.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.surface.Surface._calculate_origin">
+<span class="sig-name descname"><span class="pre">_calculate_origin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/surface.html#Surface._calculate_origin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.surface.Surface._calculate_origin" title="Permalink to this definition"></a></dt>
+<dd><p>compute the origin of the plane</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.surface.Surface.is_intersecting">
+<span class="sig-name descname"><span class="pre">is_intersecting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/surface.html#Surface.is_intersecting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.surface.Surface.is_intersecting" title="Permalink to this definition"></a></dt>
+<dd><p>checks if ray intersects plane</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ray</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>bool, array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.surface.Surface.origin">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">origin</span></span><a class="headerlink" href="#gbmgeometry.geometry.surface.Surface.origin" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-gbmgeometry.geometry.volume">
+<span id="gbmgeometry-geometry-volume-module"></span><h2>gbmgeometry.geometry.volume module<a class="headerlink" href="#module-gbmgeometry.geometry.volume" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.volume.Volume">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gbmgeometry.geometry.volume.</span></span><span class="sig-name descname"><span class="pre">Volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quaternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grey'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_surfaces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/volume.html#Volume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.volume.Volume" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.volume.Volume.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_origin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sc_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quaternion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'grey'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_surfaces</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/volume.html#Volume.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.volume.Volume.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.volume.Volume.planes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">planes</span></span><a class="headerlink" href="#gbmgeometry.geometry.volume.Volume.planes" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.volume.Volume.center">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">center</span></span><a class="headerlink" href="#gbmgeometry.geometry.volume.Volume.center" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.volume.Volume.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#gbmgeometry.geometry.volume.Volume.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.volume.Volume.plot_ipv">
+<span class="sig-name descname"><span class="pre">plot_ipv</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/volume.html#Volume.plot_ipv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.volume.Volume.plot_ipv" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.volume.Volume.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/volume.html#Volume.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.volume.Volume.plot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.volume.Volume.intersect_ray">
+<span class="sig-name descname"><span class="pre">intersect_ray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/gbmgeometry/geometry/volume.html#Volume.intersect_ray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gbmgeometry.geometry.volume.Volume.intersect_ray" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.volume.Volume.all_intersections">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">all_intersections</span></span><a class="headerlink" href="#gbmgeometry.geometry.volume.Volume.all_intersections" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="gbmgeometry.geometry.volume.Volume.intersection">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">intersection</span></span><a class="headerlink" href="#gbmgeometry.geometry.volume.Volume.intersection" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-gbmgeometry.geometry">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-gbmgeometry.geometry" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, J. Michael Burgess.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

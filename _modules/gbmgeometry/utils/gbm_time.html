@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gbmgeometry.utils.gbm_time &mdash; gbmgeometry  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@^1.0.0-rc.0/dist/embed-amd.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <link rel="stylesheet" href="../../../_static/pygments/default.css" type="text/css" id="pygments-style">
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css">
+   
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> gbmgeometry
+            <img src="../../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/demo.html">GBM Geometry Demo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/demo.html#Fermi-plotting-and-computing-blockage">Fermi plotting and computing blockage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/posinterp.html">The PositionInterpolator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/pointsource.html">Plotting Points on the Sky</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/modules.html">twopc</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gbmgeometry</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+  <!--
+  <div class="admonition note">
+    <p><a href="https://github.com/lukelbd">ProPlot author here</a>: Due to my day job as a graduate student, certain <a href="https://github.com/lukelbd/proplot/pulls?q=is%3Aopen+is%3Apr">feature additions</a> may be delayed to the summer of 2020. In the meantime, if you are interested in contributing to ProPlot, please see the <a href="https://proplot.readthedocs.io/en/latest/contributions.html">contribution guide</a>. Any amount of help is welcome!
+    </p>
+  </div>
+  -->
+  <li id="lightdark-li">
+    <label for="lightdark-checkbox" id="lightdark-label">
+      <input type="checkbox" id="lightdark-checkbox"/>
+      <div class="btn-neutral"></div>
+    </label>
+  </li>
+  
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>gbmgeometry.utils.gbm_time</li>
+
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+  <script type="text/javascript" src=../../../_static/custom.js></script>
+  
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gbmgeometry.utils.gbm_time</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">astropy.time</span> <span class="k">as</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">astropy.units</span> <span class="k">as</span> <span class="nn">u</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="GBMTime"><a class="viewcode-back" href="../../../notebooks/api/gbmgeometry.utils.html#gbmgeometry.GBMTime">[docs]</a><span class="k">class</span> <span class="nc">GBMTime</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="GBMTime.__init__"><a class="viewcode-back" href="../../../notebooks/api/gbmgeometry.utils.html#gbmgeometry.GBMTime.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_object</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_object</span> <span class="o">=</span> <span class="n">time_object</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_mjd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_object</span><span class="o">.</span><span class="n">mjd</span>
+
+        <span class="c1"># get the Fermi MET from the MET</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_met_from_mjd</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_utc_zero</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_MJD_from_MET</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># this is when week 9 of the mission starts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_utc_start_of_sc_data</span> <span class="o">=</span> <span class="s2">&quot;2008-08-07T03:35:44.0&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_time_of_start_of_sc_data</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">Time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_utc_start_of_sc_data</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">met</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_met</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">utc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_object</span><span class="o">.</span><span class="n">iso</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_object</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">t_zero</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_utc_zero</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mission_week</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">dt</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_time_object</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_of_start_of_sc_data</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">week</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dt</span> <span class="o">+</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">week</span>
+
+<div class="viewcode-block" id="GBMTime.from_UTC_fits"><a class="viewcode-back" href="../../../notebooks/api/gbmgeometry.utils.html#gbmgeometry.GBMTime.from_UTC_fits">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_UTC_fits</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">date_string</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Create a time object from a fits UTC representation</span>
+
+
+<span class="sd">        :param date_string: </span>
+<span class="sd">        :return: </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">time_object</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">Time</span><span class="p">(</span><span class="n">date_string</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;fits&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="s2">&quot;utc&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">time_object</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GBMTime.from_MET"><a class="viewcode-back" href="../../../notebooks/api/gbmgeometry.utils.html#gbmgeometry.GBMTime.from_MET">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_MET</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">met</span><span class="p">):</span>
+
+        <span class="n">time_object</span> <span class="o">=</span> <span class="n">GBMTime</span><span class="o">.</span><span class="n">_calculate_MJD_from_MET</span><span class="p">(</span><span class="n">met</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">time_object</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_calculate_MJD_from_MET</span><span class="p">(</span><span class="n">met</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">met</span> <span class="o">&lt;=</span> <span class="mf">252460801.000</span><span class="p">:</span>
+            <span class="n">utc_tt_diff</span> <span class="o">=</span> <span class="mf">65.184</span>
+        <span class="k">elif</span> <span class="n">met</span> <span class="o">&lt;=</span> <span class="mf">362793602.000</span><span class="p">:</span>
+            <span class="n">utc_tt_diff</span> <span class="o">=</span> <span class="mf">66.184</span>
+        <span class="k">elif</span> <span class="n">met</span> <span class="o">&lt;=</span> <span class="mf">457401603.000</span><span class="p">:</span>
+            <span class="n">utc_tt_diff</span> <span class="o">=</span> <span class="mf">67.184</span>
+        <span class="k">elif</span> <span class="n">met</span> <span class="o">&lt;=</span> <span class="mf">504921604.000</span><span class="p">:</span>
+            <span class="n">utc_tt_diff</span> <span class="o">=</span> <span class="mf">68.184</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">utc_tt_diff</span> <span class="o">=</span> <span class="mf">69.184</span>
+
+        <span class="n">mjdutc</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">((</span><span class="n">met</span> <span class="o">-</span> <span class="n">utc_tt_diff</span><span class="p">)</span> <span class="o">/</span> <span class="mf">86400.0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">51910</span> <span class="o">+</span> <span class="mf">0.0007428703703</span>
+        <span class="p">)</span>  <span class="c1"># -68.184 added to account for diff between TT and UTC and the 4 leapseconds since 2001</span>
+        <span class="c1"># mjdtt = ((met) / 86400.0) + 51910 + 0.00074287037037</span>
+
+        <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">Time</span><span class="p">(</span><span class="n">mjdutc</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="s2">&quot;utc&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;mjd&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GBMTime._calculate_met_from_mjd"><a class="viewcode-back" href="../../../notebooks/api/gbmgeometry.utils.html#gbmgeometry.GBMTime._calculate_met_from_mjd">[docs]</a>    <span class="k">def</span> <span class="nf">_calculate_met_from_mjd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        calculated the Fermi MET given MJD</span>
+<span class="sd">        :return: </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_mjd</span> <span class="o">&lt;=</span> <span class="mf">54832.00000000</span><span class="p">:</span>
+            <span class="n">utc_tt_diff</span> <span class="o">=</span> <span class="mf">65.184</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_mjd</span> <span class="o">&lt;=</span> <span class="mf">56109.00000000</span><span class="p">:</span>
+            <span class="n">utc_tt_diff</span> <span class="o">=</span> <span class="mf">66.184</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_mjd</span> <span class="o">&lt;=</span> <span class="mf">57204.00000000</span><span class="p">:</span>
+            <span class="n">utc_tt_diff</span> <span class="o">=</span> <span class="mf">67.184</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_mjd</span> <span class="o">&lt;=</span> <span class="mf">57754.00000000</span><span class="p">:</span>
+            <span class="n">utc_tt_diff</span> <span class="o">=</span> <span class="mf">68.184</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">utc_tt_diff</span> <span class="o">=</span> <span class="mf">69.184</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_met</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_current_mjd</span> <span class="o">-</span> <span class="mi">51910</span> <span class="o">-</span> <span class="mf">0.0007428703703</span>
+        <span class="p">)</span> <span class="o">*</span> <span class="mf">86400.0</span> <span class="o">+</span> <span class="n">utc_tt_diff</span>  <span class="c1"># convert it into MET</span></div>
+
+    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">TimeDelta</span><span class="p">):</span>
+
+            <span class="n">new_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_object</span> <span class="o">+</span> <span class="n">other</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="c1"># assuming second addition</span>
+
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">TimeDelta</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;sec&quot;</span><span class="p">)</span>
+
+            <span class="n">new_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_object</span> <span class="o">+</span> <span class="n">dt</span>
+
+        <span class="k">return</span> <span class="n">GBMTime</span><span class="p">(</span><span class="n">new_time</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">TimeDelta</span><span class="p">):</span>
+
+            <span class="n">new_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_object</span> <span class="o">-</span> <span class="n">other</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">GBMTime</span><span class="p">):</span>
+
+            <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_object</span> <span class="o">-</span> <span class="n">other</span><span class="o">.</span><span class="n">time</span>
+
+            <span class="k">return</span> <span class="n">dt</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="c1"># assuming second addition</span>
+
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">TimeDelta</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;sec&quot;</span><span class="p">)</span>
+
+            <span class="n">new_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_object</span> <span class="o">-</span> <span class="n">dt</span>
+
+        <span class="k">return</span> <span class="n">GBMTime</span><span class="p">(</span><span class="n">new_time</span><span class="p">)</span></div>
+
+
+<span class="c1"># def mission_week(met):</span>
+</pre></div>
+
+           </div>
+          </div>
+
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, J. Michael Burgess.</p>
+  </div>
+
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
