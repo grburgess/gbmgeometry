@@ -1,2 +1,3 @@
 include versioneer.py
 include gbmgeometry/_version.py
+graft gbmgeometry/data
